@@ -1,0 +1,5 @@
+---
+"workspace:activate_next_tab": cmd-g
+"workspace:toggle_ai_assistant": meta-space
+"workspace:activate_prev_tab": cmd-s
+"terminal:toggle_teams_modal": none

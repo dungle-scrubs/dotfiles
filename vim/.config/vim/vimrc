@@ -1,0 +1,165 @@
+" required to use /.config/vim as the runtime path
+set runtimepath-=~/.vim
+set runtimepath+=~/.config/vim
+set runtimepath+=~/.config/vim/autoload
+
+" Use a vertical bar in insert mode
+let &t_SI = "\<Esc>[5 q"
+let &t_EI = "\<Esc>[2 q"
+
+" Disable compatibility with vi which can cause unexpected issues.
+set nocompatible
+
+filetype on
+filetype plugin on
+filetype indent on
+
+syntax on
+
+colorscheme habamax
+
+set clipboard+=unnamedplus
+set background=dark
+set nowrap
+set number
+set cursorline
+set nocursorcolumn
+set shiftwidth=4
+set tabstop=4
+set expandtab
+set nobackup
+set scrolloff=10
+set incsearch
+set ignorecase
+set smartcase
+set showcmd
+set showmode
+set showmatch
+set hlsearch
+set history=1000
+set wildmenu
+set wildmode=list:longest
+set wildignore=*.docx,*.jpg,*.png,*.gif,*.pdf,*.pyc,*.exe,*.flv,*.flv,*.img,*.xlsx
+
+" PLUGIN SETTINGS {{{
+let g:tmux_navigator_no_wrap=1
+let g:highlightedyank_highlight_duration = 200
+
+" }}}
+
+" MAPPINGS {{{
+let mapleader = " "
+
+" resource current file
+nnoremap  <leader>r :source % \| echo "reloaded!"<cr>
+
+" search
+nnoremap s <esc> :nohls<cr>
+nnoremap f <plug>(easymotion-prefix)
+
+" buffer management
+nnoremap <leader>wl :vsplit<cr><c-w>
+nnoremap <leader>wh :set aplitright<cr>:vsplit<cr>:set nosplitright<cr>
+nnoremap <leader>wj :split<cr><c-w>
+nnoremap <leader>wk :set splitbelow<cr>:split nosplitbelow<cr>
+nnoremap <c-h> <c-w><c-h>
+nnoremap <c-l> <c-w><c-l>
+nnoremap <c-j> <c-w><c-j>
+nnoremap <c-k> <c-w><c-k>
+nnoremap <leader>xb :bd<cr>:w " close buffer
+
+" nerd tree
+nnoremap <leader>e :nerdtreetoggle<cr> 
+
+" pop up menus
+inoremap <expr> j pumvisible() ? "\<c-n>" : "j"
+inoremap <expr> k pumvisible() ? "\<c-p>" : "k"
+imap <c-@> <c-x><c-o>
+
+" fzf
+nnoremap <leader><leader> :buffers<cr>
+nnoremap <leader>sf :files<cr>
+nnoremap <leader>ss :commands<cr>
+nnoremap <leader>;; :marks<cr>
+nnoremap <leader>sg :rg<cr> 
+nnoremap <leader>f :BLines<cr>
+
+" }}}
+
+" PLUGINS {{{
+call plug#begin('~/.config/vim/plugged')
+    Plug 'dense-analysis/ale'
+    Plug 'preservim/nerdtree'
+    Plug 'prabirshrestha/vim-lsp'
+    Plug 'mattn/vim-lsp-settings'
+    Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+    Plug 'junegunn/fzf.vim'
+    Plug 'tpope/vim-commentary'
+    Plug 'tpope/vim-surround'
+    Plug 'tpope/vim-vinegar'
+    Plug 'itchyny/lightline.vim'
+    Plug 'github/copilot.vim'
+    Plug 'easymotion/vim-easymotion'
+    Plug 'christoomey/vim-tmux-navigator'
+    Plug 'machakann/vim-highlightedyank'
+call plug#end()
+" }}}
+
+" VIMSCRIPT {{{
+function! s:on_lsp_buffer_enabled() abort
+    setlocal omnifunc=lsp#complete
+    setlocal signcolumn=yes
+    nmap <buffer> <leader>pd <plug>(lsp-definition)
+    nmap <buffer> <leader>pl <plug>(lsp-declaration)
+    nmap <buffer> <leader>pr <plug>(lsp-references)
+    nmap <buffer> <leader>px <plug>(lsp-document-diagnostics)
+    nmap <buffer> <leader>pn <plug>(lsp-rename)
+    nmap <buffer> K <plug>(lsp-hover)
+endfunction
+
+augroup lsp_install
+    au!
+    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup END
+
+augroup filetype_vim
+    autocmd!
+    autocmd FileType vim setlocal foldmethod=marker
+augroup END
+
+" If Vim version is equal to or greater than 7.3 enable undofile.
+" This allows you to undo changes to a file even after saving it.
+if version >= 703
+    set undodir=~/.vim/backup
+    set undofile
+    set undoreload=10000
+endif
+
+" You can split a window into sections by typing `:split` or `:vsplit`.
+" Display cursorline and cursorcolumn ONLY in active window.
+augroup cursor_off
+    autocmd!
+    autocmd WinLeave * set nocursorline nocursorcolumn
+    autocmd WinEnter * set cursorline cursorcolumn
+augroup END
+
+" }}}
+
+" STATUS LINE {{{ 
+
+" " Clear status line when vimrc is reloaded.
+" set statusline=
+
+" " Status line left side.
+" set statusline+=\ %F\ %M\ %Y\ %R
+
+" " Use a divider to separate the left side from the right side.
+" set statusline+=%=
+
+" " Status line right side.
+" set statusline+=\ ascii:\ %b\ hex:\ 0x%B\ row:\ %l\ col:\ %c\ percent:\ %p%%
+
+" " Show the status on the second to last line.
+" set laststatus=2
+
+" }}}

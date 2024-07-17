@@ -1,0 +1,75 @@
+#!/usr/bin/env sh
+
+yabai -m signal --add event=dock_did_restart action="sudo yabai --load-sa"
+sudo yabai --load-sa
+
+# global settings
+yabai -m config mouse_follows_focus          off
+yabai -m config focus_follows_mouse          off
+yabai -m config window_origin_display        default
+yabai -m config window_placement             second_child
+yabai -m config window_shadow                on
+yabai -m config window_opacity               on 
+yabai -m config window_opacity_duration      0.0
+yabai -m config active_window_opacity        1.0
+yabai -m config normal_window_opacity        0.90
+yabai -m config insert_feedback_color        0xffd75f5f
+yabai -m config split_ratio                  0.50
+yabai -m config auto_balance                 on
+yabai -m config mouse_modifier               fn
+yabai -m config mouse_action1                move
+yabai -m config mouse_action2                resize
+yabai -m config mouse_drop_action            swap
+
+# layout settings
+yabai -m config layout bsp
+yabai -m config window_gap                   12
+yabai -m config top_padding 0
+yabai -m config bottom_padding 0
+yabai -m config left_padding 0
+yabai -m config right_padding 0
+
+# setup spaces
+function setup_space {
+  local idx="$1"
+  local space=
+  echo "setup space $idx"
+
+  space=$(yabai -m query --spaces --space $idx)
+  if [ -z "$space" ]; then
+    yabai -m space --create
+  fi
+}
+
+# apply specific app to specific space
+yabai -m rule --add app="^kitty$" space=^1
+yabai -m rule --add app="^Obsidian$" space=^5
+yabai -m rule --add app="^Craft$" space=^5
+yabai -m rule --add app="^Mail$" space=^7
+yabai -m rule --add app="^Calendar$" space=^7
+yabai -m rule --add app="^BusyCal$" space=^7
+yabai -m rule --add app="^Telegram$" space=^8
+yabai -m rule --add app="^Slack$" space=^8
+yabai -m rule --add app="^Messages$" space=^8
+yabai -m rule --add app="^Signal$" space=^8
+	
+# apps to exlude
+yabai -m rule --add app="^System Settings$" manage=off
+yabai -m rule --add app="^Time Machine$" manage=off
+yabai -m rule --add app="^timid$" manage=off
+yabai -m rule --add app="^Raycast$" manage=off
+yabai -m rule --add app="^Setapp$" manage=off
+yabai -m rule --add app="^1Password$" manage=off 
+yabai -m rule --add app="^System Settings$" manage=off
+yabai -m rule --add app="^Dash$" manage=off
+yabai -m rule --add app="^Sip$" manage=off
+yabai -m rule --add app="^App Store$" manage=off
+yabai -m rule --add app="^CleanShot X$" manage=off
+yabai -m rule --add app="^CleanMyMac X$" manage=off
+yabai -m rule --add app="^Accessibility Inspector$" manage=off
+# arc settings
+yabai -m rule --add app="^Arc$" title="^Kevin$" manage=off
+# little arc bar
+yabai -m rule --add app="^Arc$" title="^Space.*" manage=off grid=6:4:1:1:2:4
+# mini player and PIP
+yabai -m rule --add app="^Arc$" title="^$" mouse_follows_focus=off
