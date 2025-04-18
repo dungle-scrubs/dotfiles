@@ -9,6 +9,7 @@ export DISABLE_AUTO_TITLE="true"
 export COMPLETION_WAITING_DOTS="true"
 
 # ===== Path Management =====
+ 
 typeset -U path_dirs
 path_dirs=(
   "/opt/homebrew/bin"
@@ -21,6 +22,7 @@ path_dirs=(
 export PATH=${(j.:.)path_dirs}
 
 # ===== Oh My Zsh Configuration =====
+ 
 export ZSH="$HOME/.oh-my-zsh"
 zstyle ':omz:update' mode auto
 zstyle ':omz:update' frequency 7
@@ -29,10 +31,12 @@ plugins=(vscode zsh-nvm)
 source $ZSH/oh-my-zsh.sh
 
 # ===== Completion Settings =====
+ 
 setopt prompt_subst
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 
 # ===== Tool Configuration =====
+.
 # FZF
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow'
 source <(fzf --zsh)
@@ -66,6 +70,7 @@ fi
 eval "$(starship init zsh)"
 
 # ===== Node.js Management =====
+ 
 # NVM configuration
 export NVM_LAZY_LOAD=true
 export NVM_DIR="$HOME/.nvm"
@@ -97,6 +102,7 @@ load-nvmrc
 export PNPM_HOME="$HOME/Library/pnpm"
 
 # ===== Other Language Support =====
+ 
 # Ruby
 if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
@@ -106,26 +112,8 @@ eval "$(luarocks path --bin)"
 # PHP (Herd)
 export HERD_PHP_82_INI_SCAN_DIR="$HOME/Library/Application Support/Herd/config/php/82/"
 
-# ===== Key Bindings =====
-
-# Custom key bindings
-# bindkey '^r' atuin-search
-# bindkey '^w' autosuggest-execute
-# bindkey '^e' autosuggest-accept
-# bindkey '^u' autosuggest-toggle
-# bindkey '^L' vi-forward-word
-# bindkey '^k' up-line-or-search
-# bindkey '^j' down-line-or-search
-
-# Zoxide interactive search widget
-zi-widget() {
-  BUFFER="zi"
-  zle accept-line
-}
-zle -N zi-widget 
-# bindkey '^f' zi-widget
-
 # ===== Aliases =====
+ 
 # File listing
 alias la=tree
 alias cat=bat
@@ -164,6 +152,7 @@ alias http="xh"
 alias h2='$(npm prefix -s)/node_modules/.bin/shopify hydrogen'
 
 # ===== Custom Functions =====
+ 
 # Yazi file manager with directory tracking
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
@@ -180,11 +169,15 @@ fcd() { cd "$(find . -type d -not -path '*/.*' | fzf)" && l; }
 f() { echo "$(find . -type f -not -path '*/.*' | fzf)" | pbcopy }
 fv() { nvim "$(find . -type f -not -path '~/.config/.*' | fzf)" }
 
-# ===== Completion Sourcing =====
-# Tabtab completions
-[[ -f $HOME/Library/pnpm/store/v3/tmp/dlx-87268/node_modules/.pnpm/tabtab@2.2.2/node_modules/tabtab/.completions/electron-forge.zsh ]] && . $HOME/Library/pnpm/store/v3/tmp/dlx-87268/node_modules/.pnpm/tabtab@2.2.2/node_modules/tabtab/.completions/electron-forge.zsh
-
 # ===== zsh-vi-mode custom bindings =====
+ 
+# Zoxide interactive search widget
+zi-widget() {
+  BUFFER="zi"
+  zle accept-line
+}
+zle -N zi-widget 
+
 # This function runs after zsh-vi-mode initializes
 function zvm_after_init() {
   # Bind Ctrl+R to Atuin search
