@@ -31,7 +31,7 @@ function M.apply(config)
 		-- edit_config("aerc"),
 		-- {
 		-- 	label = "log",
-		-- 	cwd = tjex_site .. "/src/content",
+		-- 	cwd = home .. "/src/content",
 		-- 	set_environment_variables = {
 		-- 		PATH = env_paths,
 		-- 	},
