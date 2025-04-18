@@ -45,6 +45,7 @@ brew "pngpaste"
 brew "poppler"
 brew "postgresql@14", restart_service: :changed
 brew "python@3.12"
+brew "ranger"
 brew "rbenv"
 brew "resvg"
 brew "ripgrep"
