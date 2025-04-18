@@ -36,7 +36,7 @@ setopt prompt_subst
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 
 # ===== Tool Configuration =====
-.
+
 # FZF
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow'
 source <(fzf --zsh)
