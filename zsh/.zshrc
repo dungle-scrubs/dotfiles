@@ -1,25 +1,13 @@
 # ===== Environment Variables =====
-export XDG_CONFIG_HOME="$HOME/.config"
-export GOKU_EDN_CONFIG_FILE="$XDG_CONFIG_HOME/karabiner/karabiner.edn"
-export LANG=en_US.UTF-8
-export EDITOR=/opt/homebrew/bin/nvim
-export HOMEBREW_NO_ENV_HINTS=1
 export STARSHIP_CONFIG=$HOME/.config/starship/starship.toml
 export DISABLE_AUTO_TITLE="true"
 export COMPLETION_WAITING_DOTS="true"
-
-# ===== Path Management =====
- 
-typeset -U path_dirs
-path_dirs=(
-  "/opt/homebrew/bin"
-  "$HOME/Library/pnpm"
-  "$HOME/Library/Application Support/Herd/bin/"
-  "./scripts/"
-  "$HOME/.atuin/bin"
-  "$PATH"
-)
-export PATH=${(j.:.)path_dirs}
+export HISTFILE="$ZDOTDIR/.zsh_history"
+export ATUIN_CONFIG_DIR="$HOME/.config/atuin"
+export BAT_THEME="Monokai Extended" # Or another theme you prefer
+export BAT_STYLE="full" # Enable all features
+export PAGER="less -R" # Make less interpret color codes
+export BAT_PAGER="less -RF" # Configure bat's pager to handle colors
 
 # ===== Oh My Zsh Configuration =====
  
@@ -42,7 +30,7 @@ export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow'
 source <(fzf --zsh)
 
 # Homebrew prefix (calculate once)
-BREW_PREFIX=$(brew --prefix)
+BREW_PREFIX=$HOMEBREW_PREFIX
 
 # Zsh plugins
 source $BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
@@ -52,7 +40,6 @@ source $BREW_PREFIX/opt/zsh-vi-mode/share/zsh-vi-mode/zsh-vi-mode.plugin.zsh
 
 # Atuin (shell history)
 eval "$(atuin init zsh)"
-. "$HOME/.atuin/bin/env"
 export ATUIN_NOBIND="true"
 
 # Navi
@@ -74,9 +61,6 @@ eval "$(starship init zsh)"
 # NVM configuration
 export NVM_LAZY_LOAD=true
 export NVM_DIR="$HOME/.nvm"
-# Uncomment if zsh-nvm plugin isn't working properly
-# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-# [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 # Auto-switch Node version based on .nvmrc
 autoload -U add-zsh-hook
@@ -97,20 +81,6 @@ load-nvmrc() {
 }
 add-zsh-hook chpwd load-nvmrc
 load-nvmrc
-
-# PNPM
-export PNPM_HOME="$HOME/Library/pnpm"
-
-# ===== Other Language Support =====
- 
-# Ruby
-if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
-
-# Lua
-eval "$(luarocks path --bin)"
-
-# PHP (Herd)
-export HERD_PHP_82_INI_SCAN_DIR="$HOME/Library/Application Support/Herd/config/php/82/"
 
 # ===== Aliases =====
  
@@ -150,6 +120,9 @@ alias http="xh"
 
 # Shopify
 alias h2='$(npm prefix -s)/node_modules/.bin/shopify hydrogen'
+
+# Force jq to always use colors, even when outputting to a pipe
+alias jq='jq -C'
 
 # ===== Custom Functions =====
  
@@ -192,5 +165,46 @@ function zvm_after_init() {
   bindkey '^j' down-line-or-search
   
   # Zoxide widget binding
-  bindkey '^f' zi-widget
+  bindkey '^o' zi-widget
+}
+
+# When brew install, update, upgrade, or uninstall are run, update the Brewfile
+# commit, and push the changes.
+function brew() {
+    # Store current directory
+    local current_dir=$(pwd)
+    
+    #Run the original brew command
+    command brew "$@"
+    local brew_exit_code=$?
+    
+    # Only proceed if brew command was successful
+    if [[ $brew_exit_code -eq 0 ]]; then
+        if [[ "$1" == "install" || "$1" == "update" || "$1" == "upgrade" || "$1" == "uninstall" ]]; then
+            echo "Updating Brewfile in dotfiles repository..."
+            
+            # Change to dotfiles directory
+            cd ~/dotfiles
+            
+            # Update Brewfile
+            command brew bundle dump --file=~/dotfiles/homebrew/Brewfile --force
+            
+            # Add to git
+            git add homebrew/Brewfile
+            
+            # Commit and push if there are changes
+            if git diff --cached --quiet homebrew/Brewfile; then
+                echo "No changes in Brewfile"
+            else
+                git commit -m "Update Brewfile with new Homebrew changes"
+                git push && echo "Brewfile updated and pushed to repository"
+            fi
+            
+            # Return to original directory
+            cd "$current_dir"
+        fi
+    fi
+    
+    # Return the original brew command's exit code
+    return $brew_exit_code
 }
