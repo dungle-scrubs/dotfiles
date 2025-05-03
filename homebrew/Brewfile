@@ -94,6 +94,7 @@ cask "shortcat"
 cask "vscodium"
 cask "warp"
 cask "wezterm"
+mas "1Password for Safari", id: 1569813296
 mas "CotEditor", id: 1024640650
 mas "Expressions", id: 913158085
 mas "NordVPN", id: 905953485
