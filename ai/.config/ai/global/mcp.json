@@ -1,0 +1,24 @@
+{
+	"calls": [
+		{
+			"match": "when the user requests code examples, setup or configuration steps, or library/API documentation",
+			"tool": "context7"
+		},
+		{
+			"match": "when the user asks about Shopify API, Liquid, theme development, app development, or anything on the Shopify platform",
+			"tool": "shopify-mcp-server"
+		},
+		{
+			"match": "when the user requests file operations (reading, writing, navigating dotfiles or configs)",
+			"tool": "filesystem"
+		},
+		{
+			"match": "when the user asks about Prisma ORM, database schema design, migrations, or queries",
+			"tool": "prisma-mcp-server"
+		},
+		{
+			"match": "when the user inquires about shadcn/ui components, design system usage, or UI styling",
+			"tool": "shadcn-ui-server"
+		}
+	]
+}
