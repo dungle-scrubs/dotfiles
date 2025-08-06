@@ -1,12 +1,20 @@
 {
 	"calls": [
 		{
+			"match": "when working on this project, always consult the memory graph first to understand architecture, widget relationships, and system depyndencies before making changes or providing guidance",
+			"tool": "memory"
+		},
+		{
+			"match": "when the user asks about Git, or when you need to run Git operations",
+			"tool": "git"
+		},
+		{
 			"match": "when the user requests code examples, setup or configuration steps, or library/API documentation",
 			"tool": "context7"
 		},
 		{
 			"match": "when the user asks about Shopify API, Liquid, theme development, app development, or anything on the Shopify platform",
-			"tool": "shopify-mcp-server"
+			"tool": "shopify-dev-mcp"
 		},
 		{
 			"match": "when the user requests file operations (reading, writing, navigating dotfiles or configs)",

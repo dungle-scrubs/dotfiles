@@ -111,6 +111,7 @@ alias .....="cd ../../../.."
 alias ......="cd ../../../../.."
 
 # Git
+alias cc="claude"
 alias gc="git commit -m"
 alias gca="git commit -a -m"
 alias gp="git push origin HEAD"
@@ -130,6 +131,8 @@ alias gl='git log --oneline --graph --decorate'
 alias gu='git reset --soft HEAD~1' # undo last commit, but keep changes
 alias guh='git reset --hard HEAD~1' # undo last commit, and lose changes
 alias lg='lazygit'
+alias nv="nvim ."
+alias sz="source ~/.config/zsh/.zshrc"
 
 
 # HTTP requests

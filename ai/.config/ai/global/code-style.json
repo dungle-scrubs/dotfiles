@@ -9,7 +9,8 @@
 			"Keep components small and single-purpose",
 			"Separate business logic from presentation components",
 			"Follow separation of concerns patterns",
-			"Use custom hooks for reusable logic"
+			"Use custom hooks for reusable logic",
+			"Use JSDoc-style comments: /** ... */"
 		]
 	}
 }
