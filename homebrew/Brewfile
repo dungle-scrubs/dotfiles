@@ -6,6 +6,7 @@ tap "koekeishiya/formulae"
 tap "ngrok/ngrok"
 tap "nikitabobko/tap"
 tap "shopify/shopify"
+tap "sst/tap"
 tap "stripe/stripe-cli"
 tap "yqrashawn/goku"
 brew "age"
@@ -76,6 +77,7 @@ brew "zsh-syntax-highlighting"
 brew "zsh-vi-mode"
 brew "browsh-org/browsh/browsh"
 brew "felixkratz/formulae/borders"
+brew "sst/tap/opencode"
 brew "stripe/stripe-cli/stripe"
 brew "yqrashawn/goku/goku"
 cask "aerospace"
@@ -107,6 +109,7 @@ mas "Pages", id: 409201541
 mas "Plain Text Editor", id: 1572202501
 mas "SubTotal", id: 1569053675
 mas "Telegram", id: 747648890
+mas "Telegram Lite", id: 946399090
 mas "TextEditor", id: 1634592500
 mas "The Clock", id: 488764545
 mas "UMLBoard", id: 1579236127
