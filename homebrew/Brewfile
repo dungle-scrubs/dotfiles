@@ -1,5 +1,6 @@
 tap "austinliuigi/brew-neovim-nightly", "https://github.com/austinliuigi/brew-neovim-nightly.git"
 tap "browsh-org/browsh"
+tap "charmbracelet/tap"
 tap "felixkratz/formulae"
 tap "julien-cpsn/atac"
 tap "koekeishiya/formulae"
@@ -76,6 +77,7 @@ brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
 brew "zsh-vi-mode"
 brew "browsh-org/browsh/browsh"
+brew "charmbracelet/tap/crush"
 brew "felixkratz/formulae/borders"
 brew "sst/tap/opencode"
 brew "stripe/stripe-cli/stripe"
@@ -102,15 +104,11 @@ cask "warp"
 cask "wezterm"
 mas "1Password for Safari", id: 1569813296
 mas "CotEditor", id: 1024640650
-mas "Expressions", id: 913158085
 mas "NordVPN", id: 905953485
 mas "Numbers", id: 409203825
 mas "Pages", id: 409201541
-mas "Plain Text Editor", id: 1572202501
 mas "SubTotal", id: 1569053675
-mas "Telegram", id: 747648890
 mas "Telegram Lite", id: 946399090
-mas "TextEditor", id: 1634592500
 mas "The Clock", id: 488764545
 mas "UMLBoard", id: 1579236127
 mas "Xcode", id: 497799835
