@@ -43,6 +43,7 @@ brew "mysql", restart_service: :changed
 brew "mysql@8.4", restart_service: :changed
 brew "navi"
 brew "neovim"
+brew "sqlite"
 brew "pandoc"
 brew "php@8.3"
 brew "pipes-sh"
