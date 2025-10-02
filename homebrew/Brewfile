@@ -54,7 +54,7 @@ brew "pngpaste"
 brew "poppler"
 brew "portaudio"
 brew "postgresql@14"
-brew "postgresql@15"
+brew "postgresql@15", link: true
 brew "pyenv"
 brew "rbenv"
 brew "resvg"
