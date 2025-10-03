@@ -38,5 +38,7 @@ export PNPM_HOME="$HOME/Library/pnpm"
 if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
 # Lua environment
-eval "$(luarocks path --bin)"
+if command -v luarocks &> /dev/null; then
+  eval "$(luarocks path --bin)"
+fi
 
