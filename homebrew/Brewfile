@@ -35,3 +35,12 @@ cask "orbstack"
 cask "sf-symbols"
 cask "warp"
 cask "wezterm"
+mas "1Password for Safari", id: 1569813296
+mas "CotEditor", id: 1024640650
+mas "NordVPN", id: 905953485
+mas "Numbers", id: 409203825
+mas "Pages", id: 409201541
+mas "SubTotal", id: 1569053675
+mas "Telegram Lite", id: 946399090
+mas "The Clock", id: 488764545
+mas "UMLBoard", id: 1579236127
