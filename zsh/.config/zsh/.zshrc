@@ -1,23 +1,3 @@
-# ===== Environment Variables =====
-export STARSHIP_CONFIG=$HOME/.config/starship/starship.toml
-export DISABLE_AUTO_TITLE="true"
-export COMPLETION_WAITING_DOTS="true"
-export HISTFILE="$ZDOTDIR/.zsh_history"
-export ATUIN_CONFIG_DIR="$HOME/.config/atuin"
-export BAT_THEME="Monokai Extended" # Or another theme you prefer
-export BAT_STYLE="full" # Enable all features
-export PAGER="less -R" # Make less interpret color codes
-export BAT_PAGER="less -RF" # Configure bat's pager to handle colors
-export MCP_DEBUG=false # Claude Code
-
-# Node.js optimization
-export NODE_OPTIONS="--max-old-space-size=16384"
-
-# npm global packages
-export PATH=~/.npm-global/bin:$PATH
-
-# Homebrew (Apple Silicon)
-eval "$(/opt/homebrew/bin/brew shellenv)"
 # ===== Oh My Zsh Configuration =====
  
 export ZSH="$HOME/.oh-my-zsh"
@@ -70,13 +50,15 @@ eval "$(starship init zsh)"
 
 # ===== Node.js Management =====
  
-# NVM configuration
-export NVM_LAZY_LOAD=true
-export NVM_DIR="$HOME/.nvm"
 
 # Auto-switch Node version based on .nvmrc
 autoload -U add-zsh-hook
 load-nvmrc() {
+  # Check if nvm is loaded before trying to use it
+  if ! command -v nvm_find_nvmrc &> /dev/null; then
+    return
+  fi
+  
   local nvmrc_path="$(nvm_find_nvmrc)"
 
   if [ -n "$nvmrc_path" ]; then
@@ -92,7 +74,11 @@ load-nvmrc() {
   fi
 }
 add-zsh-hook chpwd load-nvmrc
-load-nvmrc
+
+# Only call load-nvmrc if nvm is already loaded
+if command -v nvm_find_nvmrc &> /dev/null; then
+  load-nvmrc
+fi
 
 # ===== Aliases =====
  
@@ -111,7 +97,6 @@ alias .....="cd ../../../.."
 alias ......="cd ../../../../.."
 
 # Git
-alias cc="claude"
 alias gc="git commit -m"
 alias gca="git commit -a -m"
 alias gp="git push origin HEAD"
@@ -133,7 +118,7 @@ alias guh='git reset --hard HEAD~1' # undo last commit, and lose changes
 alias lg='lazygit'
 alias nv="nvim ."
 alias sz="source ~/.config/zsh/.zshrc"
-
+alias sp="source ~/.config/zsh/.zprofile"
 
 # HTTP requests
 alias http="xh"
@@ -143,6 +128,21 @@ alias h2='$(npm prefix -s)/node_modules/.bin/shopify hydrogen'
 
 # Force jq to always use colors, even when outputting to a pipe
 alias jq='jq -C'
+
+# Claude Code
+# alias claude="/Users/kevin/.claude/local/claude"
+alias cc='claude'
+alias ccp='claude -p'
+alias ccc='claude --continue'
+alias claude-mod='~/.claude-mod/bin/claude-mod'
+alias cm='~/.claude-mod/bin/claude-mod'
+
+# Python
+alias python=python3
+alias pip=pip3
+
+# Docker
+alias docker-compose='docker compose'
 
 # ===== Custom Functions =====
  
@@ -231,6 +231,9 @@ function brew() {
 
 . "$HOME/.local/bin/env"
 
+# claude-mod PATH
+export PATH="$HOME/.claude-mod/bin:$PATH"
 
-
-alias claude="/Users/kevin/.claude/local/claude"
+# Claude-mod environment variables
+export CLAUDE_MOD_ENV_DIR="$HOME/.claude-mod"
+export CLAUDE_MOD_MCP_DIR="$HOME/.claude-mod/mcp"

@@ -1,0 +1,4577 @@
+[
+  {
+    "timestamp": "2025-08-25T08:24:15.678329",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.6946821000000001,
+        "total_duration_ms": 328639,
+        "total_api_duration_ms": 120240,
+        "total_lines_added": 7,
+        "total_lines_removed": 12
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T08:24:15.678604",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.6946821000000001,
+        "total_duration_ms": 328639,
+        "total_api_duration_ms": 120240,
+        "total_lines_added": 7,
+        "total_lines_removed": 12
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T08:26:23.104721",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.6948549,
+        "total_duration_ms": 456039,
+        "total_api_duration_ms": 121581,
+        "total_lines_added": 7,
+        "total_lines_removed": 12
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T08:26:23.104998",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.6948549,
+        "total_duration_ms": 456039,
+        "total_api_duration_ms": 121581,
+        "total_lines_added": 7,
+        "total_lines_removed": 12
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T08:26:23.838096",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7887585,
+        "total_duration_ms": 456824,
+        "total_api_duration_ms": 129703,
+        "total_lines_added": 7,
+        "total_lines_removed": 12
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T08:26:23.838605",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7887585,
+        "total_duration_ms": 456824,
+        "total_api_duration_ms": 129703,
+        "total_lines_added": 7,
+        "total_lines_removed": 12
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T08:26:27.795143",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7887585,
+        "total_duration_ms": 460763,
+        "total_api_duration_ms": 129703,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T08:26:27.795568",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7887585,
+        "total_duration_ms": 460763,
+        "total_api_duration_ms": 129703,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T08:26:28.222616",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7887585,
+        "total_duration_ms": 461216,
+        "total_api_duration_ms": 129703,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T08:26:28.223029",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7887585,
+        "total_duration_ms": 461216,
+        "total_api_duration_ms": 129703,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T08:26:28.345224",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7887585,
+        "total_duration_ms": 461332,
+        "total_api_duration_ms": 129703,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T08:26:28.345829",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7887585,
+        "total_duration_ms": 461332,
+        "total_api_duration_ms": 129703,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T08:26:33.721873",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.8131875000000001,
+        "total_duration_ms": 466682,
+        "total_api_duration_ms": 134904,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T08:26:33.722721",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.8131875000000001,
+        "total_duration_ms": 466682,
+        "total_api_duration_ms": 134904,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T08:27:04.559738",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.8367609000000001,
+        "total_duration_ms": 497546,
+        "total_api_duration_ms": 141215,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T08:27:04.560535",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.8367609000000001,
+        "total_duration_ms": 497546,
+        "total_api_duration_ms": 141215,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T08:27:04.604604",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.8367609000000001,
+        "total_duration_ms": 497597,
+        "total_api_duration_ms": 141215,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T08:27:04.605258",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.8367609000000001,
+        "total_duration_ms": 497597,
+        "total_api_duration_ms": 141215,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T08:27:10.674905",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.8616618000000001,
+        "total_duration_ms": 503668,
+        "total_api_duration_ms": 147078,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T08:27:10.675729",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.8616618000000001,
+        "total_duration_ms": 503668,
+        "total_api_duration_ms": 147078,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T08:27:21.428368",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.9083187000000001,
+        "total_duration_ms": 514386,
+        "total_api_duration_ms": 157603,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T08:27:21.429109",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.9083187000000001,
+        "total_duration_ms": 514386,
+        "total_api_duration_ms": 157603,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T08:27:38.960772",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.9083187000000001,
+        "total_duration_ms": 531937,
+        "total_api_duration_ms": 157603,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T08:27:38.961567",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.9083187000000001,
+        "total_duration_ms": 531937,
+        "total_api_duration_ms": 157603,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T08:27:39.309548",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.9083187000000001,
+        "total_duration_ms": 532299,
+        "total_api_duration_ms": 157603,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T08:27:39.310513",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.9083187000000001,
+        "total_duration_ms": 532299,
+        "total_api_duration_ms": 157603,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T08:30:39.785285",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.9385922500000001,
+        "total_duration_ms": 712711,
+        "total_api_duration_ms": 172776,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T08:30:39.786077",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.9385922500000001,
+        "total_duration_ms": 712711,
+        "total_api_duration_ms": 172776,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T08:32:34.098365",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.9701767500000001,
+        "total_duration_ms": 827024,
+        "total_api_duration_ms": 191554,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T08:32:34.099196",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.9701767500000001,
+        "total_duration_ms": 827024,
+        "total_api_duration_ms": 191554,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T08:34:08.075675",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.9701767500000001,
+        "total_duration_ms": 921026,
+        "total_api_duration_ms": 191554,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T08:34:08.076572",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.9701767500000001,
+        "total_duration_ms": 921026,
+        "total_api_duration_ms": 191554,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T08:34:08.363834",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.9701767500000001,
+        "total_duration_ms": 921327,
+        "total_api_duration_ms": 191554,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T08:34:08.364879",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.9701767500000001,
+        "total_duration_ms": 921327,
+        "total_api_duration_ms": 191554,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T08:34:08.423513",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.9701767500000001,
+        "total_duration_ms": 921414,
+        "total_api_duration_ms": 191554,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T08:34:08.424481",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.9701767500000001,
+        "total_duration_ms": 921414,
+        "total_api_duration_ms": 191554,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T08:35:03.791819",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.0009068,
+        "total_duration_ms": 976742,
+        "total_api_duration_ms": 207845,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T08:35:03.792848",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.0009068,
+        "total_duration_ms": 976742,
+        "total_api_duration_ms": 207845,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T08:35:30.988512",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.0009068,
+        "total_duration_ms": 1003961,
+        "total_api_duration_ms": 207845,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T08:35:30.989736",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.0009068,
+        "total_duration_ms": 1003961,
+        "total_api_duration_ms": 207845,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T08:35:31.296999",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.0009068,
+        "total_duration_ms": 1004261,
+        "total_api_duration_ms": 207845,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T08:35:31.298229",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.0009068,
+        "total_duration_ms": 1004261,
+        "total_api_duration_ms": 207845,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T08:35:31.336468",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.0009068,
+        "total_duration_ms": 1004329,
+        "total_api_duration_ms": 207845,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T08:35:31.337526",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.0009068,
+        "total_duration_ms": 1004329,
+        "total_api_duration_ms": 207845,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T08:35:54.693145",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.03154505,
+        "total_duration_ms": 1027628,
+        "total_api_duration_ms": 222345,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T08:35:54.694324",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.03154505,
+        "total_duration_ms": 1027628,
+        "total_api_duration_ms": 222345,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T08:37:30.346728",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.0624333000000001,
+        "total_duration_ms": 1123292,
+        "total_api_duration_ms": 236975,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T08:37:30.347905",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.0624333000000001,
+        "total_duration_ms": 1123292,
+        "total_api_duration_ms": 236975,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T08:38:07.557218",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.0930621000000003,
+        "total_duration_ms": 1160491,
+        "total_api_duration_ms": 250212,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T08:38:07.558500",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.0930621000000003,
+        "total_duration_ms": 1160491,
+        "total_api_duration_ms": 250212,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T09:54:19.918573",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.4100694500000004,
+        "total_duration_ms": 5732870,
+        "total_api_duration_ms": 266454,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T09:54:19.919945",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.4100694500000004,
+        "total_duration_ms": 5732870,
+        "total_api_duration_ms": 266454,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T09:55:55.665651",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.4397117500000003,
+        "total_duration_ms": 5828633,
+        "total_api_duration_ms": 274620,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T09:55:55.666959",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.4397117500000003,
+        "total_duration_ms": 5828633,
+        "total_api_duration_ms": 274620,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T09:55:55.862381",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.4397117500000003,
+        "total_duration_ms": 5828840,
+        "total_api_duration_ms": 274620,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T09:55:55.863940",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.4397117500000003,
+        "total_duration_ms": 5828840,
+        "total_api_duration_ms": 274620,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T09:56:01.935922",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.4685593000000003,
+        "total_duration_ms": 5834927,
+        "total_api_duration_ms": 280672,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T09:56:01.937604",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.4685593000000003,
+        "total_duration_ms": 5834927,
+        "total_api_duration_ms": 280672,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T09:56:01.943199",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.4685593000000003,
+        "total_duration_ms": 5834936,
+        "total_api_duration_ms": 280672,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T09:56:01.944609",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.4685593000000003,
+        "total_duration_ms": 5834936,
+        "total_api_duration_ms": 280672,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T09:56:02.162177",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.4685593000000003,
+        "total_duration_ms": 5835139,
+        "total_api_duration_ms": 280672,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T09:56:02.164091",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.4685593000000003,
+        "total_duration_ms": 5835139,
+        "total_api_duration_ms": 280672,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T09:56:27.282073",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.5173328500000003,
+        "total_duration_ms": 5860263,
+        "total_api_duration_ms": 305792,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T09:56:27.283960",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.5173328500000003,
+        "total_duration_ms": 5860263,
+        "total_api_duration_ms": 305792,
+        "total_lines_added": 7,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T09:57:32.641075",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.5173328500000003,
+        "total_duration_ms": 5925620,
+        "total_api_duration_ms": 305792,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T09:57:32.642940",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.5173328500000003,
+        "total_duration_ms": 5925620,
+        "total_api_duration_ms": 305792,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T09:57:33.106550",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.5173328500000003,
+        "total_duration_ms": 5926098,
+        "total_api_duration_ms": 305792,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T09:57:33.108270",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.5173328500000003,
+        "total_duration_ms": 5926098,
+        "total_api_duration_ms": 305792,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T09:57:33.200658",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.5173328500000003,
+        "total_duration_ms": 5926189,
+        "total_api_duration_ms": 305792,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T09:57:33.202367",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.5173328500000003,
+        "total_duration_ms": 5926189,
+        "total_api_duration_ms": 305792,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T09:57:38.170583",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.5573279500000003,
+        "total_duration_ms": 5931162,
+        "total_api_duration_ms": 310601,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T09:57:38.172358",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.5573279500000003,
+        "total_duration_ms": 5931162,
+        "total_api_duration_ms": 310601,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T09:57:38.226526",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.5573279500000003,
+        "total_duration_ms": 5931219,
+        "total_api_duration_ms": 310601,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T09:57:38.228491",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.5573279500000003,
+        "total_duration_ms": 5931219,
+        "total_api_duration_ms": 310601,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T09:57:38.445320",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.5573279500000003,
+        "total_duration_ms": 5931421,
+        "total_api_duration_ms": 310601,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T09:57:38.447418",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.5573279500000003,
+        "total_duration_ms": 5931421,
+        "total_api_duration_ms": 310601,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T09:57:43.046403",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.5573279500000003,
+        "total_duration_ms": 5936027,
+        "total_api_duration_ms": 310601,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T09:57:43.048892",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.5573279500000003,
+        "total_duration_ms": 5936027,
+        "total_api_duration_ms": 310601,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T09:57:44.390642",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.5880304000000003,
+        "total_duration_ms": 5937383,
+        "total_api_duration_ms": 316517,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T09:57:44.392644",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.5880304000000003,
+        "total_duration_ms": 5937383,
+        "total_api_duration_ms": 316517,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T09:57:44.601862",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.5880304000000003,
+        "total_duration_ms": 5937587,
+        "total_api_duration_ms": 316517,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T09:57:44.604220",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.5880304000000003,
+        "total_duration_ms": 5937587,
+        "total_api_duration_ms": 316517,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T09:57:53.805136",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.5880304000000003,
+        "total_duration_ms": 5946774,
+        "total_api_duration_ms": 316517,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T09:57:53.807307",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.5880304000000003,
+        "total_duration_ms": 5946774,
+        "total_api_duration_ms": 316517,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T09:57:55.037976",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.6205436500000003,
+        "total_duration_ms": 5948030,
+        "total_api_duration_ms": 326921,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T09:57:55.040351",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.6205436500000003,
+        "total_duration_ms": 5948030,
+        "total_api_duration_ms": 326921,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T09:57:55.258396",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.6205436500000003,
+        "total_duration_ms": 5948244,
+        "total_api_duration_ms": 326921,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T09:57:55.260666",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.6205436500000003,
+        "total_duration_ms": 5948244,
+        "total_api_duration_ms": 326921,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T09:58:23.498845",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.6765488000000004,
+        "total_duration_ms": 5976469,
+        "total_api_duration_ms": 336777,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T09:58:23.501316",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.6765488000000004,
+        "total_duration_ms": 5976469,
+        "total_api_duration_ms": 336777,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T09:58:28.011861",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.6771264000000004,
+        "total_duration_ms": 5980979,
+        "total_api_duration_ms": 337783,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T09:58:28.014329",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.6771264000000004,
+        "total_duration_ms": 5980979,
+        "total_api_duration_ms": 337783,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T09:58:28.288468",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.6771264000000004,
+        "total_duration_ms": 5981280,
+        "total_api_duration_ms": 337783,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T09:58:28.290691",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.6771264000000004,
+        "total_duration_ms": 5981280,
+        "total_api_duration_ms": 337783,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T09:58:28.363504",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.6771264000000004,
+        "total_duration_ms": 5981357,
+        "total_api_duration_ms": 337783,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T09:58:28.365685",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.6771264000000004,
+        "total_duration_ms": 5981357,
+        "total_api_duration_ms": 337783,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T09:58:35.657706",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.7059451500000002,
+        "total_duration_ms": 5988622,
+        "total_api_duration_ms": 344574,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T09:58:35.660522",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.7059451500000002,
+        "total_duration_ms": 5988622,
+        "total_api_duration_ms": 344574,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T09:59:48.587141",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.7061427500000002,
+        "total_duration_ms": 6061542,
+        "total_api_duration_ms": 346096,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T09:59:48.589394",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.7061427500000002,
+        "total_duration_ms": 6061542,
+        "total_api_duration_ms": 346096,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T09:59:49.016068",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.7347836,
+        "total_duration_ms": 6062007,
+        "total_api_duration_ms": 374027,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T09:59:49.018506",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.7347836,
+        "total_duration_ms": 6062007,
+        "total_api_duration_ms": 374027,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T09:59:55.903604",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.7360484,
+        "total_duration_ms": 6068869,
+        "total_api_duration_ms": 376008,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T09:59:55.907447",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.7360484,
+        "total_duration_ms": 6068869,
+        "total_api_duration_ms": 376008,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T09:59:56.475152",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.768122,
+        "total_duration_ms": 6069464,
+        "total_api_duration_ms": 382746,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T09:59:56.478730",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.768122,
+        "total_duration_ms": 6069464,
+        "total_api_duration_ms": 382746,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T10:00:02.124315",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.7687515999999999,
+        "total_duration_ms": 6075082,
+        "total_api_duration_ms": 384467,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T10:00:02.127487",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.7687515999999999,
+        "total_duration_ms": 6075082,
+        "total_api_duration_ms": 384467,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T10:00:02.531858",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.79857505,
+        "total_duration_ms": 6075525,
+        "total_api_duration_ms": 389845,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T10:00:02.535078",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.79857505,
+        "total_duration_ms": 6075525,
+        "total_api_duration_ms": 389845,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T10:00:08.467342",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.79857505,
+        "total_duration_ms": 6081431,
+        "total_api_duration_ms": 389845,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T10:00:08.470886",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.79857505,
+        "total_duration_ms": 6081431,
+        "total_api_duration_ms": 389845,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T10:00:12.776888",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.83348815,
+        "total_duration_ms": 6085736,
+        "total_api_duration_ms": 399813,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T10:00:12.779992",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.83348815,
+        "total_duration_ms": 6085736,
+        "total_api_duration_ms": 399813,
+        "total_lines_added": 84,
+        "total_lines_removed": 17
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T10:00:32.853092",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.83348815,
+        "total_duration_ms": 6105821,
+        "total_api_duration_ms": 399813,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T10:00:32.856497",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.83348815,
+        "total_duration_ms": 6105821,
+        "total_api_duration_ms": 399813,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T10:00:33.336007",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.83348815,
+        "total_duration_ms": 6106328,
+        "total_api_duration_ms": 399813,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T10:00:33.338683",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.83348815,
+        "total_duration_ms": 6106328,
+        "total_api_duration_ms": 399813,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T10:00:38.167512",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.83348815,
+        "total_duration_ms": 6111128,
+        "total_api_duration_ms": 399813,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T10:00:38.170711",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.83348815,
+        "total_duration_ms": 6111128,
+        "total_api_duration_ms": 399813,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T10:00:40.232528",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.86639155,
+        "total_duration_ms": 6113216,
+        "total_api_duration_ms": 406469,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T10:00:40.235377",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.86639155,
+        "total_duration_ms": 6113216,
+        "total_api_duration_ms": 406469,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T10:00:47.906756",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.86639155,
+        "total_duration_ms": 6120868,
+        "total_api_duration_ms": 406469,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T10:00:47.909969",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.86639155,
+        "total_duration_ms": 6120868,
+        "total_api_duration_ms": 406469,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T10:00:48.200248",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.86639155,
+        "total_duration_ms": 6121194,
+        "total_api_duration_ms": 406469,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T10:00:48.203158",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.86639155,
+        "total_duration_ms": 6121194,
+        "total_api_duration_ms": 406469,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T10:00:48.269004",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.86639155,
+        "total_duration_ms": 6121262,
+        "total_api_duration_ms": 406469,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T10:00:48.272038",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.86639155,
+        "total_duration_ms": 6121262,
+        "total_api_duration_ms": 406469,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T10:01:20.888293",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.8665971499999998,
+        "total_duration_ms": 6153812,
+        "total_api_duration_ms": 407811,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T10:01:20.891844",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.8665971499999998,
+        "total_duration_ms": 6153812,
+        "total_api_duration_ms": 407811,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T10:01:21.353265",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.8974408999999999,
+        "total_duration_ms": 6154335,
+        "total_api_duration_ms": 413742,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T10:01:21.356445",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.8974408999999999,
+        "total_duration_ms": 6154335,
+        "total_api_duration_ms": 413742,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T10:02:26.335390",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.8974408999999999,
+        "total_duration_ms": 6219274,
+        "total_api_duration_ms": 413742,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T10:02:26.338917",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.8974408999999999,
+        "total_duration_ms": 6219274,
+        "total_api_duration_ms": 413742,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T10:02:26.584365",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.8974408999999999,
+        "total_duration_ms": 6219574,
+        "total_api_duration_ms": 413742,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T10:02:26.587559",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.8974408999999999,
+        "total_duration_ms": 6219574,
+        "total_api_duration_ms": 413742,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T10:02:26.687755",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.8974408999999999,
+        "total_duration_ms": 6219680,
+        "total_api_duration_ms": 413742,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T10:02:26.694110",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.8974408999999999,
+        "total_duration_ms": 6219680,
+        "total_api_duration_ms": 413742,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T10:02:34.619078",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.9271105999999998,
+        "total_duration_ms": 6227578,
+        "total_api_duration_ms": 420709,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T10:02:34.623162",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.9271105999999998,
+        "total_duration_ms": 6227578,
+        "total_api_duration_ms": 420709,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T10:03:07.883001",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.9272857999999997,
+        "total_duration_ms": 6260842,
+        "total_api_duration_ms": 422032,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T10:03:07.886738",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.9272857999999997,
+        "total_duration_ms": 6260842,
+        "total_api_duration_ms": 422032,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T10:03:08.237745",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.9572458999999998,
+        "total_duration_ms": 6261228,
+        "total_api_duration_ms": 427404,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T10:03:08.241120",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.9572458999999998,
+        "total_duration_ms": 6261228,
+        "total_api_duration_ms": 427404,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T10:03:19.506148",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.9584178999999997,
+        "total_duration_ms": 6272477,
+        "total_api_duration_ms": 429536,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T10:03:19.510151",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.9584178999999997,
+        "total_duration_ms": 6272477,
+        "total_api_duration_ms": 429536,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T10:03:19.786397",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.9584178999999997,
+        "total_duration_ms": 6272778,
+        "total_api_duration_ms": 429536,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T10:03:19.789903",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.9584178999999997,
+        "total_duration_ms": 6272778,
+        "total_api_duration_ms": 429536,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-08-25T10:03:19.866467",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.9584178999999997,
+        "total_duration_ms": 6272854,
+        "total_api_duration_ms": 429536,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.json does not exist"
+  },
+  {
+    "timestamp": "2025-08-25T10:03:19.870087",
+    "version": "v3",
+    "input_data": {
+      "session_id": "38d6216f-058b-4f91-a22c-c2f9b9e89c2c",
+      "transcript_path": "/Users/kevin/.claude/projects/-Users-kevin--config-zsh/38d6216f-058b-4f91-a22c-c2f9b9e89c2c.jsonl",
+      "cwd": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+      "model": {
+        "id": "claude-sonnet-4-20250514",
+        "display_name": "Sonnet 4"
+      },
+      "workspace": {
+        "current_dir": "/Users/kevin/dotfiles/wezterm/.config/wezterm",
+        "project_dir": "/Users/kevin/.config/zsh"
+      },
+      "version": "1.0.90",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.9584178999999997,
+        "total_duration_ms": 6272854,
+        "total_api_duration_ms": 429536,
+        "total_lines_added": 85,
+        "total_lines_removed": 18
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  }
+]

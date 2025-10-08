@@ -11,10 +11,10 @@
  :profiles {:Default {;; 
                       ;; "default true means" rules default goes into this rule if no profiles specified
                       :default true
-                      :sim     50
-                      :delay   200
+                      :sim     20    ; faster simultaneous detection for instant combos
+                      :delay   150     ; reduced delay for faster response
                       :alone   1000
-                      :held    200
+                      :held    200 
                       ;;
                       }}
 
@@ -33,8 +33,8 @@
              :spacebar-mode {:key :spacebar}
              :r-mode {:key :r}    ; delimeters    ( ) [ ] { } and < > 
              :e-mode {:key :e}    ; Number pad with + - BS ENTER as well
+             :period-mode {:key :period} ; Special functions  
              ;; :launch-mode {:key :o}
-             ;; :d-mode {:key :d}    ; arithmetic    + - * / = % < > #
              }
 
  ;; ---- MODIFIERS -----
@@ -69,7 +69,7 @@
 
         {;;
          :des "TAB is meh if pressed in combination, otherwise TAB"
-         :rules  [[:##tab :!Tleft_shift nil {:alone :tab}]]}
+         :rules  [[:##tab :!TOleft_shift nil {:alone :tab}]]}
 
         {;;
          :des "CTRL + y is backspace"
@@ -132,64 +132,6 @@
                  ]}
 
         {;;
-         :des "Control + any number for specific Yabai space"
-         :rules  [;;
-                  [:!CC1 "/opt/homebrew/bin/yabai -m space --focus 1"]
-                  [:!CC2 "/opt/homebrew/bin/yabai -m space --focus 2"]
-                  [:!CC3 "/opt/homebrew/bin/yabai -m space --focus 3"]
-                  [:!CC4 "/opt/homebrew/bin/yabai -m space --focus 4"]
-                  [:!CC5 "/opt/homebrew/bin/yabai -m space --focus 5"]
-                  [:!CC6 "/opt/homebrew/bin/yabai -m space --focus 6"]
-                  [:!CC7 "/opt/homebrew/bin/yabai -m space --focus 7"]
-                  [:!CC2 "/opt/homebrew/bin/yabai -m space --fcus 8"]
-                  [:!CC9 "/opt/homebrew/bin/yabai -m space --focus 9"]
-                  [:!CC0 "/opt/homebrew/bin/yabai -m space --focus 10"]
-                  ;;
-                  ]}
-
-        {;;
-         :des "spacebar-mode for navigation"
-         :condi :!voyager
-         :rules [;;
-                 :condi :!voyager
-                 :spacebar-mode
-                 [:##1 "/opt/homebrew/bin/yabai -m space --focus 1"]
-                 [:##2 "/opt/homebrew/bin/yabai -m space --focus 2"]
-                 [:##3 "/opt/homebrew/bin/yabai -m space --focus 3"]
-                 [:##4 "/opt/homebrew/bin/yabai -m space --focus 4"]
-                 [:##5 "/opt/homebrew/bin/yabai -m space --focus 5"]
-                 [:##6 "/opt/homebrew/bin/yabai -m space --focus 6"]
-                 [:##7 "/opt/homebrew/bin/yabai -m space --focus 7"]
-                 [:##8 "/opt/homebrew/bin/yabai -m space --focus 8"]
-                 [:##9 "/opt/homebrew/bin/yabai -m space --focus 9"]
-                 [:##0 "/opt/homebrew/bin/yabai -m space --focus 10"]
-                 [:##y "/opt/homebrew/bin/yabai -m space --focus prev"]
-                 [:##o "/opt/homebrew/bin/yabai -m space --focus next"]
-                 [:##h :left_arrow]
-                 [:##j :down_arrow]
-                 [:##k :up_arrow]
-                 [:##l :right_arrow]
-                 [:##n :!Cn]
-                 ;;
-                 ]}
-
-        {;;
-         :des "middle mouse for navigation"
-         :rules [;;
-                 [:!C0 "/opt/homebrew/bin/yabai -m space --focus 0"]
-                 [:!C1 "/opt/homebrew/bin/yabai -m space --focus 1"]
-                 [:!C2 "/opt/homebrew/bin/yabai -m space --focus 2"]
-                 [:!C3 "/opt/homebrew/bin/yabai -m space --focus 3"]
-                 [:!C4 "/opt/homebrew/bin/yabai -m space --focus 4"]
-                 [:!C5 "/opt/homebrew/bin/yabai -m space --focus 5"]
-                 [:!C6 "/opt/homebrew/bin/yabai -m space --focus 6"]
-                 [:!C7 "/opt/homebrew/bin/yabai -m space --focus 7"]
-                 [:!C8 "/opt/homebrew/bin/yabai -m space --focus 8"]
-                 [:!C9 "/opt/homebrew/bin/yabai -m space --focus 9"]
-                 ;;
-                 ]}
-
-        {;;
          ;; r  |  ^ $ * & + #
          ;;    |  @ ( { } ) |
          ;;    |  % [ ] < > \
@@ -242,6 +184,19 @@
                  [:h :period]
                  [:n :0]
                  ;; e
+                 ]}
+
+        {;;
+         :des "spacebar-mode for navigation"
+         :condi :!voyager
+         :rules [;;
+                 :condi :!voyager
+                 :spacebar-mode
+                 [:##h :left_arrow]
+                 [:##j :down_arrow]
+                 [:##k :up_arrow]
+                 [:##l :right_arrow]
+                 ;;
                  ]}
 
         ;; {;;

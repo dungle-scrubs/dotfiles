@@ -1,15 +1,8 @@
 {
-	// "runtime.path": [
-	// 	"/Users/kevin/.config/wezterm/?.lua",
-	// 	"/Users/kevin/.config/wezterm/?/init.lua",
-	// 	"/Users/kevin/Library/Application Support/wezterm/plugins/?/plugin/init.lua",
-	// 	"/Users/kevin/.wezterm/?.lua",
-	// 	"/Users/kevin/.wezterm/?/init.lua",
-	// 	"/usr/local/share/lua/5.4/?.lua",
-	// 	"/usr/local/share/lua/5.4/?/init.lua",
-	// 	"/usr/local/lib/lua/5.4/?.lua",
-	// 	"/usr/local/lib/lua/5.4/?/init.lua"
-	// ],
+	"runtime.path": [
+		"/Users/kevin/.config/wezterm/?.lua",
+		"/Users/kevin/.config/wezterm/?/init.lua"
+	],
 	"workspace.library": ["./types"],
 	"runtime.version": "Lua 5.1",
 	"hint.enable": true,

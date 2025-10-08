@@ -1,0 +1,437 @@
+;;
+;; USEFUL LINKS
+;; goku home - https://github.com/yqrashawn/GokuRakuJoudo
+;; key maps - https://github.com/yqrashawn/GokuRakuJoudo/blob/master/src/karabiner_configurator/keys_info.clj
+;; tutorial - https://github.com/yqrashawn/GokuRakuJoudo/blob/master/tutorial.md#advance2
+;; exampmes - https://github.com/yqrashawn/GokuRakuJoudo/blob/c404d6a26775648d27716f916e7baf152cfc7132/examples.org#L205
+;; advanced configuration - https://gist.github.com/gsinclair/f4ab34da53034374eb6164698a0a8ace
+;; home row mod - https://github.com/Erlendms/karabiner-actions/blob/main/actions/home_row_mods-s_ct_o_c.json
+
+{;;
+ :profiles {:Default {;; 
+                      ;; "default true means" rules default goes into this rule if no profiles specified
+                      :default true
+                      :sim     20    ; faster simultaneous detection for instant combos
+                      :delay   80     ; reduced delay for faster response
+                      :alone   1000
+                      :held    200
+                      ;;
+                      }}
+
+ :devices {:voyager [{:vendor_id 12951 :product_id 6519}]}
+
+ ;; you can create templates for running shell commands. These follow clojure string template syntax.
+ :templates {:echo "echo \"%s\""
+             :open "open \"%s\""
+             :open-app "open -a \"%s\""}
+
+ :simlayers {;;
+             ;; simlayers work by pressing and holding the "key" and then pressing
+             ;; another key within a short amount of time. as long as you hold the
+             ;; "key", the layer remains active after the first combination is pressed.
+
+             :spacebar-mode {:key :spacebar}
+             :r-mode {:key :r}    ; delimeters    ( ) [ ] { } and < > 
+             :e-mode {:key :e}    ; Number pad with + - BS ENTER as well
+             ;; Home row mod simlayers - disabled to avoid conflicts
+             ;; :a-mode {:key :a}    ; Shift
+             ;; :s-mode {:key :s}    ; Control  
+             ;; :d-mode {:key :d}    ; Option
+             ;; :f-mode {:key :f}    ; Command
+             ;; :j-mode {:key :j}    ; Command
+             ;; :k-mode {:key :k}    ; Option
+             ;; :l-mode {:key :l}    ; Control
+             ;; :semicolon-mode {:key :semicolon} ; Shift
+             :period-mode {:key :period} ; Special functions  
+             ;; :launch-mode {:key :o}
+             ;; :d-mode {:key :d}    ; arithmetic    + - * / = % < > #
+             }
+
+ ;; ---- MODIFIERS -----
+ ;; !  | means mandatory
+ ;; #  | means optional
+ ;; CC | command
+ ;; C  | left_command
+ ;; TT | control
+ ;; T  | left_control
+ ;; OO | option
+ ;; O  | left_option
+ ;; SS | shift
+ ;; S  | left_shift
+ ;; F  | fn
+ ;; Q  | right_command
+ ;; W  | right_control
+ ;; E  | right_option
+ ;; R  | right_shift
+ ;; P  | caps_lock
+ ;; !! | mandatory command + control + optional + shift (hyper)
+ ;; ## | optional any
+
+ ;; ---- RULE STRUCTURE ----
+ ;; rule [:period ["period-mode" 1] nil {:afterup ["period-mode" 0] :alone :period}]
+ ;;       |_____| |_______________| |_| |_________________________________________|
+ ;;        <from>    <to>      <conditions>         <other options>
+
+ :main [;;
+        {;;
+         :des "CAPSLOCK is CTRL if pressed in combination, otherwise ESC"
+         :rules  [[:##caps_lock :left_control nil {:alone :escape}]]}
+
+        {;;
+         :des "TAB is meh if pressed in combination, otherwise TAB"
+         :rules  [[:##tab :!TOleft_shift nil {:alone :tab}]]}
+
+        {;;
+         :des "CTRL + y is backspace"
+         :rules  [[:!Ty :delete_or_backspace]]}
+
+        {;;
+         :des "home row mods"
+         :rules [;;
+                 ;; j, k, k, and ; are modified to work with v-mode, r-mode, and spacebar-mode
+                 ;;
+                 ;; A S D F
+                 ;; ⇧ ⌃ ⌥ ⌘
+                 [:condi :!voyager]
+                 [[:a :s :d :f] nil nil {:held :!CTOleft_shift}]
+                 [[:a :s :d] nil nil {:held :!TOleft_shift}]
+                 [[:a :d :f] nil nil {:held :!COleft_shift}]
+                 [[:s :d :f] nil nil {:held :!COleft_control}]
+                 [[:a :s :f] nil nil {:held :!Cleft_shift}]
+                 [{:sim [:a :s] :simo {:dorder :strict}} nil nil {:held :!Tleft_shift :alone [:a :s]}]
+                 [{:sim [:s :a] :simo {:dorder :strict}} nil nil {:held :!Tleft_shift :alone [:s :a]}]
+                 [{:sim [:a :d] :simo {:dorder :strict}} nil nil {:held :!Oleft_shift :alone [:a :d]}]
+                 [{:sim [:d :a] :simo {:dorder :strict}} nil nil {:held :!Oleft_shift :alone [:d :a]}]
+                 [{:sim [:a :f] :simo {:dorder :strict}} nil nil {:held :!Cleft_shift :alone [:a :f]}]
+                 [{:sim [:f :a] :simo {:dorder :strict}} nil nil {:held :!Cleft_shift :alone [:f :a]}]
+                 [{:sim [:s :d] :simo {:dorder :strict}} nil nil {:held :!Oleft_control :alone [:s :d]}]
+                 [{:sim [:d :s] :simo {:dorder :strict}} nil nil {:held :!Oleft_control :alone [:d :s]}]
+                 [{:sim [:s :f] :simo {:dorder :strict}} nil nil {:held :!Cleft_control :alone [:s :f]}]
+                 [{:sim [:f :s] :simo {:dorder :strict}} nil nil {:held :!Cleft_control :alone [:f :s]}]
+                 [{:sim [:d :f] :simo {:dorder :strict}} nil nil {:held :!Cleft_option :alone [:d :f]}]
+                 [{:sim [:f :d] :simo {:dorder :strict}} nil nil {:held :!Cleft_option :alone [:f :d]}]
+                 [:a nil nil {:held {:key :left_shift :halt true} :alone {:key :a :halt true} :delayed {:invoked :vk_none :canceled {:key :a :halt true}}}]
+                 [:s nil nil {:held {:key :left_control :halt true} :alone {:key :s :halt true} :delayed {:invoked :vk_none :canceled {:key :s :halt true}}}]
+                 [:d nil nil {:held {:key :left_option :halt true} :alone {:key :d :halt true} :delayed {:invoked :vk_none :canceled {:key :d :halt true}}}]
+                 [:f nil nil {:held {:key :left_command :halt true} :alone {:key :f :halt true} :delayed {:invoked :vk_none :canceled {:key :f :halt true}}}]
+
+                 ;; J K L ;
+                 ;; ⌘ ⌥ ⌃ ⇧
+                 [[:j :k :l :semicolon] nil nil {:held :!QTEright_shift}]
+                 [[:k :l :semicolon] nil nil {:held :!WEright_shift}]
+                 [[:j :k :semicolon] nil nil {:held :!QEright_shift}]
+                 [[:j :l :semicolon] nil nil {:held :!QWright_shift}]
+                 [[:l :k :j] nil nil {:held :!QEright_control}]
+                 [{:sim [:semicolon :l] :simo {:dorder :strict}} nil nil {:held :!Wright_shift :alone [:semicolon :l]}]
+                 [{:sim [:l :semicolon] :simo {:dorder :strict}} nil nil {:held :!Wright_shift :alone [:l :semicolon]}]
+                 [{:sim [:semicolon :k] :simo {:dorder :strict}} nil nil {:held :!Eright_shift :alone [:semicolon :k]}]
+                 [{:sim [:k :semicolon] :simo {:dorder :strict}} nil nil {:held :!Eright_shift :alone [:k :semicolon]}]
+                 [{:sim [:semicolon :j] :simo {:dorder :strict}} nil nil {:held :!Qright_shift :alone [:semicolon :j]}]
+                 [{:sim [:j :semicolon] :simo {:dorder :strict}} nil nil {:held :!Qright_shift :alone [:j :semicolon]}]
+                 [{:sim [:l :k] :simo {:dorder :strict}} nil nil {:held :!Wright_control :alone [:l :k]}]
+                 [{:sim [:k :l] :simo {:dorder :strict}} nil nil {:held :!Wright_control :alone [:k :l]}]
+                 [{:sim [:l :j] :simo {:dorder :strict}} nil nil {:held :!Qright_control :alone [:l :j]}]
+                 [{:sim [:j :l] :simo {:dorder :strict}} nil nil {:held :!Qright_control :alone [:j :l]}]
+                 [{:sim [:k :j] :simo {:dorder :strict}} nil nil {:held :!Qright_option :alone [:k :j]}]
+                 [{:sim [:j :k] :simo {:dorder :strict}} nil nil {:held :!Qright_option :alone [:j :k]}]
+                 [:j nil [:!spacebar-mode :!e-mode :!r-mode] {:held {:key :right_command :halt true} :alone {:key :j :halt true} :delayed {:invoked :vk_none :canceled {:key :j :halt true}}}]
+                 [:k nil [:!spacebar-mode :!e-mode :!r-mode] {:held {:key :right_option :halt true} :alone {:key :k :halt true} :delayed {:invoked :vk_none :canceled {:key :k :halt true}}}]
+                 [:l nil [:!spacebar-mode :!e-mode :!r-mode] {:held {:key :right_control :halt true} :alone {:key :l :halt true} :delayed {:invoked :vk_none :canceled {:key :l :halt true}}}]
+                 [:semicolon nil [:!spacebar-mode :!e-mode :!r-mode] {:held {:key :right_shift :halt true} :alone {:key :semicolon :halt true} :delayed {:invoked :vk_none :canceled {:key :semicolon :halt true}}}]
+                 ;;
+                 ]}
+
+        {;;
+         ;; r  |  ^ $ * & + #
+         ;;    |  @ ( { } ) |
+         ;;    |  % [ ] < > \
+         :des "r-mode for delimeters"
+         :rules [;;
+                 :condi :!voyager
+                 :r-mode
+                 [:##y :!S6]
+                 [:##u :!S4]
+                 [:##i :!S8]
+                 [:##o :!S7]
+                 [:##p :!Sequal_sign]
+                 [:##open_bracket :!S3]
+                 [:##h :!S2]
+                 [:##j :!S9]
+                 [:##k :!Sopen_bracket]
+                 [:##l :!Sclose_bracket]
+                 [:##semicolon :!S0]
+                 [:##quote :!Sbackslash]
+                 [:##n :!S5]
+                 [:##m :open_bracket]
+                 [:##comma :close_bracket]
+                 [:##period :!S1]
+                 [:##slash :equal_sign]
+                 ;;
+                 ]}
+
+        {;;
+         ;; e  |  ⇦ 7 8 9 +
+         ;;    |  . 4 5 6 - ↲ 
+         ;;    |  0 1 2 3 ↲
+         :des "e-mode for number pad"
+         :rules [;; e
+                 :condi :!voyager
+                 :e-mode
+                 [:u :7]
+                 [:i :8]
+                 [:o :9]
+                 [:j :4]
+                 [:k :5]
+                 [:l :6]
+                 [:m :1]
+                 [:comma :2]
+                 [:period :3]
+                 [:p :!Sequal_sign]
+                 [:semicolon :hyphen]
+                 [:slash :return_or_enter]
+                 [:quote :return_or_enter]
+                 [:y :delete_or_backspace]
+                 [:h :period]
+                 [:n :0]
+                 ;; e
+                 ]}
+
+        ;; Removed home row simlayers section - using traditional home row mods instead
+        ;; {;;
+        ;;  :des "Home row simlayers for modifiers"
+        ;;  :rules [;;
+                 :condi :!voyager
+                 ;; A-mode (Shift)
+                 :a-mode
+                 ;; Numbers
+                 [:1 :!S1] [:2 :!S2] [:3 :!S3] [:4 :!S4] [:5 :!S5]
+                 [:6 :!S6] [:7 :!S7] [:8 :!S8] [:9 :!S9] [:0 :!S0]
+                 ;; Top row
+                 [:q :!Sq] [:w :!Sw] [:e :!Se] [:r :!Sr] [:t :!St]
+                 [:y :!Sy] [:u :!Su] [:i :!Si] [:o :!So] [:p :!Sp]
+                 ;; Home row (excluding A)
+                 [:s :!Ss] [:d :!Sd] [:f :!Sf] [:g :!Sg] [:h :!Sh]
+                 [:j :!Sj] [:k :!Sk] [:l :!Sl] [:semicolon :!Ssemicolon]
+                 ;; Bottom row
+                 [:z :!Sz] [:x :!Sx] [:c :!Sc] [:v :!Sv] [:b :!Sb]
+                 [:n :!Sn] [:m :!Sm] [:comma :!Scomma] [:period :!Speriod] [:slash :!Sslash]
+                 ;; Punctuation and symbols
+                 [:grave_accent_and_tilde :!Sgrave_accent_and_tilde]
+                 [:hyphen :!Shyphen] [:equal_sign :!Sequal_sign]
+                 [:open_bracket :!Sopen_bracket] [:close_bracket :!Sclose_bracket]
+                 [:backslash :!Sbackslash] [:quote :!Squote]
+                 ;; Function keys
+                 [:return_or_enter :!Sreturn_or_enter] [:spacebar :!Sspacebar]
+                 [:tab :!Stab] [:delete_or_backspace :!Sdelete_or_backspace]
+                 ;; Arrows
+                 [:up_arrow :!Sup_arrow] [:down_arrow :!Sdown_arrow] 
+                 [:left_arrow :!Sleft_arrow] [:right_arrow :!Sright_arrow]
+                 
+                 ;; S-mode (Control)
+                 :s-mode
+                 ;; Numbers
+                 [:1 :!T1] [:2 :!T2] [:3 :!T3] [:4 :!T4] [:5 :!T5]
+                 [:6 :!T6] [:7 :!T7] [:8 :!T8] [:9 :!T9] [:0 :!T0]
+                 ;; Top row
+                 [:q :!Tq] [:w :!Tw] [:e :!Te] [:r :!Tr] [:t :!Tt]
+                 [:y :!Ty] [:u :!Tu] [:i :!Ti] [:o :!To] [:p :!Tp]
+                 ;; Home row (excluding S)
+                 [:a :!Ta] [:d :!Td] [:f :!Tf] [:g :!Tg] [:h :!Th]
+                 [:j :!Tj] [:k :!Tk] [:l :!Tl] [:semicolon :!Tsemicolon]
+                 ;; Bottom row
+                 [:z :!Tz] [:x :!Tx] [:c :!Tc] [:v :!Tv] [:b :!Tb]
+                 [:n :!Tn] [:m :!Tm] [:comma :!Tcomma] [:period :!Tperiod] [:slash :!Tslash]
+                 ;; Punctuation and symbols
+                 [:grave_accent_and_tilde :!Tgrave_accent_and_tilde]
+                 [:hyphen :!Thyphen] [:equal_sign :!Tequal_sign]
+                 [:open_bracket :!Topen_bracket] [:close_bracket :!Tclose_bracket]
+                 [:backslash :!Tbackslash] [:quote :!Tquote]
+                 ;; Function keys
+                 [:return_or_enter :!Treturn_or_enter] [:spacebar :!Tspacebar]
+                 [:tab :!Ttab] [:delete_or_backspace :!Tdelete_or_backspace]
+                 ;; Arrows
+                 [:up_arrow :!Tup_arrow] [:down_arrow :!Tdown_arrow]
+                 [:left_arrow :!Tleft_arrow] [:right_arrow :!Tright_arrow]
+                 
+                 ;; D-mode (Option)
+                 :d-mode
+                 ;; Numbers
+                 [:1 :!O1] [:2 :!O2] [:3 :!O3] [:4 :!O4] [:5 :!O5]
+                 [:6 :!O6] [:7 :!O7] [:8 :!O8] [:9 :!O9] [:0 :!O0]
+                 ;; Top row
+                 [:q :!Oq] [:w :!Ow] [:e :!Oe] [:r :!Or] [:t :!Ot]
+                 [:y :!Oy] [:u :!Ou] [:i :!Oi] [:o :!Oo] [:p :!Op]
+                 ;; Home row (excluding D)
+                 [:a :!Oa] [:s :!Os] [:f :!Of] [:g :!Og] [:h :!Oh]
+                 [:j :!Oj] [:k :!Ok] [:l :!Ol] [:semicolon :!Osemicolon]
+                 ;; Bottom row
+                 [:z :!Oz] [:x :!Ox] [:c :!Oc] [:v :!Ov] [:b :!Ob]
+                 [:n :!On] [:m :!Om] [:comma :!Ocomma] [:period :!Operiod] [:slash :!Oslash]
+                 ;; Punctuation and symbols
+                 [:grave_accent_and_tilde :!Ograve_accent_and_tilde]
+                 [:hyphen :!Ohyphen] [:equal_sign :!Oequal_sign]
+                 [:open_bracket :!Oopen_bracket] [:close_bracket :!Oclose_bracket]
+                 [:backslash :!Obackslash] [:quote :!Oquote]
+                 ;; Function keys
+                 [:return_or_enter :!Oreturn_or_enter] [:spacebar :!Ospacebar]
+                 [:tab :!Otab] [:delete_or_backspace :!Odelete_or_backspace]
+                 ;; Arrows
+                 [:up_arrow :!Oup_arrow] [:down_arrow :!Odown_arrow]
+                 [:left_arrow :!Oleft_arrow] [:right_arrow :!Oright_arrow]
+
+
+                 ;; F-mode (Command)
+                 :f-mode
+                 ;; Numbers
+                 [:1 :!C1] [:2 :!C2] [:3 :!C3] [:4 :!C4] [:5 :!C5]
+                 [:6 :!C6] [:7 :!C7] [:8 :!C8] [:9 :!C9] [:0 :!C0]
+                 ;; Top row
+                 [:q :!Cq] [:w :!Cw] [:e :!Ce] [:r :!Cr] [:t :!Ct]
+                 [:y :!Cy] [:u :!Cu] [:i :!Ci] [:o :!Co] [:p :!Cp]
+                 ;; Home row (excluding J)
+                 [:a :!Ca] [:s :!Cs] [:d :!Cd] [:f :!Cf] [:g :!Cg] [:h :!Ch]
+                 [:k :!Ck] [:l :!Cl] [:semicolon :!Csemicolon]
+                 ;; Bottom row
+                 [:z :!Cz] [:x :!Cx] [:c :!Cc] [:v :!Cv] [:b :!Cb]
+                 [:n :!Cn] [:m :!Cm] [:comma :!Ccomma] [:period :!Cperiod] [:slash :!Cslash]
+                 ;; Punctuation and symbols
+                 [:grave_accent_and_tilde :!Cgrave_accent_and_tilde]
+                 [:hyphen :!Chyphen] [:equal_sign :!Cequal_sign]
+                 [:open_bracket :!Copen_bracket] [:close_bracket :!Cclose_bracket]
+                 [:backslash :!Cbackslash] [:quote :!Cquote]
+                 ;; Function keys
+                 [:return_or_enter :!Creturn_or_enter] [:spacebar :!Cspacebar]
+                 [:tab :!Ctab] [:delete_or_backspace :!Cdelete_or_backspace]
+                 ;; Arrows
+                 [:up_arrow :!Cup_arrow] [:down_arrow :!Cdown_arrow]
+                 [:left_arrow :!Cleft_arrow] [:right_arrow :!Cright_arrow]
+                 
+                 ;; J-mode (Command)
+                 :j-mode
+                 ;; Numbers
+                 [:1 :!C1] [:2 :!C2] [:3 :!C3] [:4 :!C4] [:5 :!C5]
+                 [:6 :!C6] [:7 :!C7] [:8 :!C8] [:9 :!C9] [:0 :!C0]
+                 ;; Top row
+                 [:q :!Cq] [:w :!Cw] [:e :!Ce] [:r :!Cr] [:t :!Ct]
+                 [:y :!Cy] [:u :!Cu] [:i :!Ci] [:o :!Co] [:p :!Cp]
+                 ;; Home row (excluding J)
+                 [:a :!Ca] [:s :!Cs] [:d :!Cd] [:f :!Cf] [:g :!Cg] [:h :!Ch]
+                 [:k :!Ck] [:l :!Cl] [:semicolon :!Csemicolon]
+                 ;; Bottom row
+                 [:z :!Cz] [:x :!Cx] [:c :!Cc] [:v :!Cv] [:b :!Cb]
+                 [:n :!Cn] [:m :!Cm] [:comma :!Ccomma] [:period :!Cperiod] [:slash :!Cslash]
+                 ;; Punctuation and symbols
+                 [:grave_accent_and_tilde :!Cgrave_accent_and_tilde]
+                 [:hyphen :!Chyphen] [:equal_sign :!Cequal_sign]
+                 [:open_bracket :!Copen_bracket] [:close_bracket :!Cclose_bracket]
+                 [:backslash :!Cbackslash] [:quote :!Cquote]
+                 ;; Function keys
+                 [:return_or_enter :!Creturn_or_enter] [:spacebar :!Cspacebar]
+                 [:tab :!Ctab] [:delete_or_backspace :!Cdelete_or_backspace]
+                 ;; Arrows
+                 [:up_arrow :!Cup_arrow] [:down_arrow :!Cdown_arrow]
+                 [:left_arrow :!Cleft_arrow] [:right_arrow :!Cright_arrow]
+                 
+                 ;; K-mode (Option)
+                 :k-mode
+                 ;; Numbers
+                 [:1 :!O1] [:2 :!O2] [:3 :!O3] [:4 :!O4] [:5 :!O5]
+                 [:6 :!O6] [:7 :!O7] [:8 :!O8] [:9 :!O9] [:0 :!O0]
+                 ;; Top row
+                 [:q :!Oq] [:w :!Ow] [:e :!Oe] [:r :!Or] [:t :!Ot]
+                 [:y :!Oy] [:u :!Ou] [:i :!Oi] [:o :!Oo] [:p :!Op]
+                 ;; Home row (excluding K)
+                 [:a :!Oa] [:s :!Os] [:d :!Od] [:f :!Of] [:g :!Og] [:h :!Oh]
+                 [:j :!Oj] [:l :!Ol] [:semicolon :!Osemicolon]
+                 ;; Bottom row
+                 [:z :!Oz] [:x :!Ox] [:c :!Oc] [:v :!Ov] [:b :!Ob]
+                 [:n :!On] [:m :!Om] [:comma :!Ocomma] [:period :!Operiod] [:slash :!Oslash]
+                 ;; Punctuation and symbols
+                 [:grave_accent_and_tilde :!Ograve_accent_and_tilde]
+                 [:hyphen :!Ohyphen] [:equal_sign :!Oequal_sign]
+                 [:open_bracket :!Oopen_bracket] [:close_bracket :!Oclose_bracket]
+                 [:backslash :!Obackslash] [:quote :!Oquote]
+                 ;; Function keys
+                 [:return_or_enter :!Oreturn_or_enter] [:spacebar :!Ospacebar]
+                 [:tab :!Otab] [:delete_or_backspace :!Odelete_or_backspace]
+                 ;; Arrows
+                 [:up_arrow :!Oup_arrow] [:down_arrow :!Odown_arrow]
+                 [:left_arrow :!Oleft_arrow] [:right_arrow :!Oright_arrow]
+                 
+                 ;; L-mode (Control)
+                 :l-mode
+                 ;; Numbers
+                 [:1 :!T1] [:2 :!T2] [:3 :!T3] [:4 :!T4] [:5 :!T5]
+                 [:6 :!T6] [:7 :!T7] [:8 :!T8] [:9 :!T9] [:0 :!T0]
+                 ;; Top row
+                 [:q :!Tq] [:w :!Tw] [:e :!Te] [:r :!Tr] [:t :!Tt]
+                 [:y :!Ty] [:u :!Tu] [:i :!Ti] [:o :!To] [:p :!Tp]
+                 ;; Home row (excluding L)
+                 [:a :!Ta] [:s :!Ts] [:d :!Td] [:f :!Tf] [:g :!Tg] [:h :!Th]
+                 [:j :!Tj] [:k :!Tk] [:semicolon :!Tsemicolon]
+                 ;; Bottom row
+                 [:z :!Tz] [:x :!Tx] [:c :!Tc] [:v :!Tv] [:b :!Tb]
+                 [:n :!Tn] [:m :!Tm] [:comma :!Tcomma] [:period :!Tperiod] [:slash :!Tslash]
+                 ;; Punctuation and symbols
+                 [:grave_accent_and_tilde :!Tgrave_accent_and_tilde]
+                 [:hyphen :!Thyphen] [:equal_sign :!Tequal_sign]
+                 [:open_bracket :!Topen_bracket] [:close_bracket :!Tclose_bracket]
+                 [:backslash :!Tbackslash] [:quote :!Tquote]
+                 ;; Function keys
+                 [:return_or_enter :!Treturn_or_enter] [:spacebar :!Tspacebar]
+                 [:tab :!Ttab] [:delete_or_backspace :!Tdelete_or_backspace]
+                 ;; Arrows
+                 [:up_arrow :!Tup_arrow] [:down_arrow :!Tdown_arrow]
+                 [:left_arrow :!Tleft_arrow] [:right_arrow :!Tright_arrow]
+                 
+                 ;; Semicolon-mode (Shift)
+                 :semicolon-mode
+                 ;; Numbers
+                 [:1 :!S1] [:2 :!S2] [:3 :!S3] [:4 :!S4] [:5 :!S5]
+                 [:6 :!S6] [:7 :!S7] [:8 :!S8] [:9 :!S9] [:0 :!S0]
+                 ;; Top row
+                 [:q :!Sq] [:w :!Sw] [:e :!Se] [:r :!Sr] [:t :!St]
+                 [:y :!Sy] [:u :!Su] [:i :!Si] [:o :!So] [:p :!Sp]
+                 ;; Home row (excluding semicolon)
+                 [:a :!Sa] [:s :!Ss] [:d :!Sd] [:f :!Sf] [:g :!Sg] [:h :!Sh]
+                 [:j :!Sj] [:k :!Sk] [:l :!Sl]
+                 ;; Bottom row
+                 [:z :!Sz] [:x :!Sx] [:c :!Sc] [:v :!Sv] [:b :!Sb]
+                 [:n :!Sn] [:m :!Sm] [:comma :!Scomma] [:period :!Speriod] [:slash :!Sslash]
+                 ;; Punctuation and symbols
+                 [:grave_accent_and_tilde :!Sgrave_accent_and_tilde]
+                 [:hyphen :!Shyphen] [:equal_sign :!Sequal_sign]
+                 [:open_bracket :!Sopen_bracket] [:close_bracket :!Sclose_bracket]
+                 [:backslash :!Sbackslash] [:quote :!Squote]
+                 ;; Function keys
+                 [:return_or_enter :!Sreturn_or_enter] [:spacebar :!Sspacebar]
+                 [:tab :!Stab] [:delete_or_backspace :!Sdelete_or_backspace]
+                 ;; Arrows
+                 [:up_arrow :!Sup_arrow] [:down_arrow :!Sdown_arrow]
+                 [:left_arrow :!Sleft_arrow] [:right_arrow :!Sright_arrow]
+                 ;;
+                 ;; ]}
+
+        {;;
+         :des "spacebar-mode for navigation"
+         :condi :!voyager
+         :rules [;;
+                 :condi :!voyager
+                 :spacebar-mode
+                 [:##h :left_arrow]
+                 [:##j :down_arrow]
+                 [:##k :up_arrow]
+                 [:##l :right_arrow]
+                 ;;
+                 ]}
+
+        ;; {;;
+        ;;  :des "launch mode: quick launch applications"
+        ;;  :rules [:launch-mode                                      ; when open-mode is active (o is held)
+        ;;          [:t [:open-app "terminal"]]                   ; and t is pressed, open Terminal
+        ;;          [:f [:open-app "finder"]]                     ; and f is pressed, open Finder
+        ;;          [:e "/bin/bash -c 'printenv > ~/Desktop/karabiner_env.txt'"]                     ; and f is pressed, open Finder
+        ;;          ]}
+        ]
+ ;; 
+ }

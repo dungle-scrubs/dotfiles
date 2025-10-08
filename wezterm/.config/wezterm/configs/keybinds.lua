@@ -150,16 +150,6 @@ function M.apply(config)
 			mods = "LEADER|CTRL",
 			action = act.SendKey({ key = "o", mods = "ALT" }),
 		},
-		{
-			key = "j",
-			mods = "ALT",
-			action = act.SendKey({ key = "j", mods = "ALT" }),
-		},
-		{
-			key = "k",
-			mods = "ALT",
-			action = act.SendKey({ key = "k", mods = "ALT" }),
-		},
 
 		-- COMBO
 		-- i.e, (ctrl + shift + l)
