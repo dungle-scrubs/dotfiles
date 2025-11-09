@@ -21,6 +21,9 @@ function M.apply(config)
 
 	-- LEADER KEYBINDS
 	config.keys = {
+		-- Shift+Enter for newlines (useful for Claude Code multi-line input)
+		{ key = "Enter", mods = "SHIFT", action = act.SendString("\n") },
+
 		{ key = "k", mods = "LEADER", action = act.ShowLauncherArgs({ flags = "FUZZY|KEY_ASSIGNMENTS" }) },
 		{
 			key = "b",
