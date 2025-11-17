@@ -9,11 +9,16 @@
     <array>
         <string>/bin/bash</string>
         <string>-c</string>
-        <string>docker system prune --volumes -f && brew update && brew upgrade</string>
+        <string>/usr/local/bin/docker system prune --volumes -f && /opt/homebrew/bin/brew update && /opt/homebrew/bin/brew upgrade</string>
     </array>
     
-    <key>RunAtLoad</key>
-    <true/>
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>10</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
     
     <key>StandardOutPath</key>
     <string>/tmp/startup-maintenance.out</string>

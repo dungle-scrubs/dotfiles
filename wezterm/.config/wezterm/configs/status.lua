@@ -68,6 +68,75 @@ function M.load(config)
 			end
 		end
 
+		local function getGitInfo()
+			local cwd = pane:get_current_working_dir()
+			if cwd then
+				local cwd_path = cwd.file_path or ""
+
+				-- Get git branch name
+				local branch_success, branch_stdout, branch_stderr = Wezterm.run_child_process({
+					"git",
+					"-C",
+					cwd_path,
+					"branch",
+					"--show-current"
+				})
+
+				if branch_success then
+					local branch = branch_stdout:gsub("%s+", "")
+
+					if branch and branch ~= "" then
+						-- Get ahead/behind count
+						local count_success, count_stdout, count_stderr = Wezterm.run_child_process({
+							"git",
+							"-C",
+							cwd_path,
+							"rev-list",
+							"--left-right",
+							"--count",
+							"HEAD...@{upstream}"
+						})
+
+						local ahead = 0
+						local behind = 0
+
+						if count_success and count_stdout then
+							-- Parse the output: "ahead	behind"
+							ahead, behind = count_stdout:match("(%d+)%s+(%d+)")
+							ahead = tonumber(ahead) or 0
+							behind = tonumber(behind) or 0
+						end
+
+						-- Add git icon and branch name
+						table.insert(elements, { Foreground = { Color = "#98c379" } })
+						table.insert(elements, { Background = { Color = bg } })
+						table.insert(elements, { Text = " " .. Wezterm.nerdfonts.dev_git_branch .. " " .. branch })
+
+						-- Add ahead/behind info if applicable
+						if ahead > 0 or behind > 0 then
+							table.insert(elements, { Foreground = { Color = "#61afef" } })
+							table.insert(elements, { Text = " " })
+
+							if ahead > 0 then
+								table.insert(elements, { Text = Wezterm.nerdfonts.fa_arrow_up .. ahead })
+							end
+
+							if behind > 0 then
+								if ahead > 0 then
+									table.insert(elements, { Text = " " })
+								end
+								table.insert(elements, { Foreground = { Color = "#e06c75" } })
+								table.insert(elements, { Text = Wezterm.nerdfonts.fa_arrow_down .. behind })
+							end
+						end
+
+						table.insert(elements, { Text = " " })
+						table.insert(elements, { Text = "|" })
+					end
+				end
+			end
+		end
+
 		local function getWorkspace()
 			if workspace then
 				table.insert(elements, "ResetAttributes")
@@ -87,6 +156,7 @@ function M.load(config)
 		getActiveKeytableKeys()
 		getActiveKeytable()
 		getProcessName()
+		getGitInfo()
 		getWorkspace()
 
 		window:set_right_status(Wezterm.format(elements))
