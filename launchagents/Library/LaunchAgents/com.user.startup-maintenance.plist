@@ -4,20 +4,20 @@
 <dict>
     <key>Label</key>
     <string>com.user.startup-maintenance</string>
-    
+
     <key>ProgramArguments</key>
     <array>
-        <string>/bin/bash</string>
+        <string>/opt/homebrew/bin/hs</string>
         <string>-c</string>
-        <string>/opt/homebrew/bin/brew update && /opt/homebrew/bin/brew upgrade</string>
+        <string>taskRunner.startupMaintenance()</string>
     </array>
-    
+
     <key>RunAtLoad</key>
     <true/>
-    
+
     <key>StandardOutPath</key>
     <string>/tmp/startup-maintenance.out</string>
-    
+
     <key>StandardErrorPath</key>
     <string>/tmp/startup-maintenance.err</string>
 </dict>

@@ -512,6 +512,143 @@ end
 _G.projectLauncher = projectLauncher
 
 ----------------------------------------------------------------------------------------------------
+-- Task Runner with Canvas Output
+----------------------------------------------------------------------------------------------------
+
+local taskRunner = {}
+taskRunner.canvas = nil
+taskRunner.task = nil
+taskRunner.output = {}
+taskRunner.maxLines = 30
+
+function taskRunner.show(title)
+	local screen = hs.screen.mainScreen()
+	local frame = screen:frame()
+
+	local width = 780
+	local height = 520
+	local x = frame.x + (frame.w - width) / 2
+	local y = frame.y + (frame.h - height) / 2
+
+	if taskRunner.canvas then
+		taskRunner.canvas:delete()
+	end
+
+	taskRunner.output = {}
+	taskRunner.canvas = hs.canvas.new({ x = x, y = y, w = width, h = height })
+	local c = taskRunner.canvas
+
+	-- Background
+	c[1] = {
+		type = "rectangle",
+		action = "fill",
+		fillColor = { hex = "#1a1a1a", alpha = 0.95 },
+		roundedRectRadii = { xRadius = 8, yRadius = 8 },
+	}
+
+	-- Border
+	c[2] = {
+		type = "rectangle",
+		action = "stroke",
+		strokeColor = { hex = "#3b82f6", alpha = 0.9 },
+		strokeWidth = 2,
+		roundedRectRadii = { xRadius = 8, yRadius = 8 },
+	}
+
+	-- Title
+	c[3] = {
+		type = "text",
+		text = title or "Running...",
+		textFont = "CaskaydiaCove Nerd Font Mono",
+		textSize = 14,
+		textColor = { hex = "#3b82f6", alpha = 1 },
+		textAlignment = "center",
+		frame = { x = 12, y = 8, w = width - 24, h = 24 },
+	}
+
+	-- Output area (will be updated)
+	c[4] = {
+		type = "text",
+		text = "",
+		textFont = "CaskaydiaCove Nerd Font Mono",
+		textSize = 11,
+		textColor = { hex = "#aaaaaa", alpha = 1 },
+		textAlignment = "left",
+		frame = { x = 12, y = 36, w = width - 24, h = height - 48 },
+	}
+
+	c:level(hs.canvas.windowLevels.modalPanel)
+	c:show()
+end
+
+function taskRunner.appendOutput(text)
+	if not taskRunner.canvas then return end
+
+	-- Split text into lines and add to output buffer
+	for line in text:gmatch("[^\r\n]+") do
+		table.insert(taskRunner.output, line)
+	end
+
+	-- Keep only last N lines
+	while #taskRunner.output > taskRunner.maxLines do
+		table.remove(taskRunner.output, 1)
+	end
+
+	-- Update canvas
+	taskRunner.canvas[4].text = table.concat(taskRunner.output, "\n")
+end
+
+function taskRunner.hide()
+	if taskRunner.canvas then
+		taskRunner.canvas:delete()
+		taskRunner.canvas = nil
+	end
+end
+
+function taskRunner.run(title, command, args, onComplete)
+	taskRunner.show(title)
+
+	local function streamCallback(task, stdOut, stdErr)
+		if stdOut and #stdOut > 0 then
+			taskRunner.appendOutput(stdOut)
+		end
+		if stdErr and #stdErr > 0 then
+			taskRunner.appendOutput(stdErr)
+		end
+		return true -- keep streaming
+	end
+
+	local function exitCallback(exitCode, stdOut, stdErr)
+		if exitCode == 0 then
+			taskRunner.appendOutput("\n✓ Done")
+		else
+			taskRunner.appendOutput("\n✗ Failed (exit " .. exitCode .. ")")
+		end
+
+		-- Auto-close after delay
+		hs.timer.doAfter(2, function()
+			taskRunner.hide()
+			if onComplete then onComplete(exitCode) end
+		end)
+	end
+
+	taskRunner.task = hs.task.new(command, exitCallback, streamCallback, args)
+	taskRunner.task:start()
+end
+
+-- Run startup maintenance (docker cleanup + brew upgrade) in one canvas
+function taskRunner.startupMaintenance()
+	taskRunner.run(
+		"Startup Maintenance",
+		"/bin/bash",
+		{ "-c", "/usr/local/bin/docker system prune --volumes -f && /opt/homebrew/bin/brew update && /opt/homebrew/bin/brew upgrade" }
+	)
+end
+
+-- Expose globally
+_G.taskRunner = taskRunner
+
+----------------------------------------------------------------------------------------------------
 
 -- Override the modal binding function to preserve case of keys (add this before loading MenuHammer)
 local originalBind = hs.hotkey.modal.bind
