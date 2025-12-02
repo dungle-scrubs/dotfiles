@@ -1,5 +1,5 @@
 ---
-description: Implement a plan from .claude/local/plans/
+description: Implement a plan from .claude/plans/
 argument-hint: <path-to-plan.md>
 ---
 

@@ -5,11 +5,11 @@ argument-hint: <task-description>
 
 # Task Planning
 
-Create a new plan in `.claude/local/plans/*.plan.md` to implement the `Task`.
+Create a new plan in `.claude/plans/*.plan.md` to implement the `Task`.
 
 ## Instructions
 
-- Create the plan in the `.claude/local/plans/<task>.plan.md` file. Name it appropriately based on the `Task`.
+- Create the plan in the `.claude/plans/<task>.plan.md` file. Name it appropriately based on the `Task`.
 - Use your reasoning model: ultrathink about the requirements, design, and implementation approach.
 - **Interactive Mode Handling:**
   - If in interactive mode: **BEFORE entering plan mode**, analyze the task and use the `AskUserQuestion` tool to gather clarifying information. You MUST ask questions when:
@@ -55,5 +55,5 @@ $ARGUMENTS
 ## Report
 
 - Summarize the work you've just done in a concise bullet point list.
-- Include a path to the plan you created in the `.claude/local/plans/*.plan.md` file.
+- Include a path to the plan you created in the `.claude/plans/*.plan.md` file.
 - Ask the user if they want to proceed with implementation.
