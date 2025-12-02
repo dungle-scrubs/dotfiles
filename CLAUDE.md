@@ -103,3 +103,5 @@ When changes are made and approved, always commit to `main` and push to origin:
 ```bash
 git add -A && git commit -m "description" && git push origin main
 ```
+
+**Plans**: When a plan is created in `.claude/local/plans/` or `.claude/plans/`, always commit and push to origin immediately.
