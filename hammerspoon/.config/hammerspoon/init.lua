@@ -12,8 +12,8 @@ hs.hotkey.modal.bind = function(self, mods, key, message, pressedfn, releasedfn,
 	return result
 end
 
--- local menuHammer = hs.loadSpoon("MenuHammer")
--- menuHammer:enter()
+local menuHammer = hs.loadSpoon("MenuHammer")
+menuHammer:enter()
 
 -- local function cmd(key, command)
 -- 	hs.hotkey.bind({ "cmd" }, key, command)

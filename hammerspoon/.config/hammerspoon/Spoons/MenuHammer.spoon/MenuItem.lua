@@ -65,7 +65,11 @@ function MenuItem.new(category,
     self.height = tostring(height)
 
     self.xValue = tostring(self.column * self.width)
-    self.yValue = tostring(self.height * self.row)
+    -- Add top padding offset (as fraction of total canvas height including padding)
+    local topPadding = menuTopPadding or 0
+    local canvasHeight = menu.windowHeight + topPadding
+    local paddingFraction = topPadding / canvasHeight
+    self.yValue = tostring(paddingFraction + (self.height * self.row * menu.windowHeight / canvasHeight))
 
     self.commands = commands
     self.menuManager = menuManager

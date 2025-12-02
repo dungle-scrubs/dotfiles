@@ -280,7 +280,8 @@ end
 ----------------------------------------------------------------------------------------------------
 -- Get the frame to put the menu in
 function Menu:getMenuFrame()
-	local windowHeight = self.windowHeight
+	local topPadding = menuTopPadding or 0
+	local windowHeight = self.windowHeight + topPadding
 
 	-- Calculate the dimensions using the size of the main screen.
 	local cscreen = hs.screen.mainScreen()
@@ -302,6 +303,12 @@ function Menu:getMenuDisplay()
 
 	local newCanvases = {}
 
+	-- Add cheat sheet if enabled
+	local cheatSheetCanvases = self:getCheatSheetCanvases()
+	for _, canvas in pairs(cheatSheetCanvases) do
+		table.insert(newCanvases, canvas)
+	end
+
 	-- Loop through each menu item and build them
 	for _, menuItem in pairs(self.menuItems) do
 		-- Create the background canvas
@@ -319,6 +326,81 @@ function Menu:getMenuDisplay()
 	end
 
 	return newCanvases
+end
+
+----------------------------------------------------------------------------------------------------
+-- Generate cheat sheet canvas elements
+function Menu:getCheatSheetCanvases()
+	local canvases = {}
+
+	-- Check if cheat sheet is enabled
+	if not menuCheatSheet or not menuCheatSheet.enabled then
+		return canvases
+	end
+
+	local cs = menuCheatSheet
+	local topPadding = menuTopPadding or 0
+	local frame = self:getMenuFrame()
+
+	-- Calculate cheat sheet dimensions
+	local lineHeight = (cs.fontSize or 12) + 4
+	local titleHeight = (cs.titleFontSize or 13) + 4
+	local numItems = #(cs.items or {})
+	local contentHeight = titleHeight + (numItems * lineHeight) + ((cs.padding or 8) * 2)
+	local boxWidth = 250
+	local boxX = frame.w - boxWidth - 20  -- Right-aligned with margin
+	local boxY = 4  -- Small margin from top
+
+	-- Background rectangle
+	table.insert(canvases, {
+		type = "rectangle",
+		action = "fill",
+		fillColor = { hex = cs.backgroundColor or "#1a1a1a", alpha = 0.95 },
+		frame = { x = boxX, y = boxY, w = boxWidth, h = contentHeight },
+		roundedRectRadii = { xRadius = 4, yRadius = 4 },
+	})
+
+	-- Border rectangle
+	table.insert(canvases, {
+		type = "rectangle",
+		action = "stroke",
+		strokeColor = { hex = cs.borderColor or "#444444", alpha = 1 },
+		strokeWidth = cs.borderWidth or 1,
+		frame = { x = boxX, y = boxY, w = boxWidth, h = contentHeight },
+		roundedRectRadii = { xRadius = 4, yRadius = 4 },
+	})
+
+	-- Title text
+	local padding = cs.padding or 8
+	table.insert(canvases, {
+		type = "text",
+		text = cs.title or "Cheat Sheet",
+		textFont = cs.font or "Menlo-Bold",
+		textSize = cs.titleFontSize or 13,
+		textColor = { hex = cs.titleColor or "#ffffff", alpha = 1 },
+		textAlignment = "left",
+		frame = { x = boxX + padding, y = boxY + padding, w = boxWidth - (padding * 2), h = titleHeight },
+	})
+
+	-- Item texts
+	for i, item in ipairs(cs.items or {}) do
+		table.insert(canvases, {
+			type = "text",
+			text = item,
+			textFont = cs.font or "Menlo",
+			textSize = cs.fontSize or 12,
+			textColor = { hex = cs.textColor or "#88ccff", alpha = 1 },
+			textAlignment = "left",
+			frame = {
+				x = boxX + padding,
+				y = boxY + padding + titleHeight + ((i - 1) * lineHeight),
+				w = boxWidth - (padding * 2),
+				h = lineHeight,
+			},
+		})
+	end
+
+	return canvases
 end
 
 return Menu

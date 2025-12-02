@@ -43,6 +43,27 @@ menuRowHeight = 30
 -- The padding to apply to each side of the menu
 menuOuterPadding = 50
 
+-- Top padding inside the menu (pixels) - includes space for cheat sheet
+menuTopPadding = 50
+
+-- Cheat sheet configuration
+menuCheatSheet = {
+	enabled = true,
+	title = "Claude Code",
+	items = {
+		"⌃⌥R  Search prompts",
+	},
+	font = "CaskaydiaCove Nerd Font Mono",
+	fontSize = 12,
+	titleFontSize = 13,
+	textColor = "#88ccff",
+	titleColor = "#ffffff",
+	borderColor = "#444444",
+	backgroundColor = "#1a1a1a",
+	borderWidth = 1,
+	padding = 8,
+}
+
 ----------------------------------------------------------------------------------------------------
 ----------------------------------------- Font options ---------------------------------------------
 ----------------------------------------------------------------------------------------------------
@@ -811,8 +832,8 @@ menuHammerMenuList = {
 			},
 			{
 				cons.cat.action,
-				"",
-				"r",
+				"shift",
+				"R",
 				"Reload Hammerspoon",
 				{
 					{

@@ -152,6 +152,10 @@ function MenuManager:createMenu(menuName, parentMenu, menuHotkey, menuItems)
 		self.rootMenu:bind(menuHotkey[1], menuHotkey[2], "Open " .. menuName, function()
 			self:switchMenu(menuName)
 		end)
+		-- Also bind the same hotkey to the menu's modal to toggle/close it
+		newMenu.modal:bind(menuHotkey[1], menuHotkey[2], "Close " .. menuName, function()
+			self:closeMenu()
+		end)
 	end
 
 	self.menuList[menuName] = newMenu
