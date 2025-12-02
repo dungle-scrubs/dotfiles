@@ -106,9 +106,28 @@ end
 ----------------------------------------------------------------------------------------------------
 -- Build the list of menu items
 function Menu:buildMenuItemList()
-	-- Start with an exit button
-	local menuItemList = {
-		{
+	local menuItemList = {}
+
+	-- If there is a parent menu, escape goes back; otherwise escape exits
+	if self.parentMenu ~= nil then
+		-- Escape = back to parent menu
+		table.insert(menuItemList, {
+			cons.cat.back,
+			"",
+			"escape",
+			"Back",
+			{
+				{
+					cons.act.func,
+					function()
+						self.menuManager:switchMenu(self.parentMenu)
+					end,
+				},
+			},
+		})
+	else
+		-- No parent = root menu, escape exits
+		table.insert(menuItemList, {
 			cons.cat.exit,
 			"",
 			"escape",
@@ -118,24 +137,6 @@ function Menu:buildMenuItemList()
 					cons.act.func,
 					function()
 						self.menuManager:closeMenu()
-					end,
-				},
-			},
-		},
-	}
-
-	-- If there is a parent menu, append a back button
-	if self.parentMenu ~= nil then
-		table.insert(menuItemList, {
-			cons.cat.back,
-			"",
-			"delete",
-			"Parent Menu",
-			{
-				{
-					cons.act.func,
-					function()
-						self.menuManager:switchMenu(self.parentMenu)
 					end,
 				},
 			},

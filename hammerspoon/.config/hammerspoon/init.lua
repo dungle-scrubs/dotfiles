@@ -1,6 +1,455 @@
 require("hs.ipc")
 hs.loadSpoon("EmmyLua")
 
+----------------------------------------------------------------------------------------------------
+-- AeroSpace Service Mode Overlay
+----------------------------------------------------------------------------------------------------
+
+local aerospaceOverlay = {}
+aerospaceOverlay.canvas = nil
+aerospaceOverlay.visible = false
+
+-- Format modifier keys for display
+local function formatKey(keyStr)
+	local result = keyStr
+	result = result:gsub("alt%-shift%-", "⌥⇧")
+	result = result:gsub("shift%-ctrl%-alt%-", "⌃⌥⇧")
+	result = result:gsub("ctrl%-alt%-", "⌃⌥")
+	result = result:gsub("alt%-", "⌥")
+	result = result:gsub("shift%-", "⇧")
+	result = result:gsub("ctrl%-", "⌃")
+	result = result:gsub("cmd%-", "⌘")
+	result = result:gsub("backspace", "⌫")
+	result = result:gsub("esc", "Esc")
+	result = result:gsub("semicolon", ";")
+	result = result:gsub("comma", ",")
+	result = result:gsub("slash", "/")
+	return result
+end
+
+-- Shorten command for display
+local function formatCommand(cmd)
+	if cmd == "" then
+		return "(disabled)"
+	end
+	-- Remove "mode main" suffix for cleaner display
+	cmd = cmd:gsub("; mode main$", "")
+	cmd = cmd:gsub(",mode main%]$", "]")
+	-- Shorten common commands
+	cmd = cmd:gsub("flatten%-workspace%-tree", "flatten")
+	cmd = cmd:gsub("close%-all%-windows%-but%-current", "close others")
+	cmd = cmd:gsub("layout floating tiling", "toggle float")
+	cmd = cmd:gsub("reload%-config", "reload")
+	cmd = cmd:gsub("join%-with ", "join ")
+	cmd = cmd:gsub("enable toggle", "toggle enable")
+	return cmd
+end
+
+-- Categorize a binding into a group
+local function categorizeBinding(key, cmd)
+	-- Directional commands
+	if cmd:match("^move ") or cmd:match("^join%-with ") or cmd:match("^focus ") then
+		return "directional"
+	end
+	-- Layout commands
+	if cmd:match("^layout ") or cmd:match("fullscreen") then
+		return "layout"
+	end
+	-- Exit/mode commands
+	if cmd:match("mode main") and (key == "esc" or cmd:match("reload")) then
+		return "exit"
+	end
+	-- Everything else is actions
+	return "actions"
+end
+
+function aerospaceOverlay.show(mode)
+	mode = mode or "service"
+
+	-- Get bindings from aerospace
+	local output, status = hs.execute("/opt/homebrew/bin/aerospace config --get mode." .. mode .. ".binding --json")
+	if not status then
+		print("Failed to get aerospace bindings")
+		return
+	end
+
+	local bindings = hs.json.decode(output)
+	if not bindings then
+		print("Failed to parse aerospace bindings")
+		return
+	end
+
+	-- Group bindings by category
+	local groups = {
+		{ name = "Movement", key = "directional", items = {} },
+		{ name = "Layout", key = "layout", items = {} },
+		{ name = "Actions", key = "actions", items = {} },
+		{ name = "Exit", key = "exit", items = {} },
+	}
+	local groupMap = {}
+	for _, g in ipairs(groups) do
+		groupMap[g.key] = g.items
+	end
+
+	for key, cmd in pairs(bindings) do
+		local category = categorizeBinding(key, cmd)
+		table.insert(groupMap[category], { key = key, cmd = cmd })
+	end
+
+	-- Sort items within each group
+	for _, g in ipairs(groups) do
+		table.sort(g.items, function(a, b)
+			return a.key < b.key
+		end)
+	end
+
+	-- Calculate dimensions
+	local font = "CaskaydiaCove Nerd Font Mono"
+	local fontSize = 14
+	local lineHeight = fontSize + 6
+	local groupHeaderHeight = fontSize + 10
+	local padding = 12
+	local titleHeight = 24
+	local groupSpacing = 8
+
+	-- Count total lines needed (items + group headers + spacing)
+	local totalLines = 0
+	local numGroups = 0
+	for _, g in ipairs(groups) do
+		if #g.items > 0 then
+			numGroups = numGroups + 1
+			totalLines = totalLines + #g.items
+		end
+	end
+
+	local contentHeight = titleHeight + (totalLines * lineHeight) + (numGroups * (groupHeaderHeight + groupSpacing)) + (padding * 2)
+	local boxWidth = 320
+
+	-- Get screen dimensions
+	local screen = hs.screen.mainScreen()
+	local frame = screen:frame()
+
+	-- Position at bottom-right
+	local boxX = frame.x + frame.w - boxWidth - 20
+	local boxY = frame.y + frame.h - contentHeight - 20
+
+	-- Create or reuse canvas
+	if aerospaceOverlay.canvas then
+		aerospaceOverlay.canvas:delete()
+	end
+
+	aerospaceOverlay.canvas = hs.canvas.new({ x = boxX, y = boxY, w = boxWidth, h = contentHeight })
+	local c = aerospaceOverlay.canvas
+
+	-- Background
+	c[1] = {
+		type = "rectangle",
+		action = "fill",
+		fillColor = { hex = "#1a1a1a", alpha = 0.95 },
+		roundedRectRadii = { xRadius = 8, yRadius = 8 },
+	}
+
+	-- Border
+	c[2] = {
+		type = "rectangle",
+		action = "stroke",
+		strokeColor = { hex = "#00ff00", alpha = 0.8 },
+		strokeWidth = 2,
+		roundedRectRadii = { xRadius = 8, yRadius = 8 },
+	}
+
+	-- Title
+	c[3] = {
+		type = "text",
+		text = "AeroSpace",
+		textFont = font,
+		textSize = fontSize + 2,
+		textColor = { hex = "#00ff00", alpha = 1 },
+		textAlignment = "center",
+		frame = { x = padding, y = padding, w = boxWidth - (padding * 2), h = titleHeight },
+	}
+
+	-- Separator line
+	c[4] = {
+		type = "rectangle",
+		action = "fill",
+		fillColor = { hex = "#444444", alpha = 1 },
+		frame = { x = padding, y = padding + titleHeight, w = boxWidth - (padding * 2), h = 1 },
+	}
+
+	-- Render grouped items
+	local yPos = padding + titleHeight + 8
+
+	for _, group in ipairs(groups) do
+		if #group.items > 0 then
+			-- Group header
+			c[#c + 1] = {
+				type = "text",
+				text = group.name,
+				textFont = font,
+				textSize = fontSize - 1,
+				textColor = { hex = "#888888", alpha = 1 },
+				textAlignment = "left",
+				frame = { x = padding, y = yPos, w = boxWidth - (padding * 2), h = groupHeaderHeight },
+			}
+			yPos = yPos + groupHeaderHeight
+
+			-- Group items
+			for _, item in ipairs(group.items) do
+				local keyDisplay = formatKey(item.key)
+				local cmdDisplay = formatCommand(item.cmd)
+
+				-- Key
+				c[#c + 1] = {
+					type = "text",
+					text = keyDisplay,
+					textFont = font,
+					textSize = fontSize,
+					textColor = { hex = "#ffcc00", alpha = 1 },
+					textAlignment = "left",
+					frame = { x = padding + 8, y = yPos, w = 80, h = lineHeight },
+				}
+
+				-- Command
+				c[#c + 1] = {
+					type = "text",
+					text = cmdDisplay,
+					textFont = font,
+					textSize = fontSize,
+					textColor = { hex = "#aaaaaa", alpha = 1 },
+					textAlignment = "left",
+					frame = { x = padding + 93, y = yPos, w = boxWidth - padding - 98, h = lineHeight },
+				}
+
+				yPos = yPos + lineHeight
+			end
+
+			yPos = yPos + groupSpacing
+		end
+	end
+
+	c:level(hs.canvas.windowLevels.overlay)
+	c:show()
+	aerospaceOverlay.visible = true
+end
+
+function aerospaceOverlay.hide()
+	if aerospaceOverlay.canvas then
+		aerospaceOverlay.canvas:hide()
+		aerospaceOverlay.visible = false
+	end
+end
+
+function aerospaceOverlay.toggle(mode)
+	if aerospaceOverlay.visible then
+		aerospaceOverlay.hide()
+	else
+		aerospaceOverlay.show(mode)
+	end
+end
+
+-- Expose globally so aerospace can call it via hs CLI
+_G.aerospaceOverlay = aerospaceOverlay
+
+----------------------------------------------------------------------------------------------------
+-- Arc Browser Space Control
+----------------------------------------------------------------------------------------------------
+
+local arcBrowser = {}
+
+-- Get list of Arc spaces
+function arcBrowser.getSpaces()
+	local script = [[
+		set _output to "["
+		tell application "Arc"
+			set _space_index to 1
+			repeat with _space in spaces of front window
+				set _title to get title of _space
+				set _output to (_output & "{ \"title\": \"" & _title & "\", \"id\": " & _space_index & " }")
+				if _space_index < (count spaces of front window) then
+					set _output to (_output & ", ")
+				end if
+				set _space_index to _space_index + 1
+			end repeat
+		end tell
+		set _output to (_output & "]")
+		return _output
+	]]
+	local ok, result = hs.osascript.applescript(script)
+	if ok then
+		return hs.json.decode(result)
+	end
+	return nil
+end
+
+-- Select Arc space by ID (1-indexed)
+function arcBrowser.selectSpace(id)
+	local script = string.format([[
+		tell application "Arc"
+			activate
+			tell front window
+				tell space %d to focus
+			end tell
+		end tell
+	]], id)
+	hs.osascript.applescript(script)
+end
+
+-- Select Arc space by name
+function arcBrowser.selectSpaceByName(name)
+	local spaces = arcBrowser.getSpaces()
+	if spaces then
+		for _, space in ipairs(spaces) do
+			if space.title == name then
+				arcBrowser.selectSpace(space.id)
+				return true
+			end
+		end
+	end
+	return false
+end
+
+-- Open Arc to a specific space, optionally on an AeroSpace workspace
+function arcBrowser.openToSpace(spaceName, workspace)
+	local function selectSpace()
+		-- Let AppleScript handle the waiting internally
+		local script = [[
+			tell application "Arc"
+				activate
+				-- Wait for window to be available
+				set _maxWait to 50
+				set _waited to 0
+				repeat while (count of windows) < 1 and _waited < _maxWait
+					delay 0.05
+					set _waited to _waited + 1
+				end repeat
+
+				if (count of windows) > 0 then
+					set _space_index to 1
+					repeat with _space in spaces of front window
+						if title of _space is "]] .. spaceName .. [[" then
+							tell front window
+								tell space _space_index to focus
+							end tell
+							exit repeat
+						end if
+						set _space_index to _space_index + 1
+					end repeat
+				end if
+			end tell
+		]]
+		hs.task.new("/usr/bin/osascript", nil, { "-e", script }):start()
+	end
+
+	-- Check if AeroSpace is available and switch workspace first
+	if workspace then
+		hs.task.new("/opt/homebrew/bin/aerospace", function(exitCode)
+			if exitCode == 0 then
+				hs.task.new("/opt/homebrew/bin/aerospace", function()
+					hs.timer.doAfter(0.1, selectSpace)
+				end, { "workspace", workspace }):start()
+			else
+				selectSpace()
+			end
+		end, { "list-workspaces", "--all" }):start()
+	else
+		selectSpace()
+	end
+end
+
+-- Expose globally
+_G.arcBrowser = arcBrowser
+
+----------------------------------------------------------------------------------------------------
+-- Project Launcher
+----------------------------------------------------------------------------------------------------
+
+local projectLauncher = {}
+
+-- Open a full project environment sequentially
+-- config = {
+--   wezterm = { dir = "~/path", workspace = "T" },
+--   arc = { space = "SpaceName", workspace = "B" },
+--   windsurf = { dir = "~/path", workspace = "X" },
+--   orbstack = { workspace = "D" },
+-- }
+function projectLauncher.open(config)
+	local steps = {}
+
+	-- Build step list
+	if config.wezterm then
+		local dir = config.wezterm.dir:gsub("^~", os.getenv("HOME"))
+		local ws = config.wezterm.workspace
+		table.insert(steps, function(next)
+			hs.task.new("/opt/homebrew/bin/aerospace", function()
+				hs.task.new("/opt/homebrew/bin/wezterm", nil, { "start", "--cwd", dir }):start()
+				hs.timer.doAfter(3, next)
+			end, { "workspace", ws }):start()
+		end)
+	end
+
+	if config.arc then
+		local ws = config.arc.workspace
+		local space = config.arc.space
+		table.insert(steps, function(next)
+			hs.task.new("/opt/homebrew/bin/aerospace", function()
+				local script = [[
+					tell application "Arc"
+						activate
+						delay 0.5
+						if (count of windows) > 0 then
+							set _space_index to 1
+							repeat with _space in spaces of front window
+								if title of _space is "]] .. space .. [[" then
+									tell front window to tell space _space_index to focus
+									exit repeat
+								end if
+								set _space_index to _space_index + 1
+							end repeat
+						end if
+					end tell
+				]]
+				hs.task.new("/usr/bin/osascript", nil, { "-e", script }):start()
+				hs.timer.doAfter(3, next)
+			end, { "workspace", ws }):start()
+		end)
+	end
+
+	if config.windsurf then
+		local dir = config.windsurf.dir:gsub("^~", os.getenv("HOME"))
+		local ws = config.windsurf.workspace
+		table.insert(steps, function(next)
+			hs.task.new("/opt/homebrew/bin/aerospace", function()
+				hs.task.new("/Applications/Windsurf.app/Contents/Resources/app/bin/windsurf", nil, { dir }):start()
+				hs.timer.doAfter(3, next)
+			end, { "workspace", ws }):start()
+		end)
+	end
+
+	if config.orbstack then
+		local ws = config.orbstack.workspace
+		table.insert(steps, function(next)
+			hs.task.new("/opt/homebrew/bin/aerospace", function()
+				hs.application.launchOrFocus("OrbStack")
+				hs.timer.doAfter(3, next)
+			end, { "workspace", ws }):start()
+		end)
+	end
+
+	-- Run steps sequentially
+	local function runStep(i)
+		if i <= #steps then
+			steps[i](function() runStep(i + 1) end)
+		end
+	end
+	runStep(1)
+end
+
+-- Expose globally
+_G.projectLauncher = projectLauncher
+
+----------------------------------------------------------------------------------------------------
+
 -- Override the modal binding function to preserve case of keys (add this before loading MenuHammer)
 local originalBind = hs.hotkey.modal.bind
 hs.hotkey.modal.bind = function(self, mods, key, message, pressedfn, releasedfn, repeatfn)

@@ -211,6 +211,37 @@ local toggleMenu = "toggleMenu"
 -- Window menu
 local resizeMenu = "resizeMenu"
 
+-- WezTerm workspaces menu
+local weztermMenu = "weztermMenu"
+
+-- Projects menu
+local projectsMenu = "projectsMenu"
+
+-- Helper function to open WezTerm at a directory, optionally on AeroSpace workspace
+-- Uses hs.task for async execution to avoid blocking Hammerspoon
+local function openWezTermAt(dir, workspace)
+	-- Expand ~ to home directory
+	local expandedDir = dir:gsub("^~", os.getenv("HOME"))
+
+	local function launchWezTerm()
+		hs.task.new("/opt/homebrew/bin/wezterm", nil, { "start", "--cwd", expandedDir }):start()
+	end
+
+	-- Check if AeroSpace is available (async)
+	hs.task.new("/opt/homebrew/bin/aerospace", function(exitCode, stdOut, stdErr)
+		local aerospaceEnabled = (exitCode == 0)
+
+		if aerospaceEnabled and workspace then
+			-- Switch to workspace first, then open WezTerm
+			hs.task.new("/opt/homebrew/bin/aerospace", function()
+				hs.timer.doAfter(0.15, launchWezTerm)
+			end, { "workspace", workspace }):start()
+		else
+			launchWezTerm()
+		end
+	end, { "list-workspaces", "--all" }):start()
+end
+
 menuHammerMenuList = {
 
 	------------------------------------------------------------------------------------------------
@@ -220,9 +251,6 @@ menuHammerMenuList = {
 		parentMenu = nil,
 		menuHotkey = { { "ctrl", "alt" }, "space" },
 		menuItems = {
-			{ cons.cat.submenu, "shift", "/", "Help", {
-				{ cons.act.menu, helpMenu },
-			} },
 			{
 				cons.cat.submenu,
 				"",
@@ -232,17 +260,8 @@ menuHammerMenuList = {
 					{ cons.act.menu, applicationMenu },
 				},
 			},
-			{ cons.cat.submenu, "", "b", "Browser", {
-				{ cons.act.menu, browserMenu },
-			} },
-			{ cons.cat.submenu, "", "d", "Documents", {
-				{ cons.act.menu, documentsMenu },
-			} },
 			{ cons.cat.submenu, "", "f", "Finder", {
 				{ cons.act.menu, finderMenu },
-			} },
-			{ cons.cat.submenu, "", "g", "Games", {
-				{ cons.act.menu, gamesMenu },
 			} },
 			{
 				cons.cat.submenu,
@@ -253,21 +272,12 @@ menuHammerMenuList = {
 					{ cons.act.menu, hammerspoonMenu },
 				},
 			},
-			{ cons.cat.submenu, "", "l", "Layouts", {
-				{ cons.act.menu, layoutMenu },
-			} },
 			{ cons.cat.submenu, "", "m", "Media Controls", {
 				{ cons.act.menu, mediaMenu },
 			} },
-			{
-				cons.cat.submenu,
-				"",
-				"r",
-				"Resolution",
-				{
-					{ cons.act.menu, resolutionMenu },
-				},
-			},
+			{ cons.cat.submenu, "", "p", "Projects", {
+				{ cons.act.menu, projectsMenu },
+			} },
 			{
 				cons.cat.submenu,
 				"",
@@ -280,11 +290,11 @@ menuHammerMenuList = {
 			{ cons.cat.submenu, "", "t", "Toggles", {
 				{ cons.act.menu, toggleMenu },
 			} },
+			{ cons.cat.submenu, "", "w", "WezTerm Workspaces", {
+				{ cons.act.menu, weztermMenu },
+			} },
 			{ cons.cat.submenu, "", "x", "Text", {
 				{ cons.act.menu, textMenu },
-			} },
-			{ cons.cat.submenu, "", "/", "Scripts", {
-				{ cons.act.menu, scriptsMenu },
 			} },
 			{
 				cons.cat.action,
@@ -1195,6 +1205,73 @@ menuHammerMenuList = {
 						cons.act.func,
 						function()
 							hs.wifi.setPower(true)
+						end,
+					},
+				},
+			},
+		},
+	},
+
+	------------------------------------------------------------------------------------------------
+	-- WezTerm Workspaces Menu
+	------------------------------------------------------------------------------------------------
+	[weztermMenu] = {
+		parentMenu = mainMenu,
+		menuHotkey = nil,
+		menuItems = {
+			{
+				cons.cat.action,
+				"",
+				"d",
+				"Dotfiles (T)",
+				{
+					{
+						cons.act.func,
+						function()
+							openWezTermAt("~/dotfiles", "T")
+						end,
+					},
+				},
+			},
+			{
+				cons.cat.action,
+				"",
+				"f",
+				"DeckFusion (B)",
+				{
+					{
+						cons.act.func,
+						function()
+							arcBrowser.openToSpace("DF", "B")
+						end,
+					},
+				},
+			},
+		},
+	},
+
+	------------------------------------------------------------------------------------------------
+	-- Projects Menu
+	------------------------------------------------------------------------------------------------
+	[projectsMenu] = {
+		parentMenu = mainMenu,
+		menuHotkey = nil,
+		menuItems = {
+			{
+				cons.cat.action,
+				"",
+				"f",
+				"Fuse (DeckFusion)",
+				{
+					{
+						cons.act.func,
+						function()
+							projectLauncher.open({
+								wezterm = { dir = "~/dev/client/deckfusion", workspace = "T" },
+								arc = { space = "DF", workspace = "B" },
+								windsurf = { dir = "~/dev/client/deckfusion", workspace = "X" },
+								orbstack = { workspace = "D" },
+							})
 						end,
 					},
 				},
