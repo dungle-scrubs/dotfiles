@@ -2,6 +2,21 @@ require("hs.ipc")
 hs.loadSpoon("EmmyLua")
 
 ----------------------------------------------------------------------------------------------------
+-- Custom Alert Style
+----------------------------------------------------------------------------------------------------
+
+hs.alert.defaultStyle.fillColor = { hex = "#1a1a1a", alpha = 0.95 }
+hs.alert.defaultStyle.strokeColor = { hex = "#3b82f6", alpha = 0.9 }
+hs.alert.defaultStyle.strokeWidth = 2
+hs.alert.defaultStyle.textColor = { hex = "#f97316", alpha = 1 }
+hs.alert.defaultStyle.textFont = "CaskaydiaCove Nerd Font Mono"
+hs.alert.defaultStyle.textSize = 16
+hs.alert.defaultStyle.radius = 8
+hs.alert.defaultStyle.atScreenEdge = 0  -- center of screen
+hs.alert.defaultStyle.fadeInDuration = 0.1
+hs.alert.defaultStyle.fadeOutDuration = 0.2
+
+----------------------------------------------------------------------------------------------------
 -- AeroSpace Service Mode Overlay
 ----------------------------------------------------------------------------------------------------
 
@@ -366,8 +381,35 @@ _G.arcBrowser = arcBrowser
 
 local projectLauncher = {}
 
--- Open a full project environment sequentially
+-- Launch app, wait for it to appear, then move to workspace
+local function launchAndMove(launchFn, appName, workspace, callback)
+	-- Launch the app
+	launchFn()
+
+	-- Wait for app to be running and have a window, then move it
+	local attempts = 0
+	local maxAttempts = 20
+	local checkTimer
+	checkTimer = hs.timer.doEvery(0.5, function()
+		attempts = attempts + 1
+		local app = hs.application.get(appName)
+		if app and #app:allWindows() > 0 then
+			checkTimer:stop()
+			-- Move the focused window to the target workspace
+			hs.task.new("/opt/homebrew/bin/aerospace", function()
+				if callback then callback() end
+			end, { "move-node-to-workspace", workspace }):start()
+		elseif attempts >= maxAttempts then
+			checkTimer:stop()
+			hs.alert.show("Timeout waiting for " .. appName)
+			if callback then callback() end
+		end
+	end)
+end
+
+-- Open a full project environment
 -- config = {
+--   name = "Project Name",
 --   wezterm = { dir = "~/path", workspace = "T" },
 --   arc = { space = "SpaceName", workspace = "B" },
 --   windsurf = { dir = "~/path", workspace = "X" },
@@ -375,71 +417,92 @@ local projectLauncher = {}
 -- }
 function projectLauncher.open(config)
 	local steps = {}
+	local projectName = config.name or "Project"
 
-	-- Build step list
 	if config.wezterm then
-		local dir = config.wezterm.dir:gsub("^~", os.getenv("HOME"))
-		local ws = config.wezterm.workspace
 		table.insert(steps, function(next)
-			hs.task.new("/opt/homebrew/bin/aerospace", function()
-				hs.task.new("/opt/homebrew/bin/wezterm", nil, { "start", "--cwd", dir }):start()
-				hs.timer.doAfter(3, next)
-			end, { "workspace", ws }):start()
+			local dir = config.wezterm.dir:gsub("^~", os.getenv("HOME"))
+			launchAndMove(
+				function()
+					hs.task.new("/opt/homebrew/bin/wezterm", nil, { "start", "--cwd", dir }):start()
+				end,
+				"WezTerm",
+				config.wezterm.workspace,
+				next
+			)
 		end)
 	end
 
 	if config.arc then
-		local ws = config.arc.workspace
-		local space = config.arc.space
 		table.insert(steps, function(next)
-			hs.task.new("/opt/homebrew/bin/aerospace", function()
-				local script = [[
-					tell application "Arc"
-						activate
-						delay 0.5
-						if (count of windows) > 0 then
-							set _space_index to 1
-							repeat with _space in spaces of front window
-								if title of _space is "]] .. space .. [[" then
-									tell front window to tell space _space_index to focus
-									exit repeat
-								end if
-								set _space_index to _space_index + 1
-							end repeat
-						end if
-					end tell
-				]]
-				hs.task.new("/usr/bin/osascript", nil, { "-e", script }):start()
-				hs.timer.doAfter(3, next)
-			end, { "workspace", ws }):start()
+			local space = config.arc.space
+			launchAndMove(
+				function()
+					local script = [[
+						tell application "Arc"
+							activate
+							delay 0.5
+							if (count of windows) > 0 then
+								set _space_index to 1
+								repeat with _space in spaces of front window
+									if title of _space is "]] .. space .. [[" then
+										tell front window to tell space _space_index to focus
+										exit repeat
+									end if
+									set _space_index to _space_index + 1
+								end repeat
+							end if
+						end tell
+					]]
+					hs.task.new("/usr/bin/osascript", nil, { "-e", script }):start()
+				end,
+				"Arc",
+				config.arc.workspace,
+				next
+			)
 		end)
 	end
 
 	if config.windsurf then
-		local dir = config.windsurf.dir:gsub("^~", os.getenv("HOME"))
-		local ws = config.windsurf.workspace
 		table.insert(steps, function(next)
-			hs.task.new("/opt/homebrew/bin/aerospace", function()
-				hs.task.new("/Applications/Windsurf.app/Contents/Resources/app/bin/windsurf", nil, { dir }):start()
-				hs.timer.doAfter(3, next)
-			end, { "workspace", ws }):start()
+			local dir = config.windsurf.dir:gsub("^~", os.getenv("HOME"))
+			launchAndMove(
+				function()
+					hs.task.new("/Applications/Windsurf.app/Contents/Resources/app/bin/windsurf", nil, { dir }):start()
+				end,
+				"Windsurf",
+				config.windsurf.workspace,
+				next
+			)
 		end)
 	end
 
 	if config.orbstack then
-		local ws = config.orbstack.workspace
 		table.insert(steps, function(next)
-			hs.task.new("/opt/homebrew/bin/aerospace", function()
-				hs.application.launchOrFocus("OrbStack")
-				hs.timer.doAfter(3, next)
-			end, { "workspace", ws }):start()
+			launchAndMove(
+				function()
+					hs.application.launchOrFocus("OrbStack")
+				end,
+				"OrbStack",
+				config.orbstack.workspace,
+				next
+			)
 		end)
 	end
 
-	-- Run steps sequentially
+	-- Run steps sequentially, then finalize
 	local function runStep(i)
 		if i <= #steps then
 			steps[i](function() runStep(i + 1) end)
+		else
+			-- All done - show message, switch to T, focus WezTerm
+			hs.alert.show(projectName .. " loaded")
+			hs.task.new("/opt/homebrew/bin/aerospace", function()
+				local wezterm = hs.application.get("WezTerm")
+				if wezterm then
+					wezterm:activate()
+				end
+			end, { "workspace", "T" }):start()
 		end
 	end
 	runStep(1)

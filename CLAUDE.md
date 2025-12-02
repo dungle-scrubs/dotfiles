@@ -9,7 +9,10 @@ This is a **macOS dotfiles repository** managed with **GNU Stow**. Each top-leve
 ## Common Commands
 
 ```bash
-# Install/link a package (from repo root)
+# Stow all packages at once (preferred method)
+stow */
+
+# Install/link a single package (from repo root)
 stow <package>          # e.g., stow wezterm
 
 # Unlink a package
@@ -38,6 +41,8 @@ launchctl kickstart -k gui/$(id -u)/org.pqrs.karabiner.karabiner_console_user_se
 ```bash
 hs -c "hs.reload()"     # Reload config (ignore "message port invalidated" error)
 ```
+
+**Important**: Always reload Hammerspoon after any config change.
 
 ### AeroSpace
 
@@ -90,4 +95,11 @@ When stowed, `~/.config/<package>` becomes a symlink to the repo.
 Zsh uses XDG-style config. Requires this in `~/.zshenv`:
 ```bash
 export ZDOTDIR=$HOME/.config/zsh
+```
+
+## Workflow
+
+When changes are made and approved, always commit to `main` and push to origin:
+```bash
+git add -A && git commit -m "description" && git push origin main
 ```

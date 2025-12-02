@@ -259,3 +259,22 @@ alt-shift-l = ['join-with right', 'mode main', 'exec-and-forget hs -c "aerospace
 #[[on-window-detected]]
 #if.window-title-regex-substring = '^BIG-IP'
 #run = ['layout floating']
+
+# Project Launcher Rules (managed by Hammerspoon)
+# These are temporarily uncommented when launching projects
+
+#[[on-window-detected]]
+#if.app-id = 'com.github.wez.wezterm'
+#run = ['move-node-to-workspace T']
+
+#[[on-window-detected]]
+#if.app-id = 'company.thebrowser.Browser'
+#run = ['move-node-to-workspace B']
+
+#[[on-window-detected]]
+#if.app-id = 'com.codeium.windsurf'
+#run = ['move-node-to-workspace X']
+
+#[[on-window-detected]]
+#if.app-id = 'dev.kdrag0n.MacVirt'
+#run = ['move-node-to-workspace D']

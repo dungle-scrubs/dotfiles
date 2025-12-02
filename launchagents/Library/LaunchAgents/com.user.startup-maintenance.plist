@@ -9,7 +9,7 @@
     <array>
         <string>/bin/bash</string>
         <string>-c</string>
-        <string>docker system prune --volumes -f && brew update && brew upgrade</string>
+        <string>/opt/homebrew/bin/brew update && /opt/homebrew/bin/brew upgrade</string>
     </array>
     
     <key>RunAtLoad</key>

@@ -1267,6 +1267,7 @@ menuHammerMenuList = {
 						cons.act.func,
 						function()
 							projectLauncher.open({
+								name = "Fuse",
 								wezterm = { dir = "~/dev/client/deckfusion", workspace = "T" },
 								arc = { space = "DF", workspace = "B" },
 								windsurf = { dir = "~/dev/client/deckfusion", workspace = "X" },
