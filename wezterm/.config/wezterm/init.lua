@@ -32,11 +32,7 @@ config.default_workspace = "admin"
 config.automatically_reload_config = false
 config.status_update_interval = 200
 
-config.skip_close_confirmation_for_processes_named = {
-	"bash",
-	"sh",
-	"zsh",
-}
+config.window_close_confirmation = "NeverPrompt"
 
 design.apply(config)
 keybinds.apply(config)

@@ -58,6 +58,24 @@ shiftCtrl("n", function()
 		"/opt/homebrew/bin/aerospace list-workspaces --monitor focused --empty no | /opt/homebrew/bin/aerospace workspace next"
 	)
 end)
+
+shiftCtrl("a", function()
+	hs.task
+		.new("/opt/homebrew/bin/aerospace", function(exitCode, stdOut, stdErr)
+			if exitCode == 0 then
+				local enabled = stdOut:match("true")
+				if enabled then
+					hs.alert.show("AeroSpace enabled")
+				else
+					hs.alert.show("AeroSpace disabled")
+				end
+			else
+				print("Error toggling AeroSpace:", stdErr)
+			end
+		end, { "enable", "toggle" })
+		:start()
+end)
+
 -- shiftCtrl("e", function()
 -- 	yabai({ "space --toggle show-desktop" })
 -- end)
