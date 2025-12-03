@@ -111,6 +111,33 @@ function MenuManager:enter()
 		self:setMenuBarText(nil)
 	end
 
+	-- Calculate max items across all menus to determine fixed row count
+	-- Use the global menuHammerMenuList directly to ensure we get raw config
+	print("MenuHammer: Starting max items calculation...")
+	local maxItems = 0
+	local maxMenuName = ""
+	for menuName, menuConfig in pairs(menuHammerMenuList) do
+		if menuConfig.menuItems then
+			local itemCount = 0
+			for _ in pairs(menuConfig.menuItems) do
+				itemCount = itemCount + 1
+			end
+			print("  " .. menuName .. ": " .. itemCount .. " items")
+			if itemCount > maxItems then
+				maxItems = itemCount
+				maxMenuName = menuName
+			end
+		end
+	end
+
+	-- Set fixed row count: min 5, or ceil(maxItems / contentColumns)
+	local contentColumns = menuNumberOfColumns - 1
+	local calculatedRows = math.ceil(maxItems / contentColumns)
+	menuFixedNumberOfRows = math.max(menuMinNumberOfRows or 5, calculatedRows)
+	print("MenuHammer: Max items = " .. maxItems .. " in " .. maxMenuName)
+	print("MenuHammer: contentColumns = " .. contentColumns .. ", calculatedRows = " .. calculatedRows)
+	print("MenuHammer: menuFixedNumberOfRows = " .. menuFixedNumberOfRows)
+
 	-- Build the menus
 	self:populateMenus()
 
@@ -293,25 +320,93 @@ end
 ----------------------------------------------------------------------------------------------------
 
 ----------------------------------------------------------------------------------------------------
--- Set the menu bar text
-function MenuManager:setMenuBarText(text)
-	if self.showMenuBarItem then
-		local newText = text
+-- Create a depth icon using hs.canvas
+-- Shows a rounded square with dots indicating menu depth
+function MenuManager:createDepthIcon(depth)
+	local size = 18
+	local canvas = hs.canvas.new({ x = 0, y = 0, w = size, h = size })
 
-		local backgroundColor = { hex = menuItemColors.menuBarActive.background, alpha = 0.95 }
-		local textColor = { hex = menuItemColors.menuBarActive.text, alpha = 0.95 }
+	-- Determine if we're in dark mode for proper icon coloring
+	local isDark = true -- Menubar icons work best as template images (dark)
+	local strokeColor = { white = 0, alpha = 0.9 }
+	local fillColor = { white = 0, alpha = 0.9 }
 
-		if text == nil then
-			newText = "idle"
-			backgroundColor = { hex = menuItemColors.menuBarIdle.background, alpha = 0.95 }
-			textColor = { hex = menuItemColors.menuBarIdle.text, alpha = 0.95 }
+	-- Draw rounded square border
+	canvas[1] = {
+		type = "rectangle",
+		action = "stroke",
+		frame = { x = 2, y = 2, w = size - 4, h = size - 4 },
+		roundedRectRadii = { xRadius = 3, yRadius = 3 },
+		strokeColor = strokeColor,
+		strokeWidth = 1.5,
+	}
+
+	-- Add dots for depth (vertically centered)
+	if depth > 0 then
+		local maxDots = math.min(depth, 4) -- Cap at 4 dots
+		local dotRadius = 1.5
+		local dotSpacing = 3.5
+		local totalDotsHeight = (maxDots - 1) * dotSpacing
+		local startY = (size - totalDotsHeight) / 2
+
+		for i = 1, maxDots do
+			canvas[i + 1] = {
+				type = "circle",
+				action = "fill",
+				center = { x = size / 2, y = startY + (i - 1) * dotSpacing },
+				radius = dotRadius,
+				fillColor = fillColor,
+			}
 		end
-
-		self.menuBarItem:setTitle(hs.styledtext.new(newText, {
-			color = textColor,
-			backgroundColor = backgroundColor,
-		}))
 	end
+
+	-- Convert to image and set as template (adapts to light/dark menubar)
+	local image = canvas:imageFromCanvas()
+	if image then
+		image:template(true)
+	end
+
+	return image
+end
+
+----------------------------------------------------------------------------------------------------
+-- Calculate menu depth by traversing parent chain
+function MenuManager:getMenuDepth(menuName)
+	if menuName == nil then
+		return 0
+	end
+
+	local depth = 1
+	local currentMenu = self.menuList[menuName]
+
+	while currentMenu and currentMenu.parentMenu do
+		depth = depth + 1
+		currentMenu = self.menuList[currentMenu.parentMenu]
+	end
+
+	return depth
+end
+
+----------------------------------------------------------------------------------------------------
+-- Update the menu bar icon based on current state
+function MenuManager:updateMenuBarIcon(menuName)
+	if not self.showMenuBarItem or not self.menuBarItem then
+		return
+	end
+
+	local depth = self:getMenuDepth(menuName)
+	local icon = self:createDepthIcon(depth)
+
+	if icon then
+		self.menuBarItem:setIcon(icon)
+		self.menuBarItem:setTitle("") -- Clear any text
+	end
+end
+
+----------------------------------------------------------------------------------------------------
+-- Set the menu bar text (legacy function, now updates icon)
+function MenuManager:setMenuBarText(text)
+	self:updateMenuBarIcon(text)
 end
 
 return MenuManager

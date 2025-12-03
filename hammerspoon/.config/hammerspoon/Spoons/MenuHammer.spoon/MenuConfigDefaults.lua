@@ -30,12 +30,20 @@ askpassLocation = "/usr/local/bin/ssh-askpass"
 ----------------------------------------- Menu options ---------------------------------------------
 ----------------------------------------------------------------------------------------------------
 
--- The number of columns to display in the menus.  Setting this too high or too low will
--- probably have odd results.
-menuNumberOfColumns = 5
+-- The number of columns to display in the menus (including the navigation column).
+menuNumberOfColumns = 6
+
+-- Width of the first column (Back/Exit) as a fraction of total width (0.1 = 10%)
+menuNavColumnWidth = 0.12
 
 -- The minimum number of rows to show in menus
-menuMinNumberOfRows = 4
+menuMinNumberOfRows = 5
+
+-- The maximum number of rows to show in menus (items wrap to more columns if exceeded)
+menuMaxNumberOfRows = 13
+
+-- Fixed row count (will be recalculated at runtime based on largest menu)
+menuFixedNumberOfRows = 13
 
 -- The height of menu rows in pixels
 menuRowHeight = 30
@@ -43,8 +51,8 @@ menuRowHeight = 30
 -- The padding to apply to each side of the menu
 menuOuterPadding = 50
 
--- Top padding inside the menu (pixels) - includes space for cheat sheet
-menuTopPadding = 50
+-- Top padding inside the menu (pixels)
+menuTopPadding = 25
 
 -- Cheat sheet configuration
 menuCheatSheet = {
@@ -193,8 +201,6 @@ local layoutMenu = "layoutMenu"
 -- Media menu
 local mediaMenu = "mediaMenu"
 
--- Resolution menu
-local resolutionMenu = "resolutionMenu"
 
 -- Scripts menu
 local scriptsMenu = "scriptsMenu"
@@ -216,6 +222,9 @@ local weztermMenu = "weztermMenu"
 
 -- Projects menu
 local projectsMenu = "projectsMenu"
+
+-- Menu Bar menu (Ice control)
+local menuBarMenu = "menuBarMenu"
 
 -- Helper function to open WezTerm at a directory, optionally on AeroSpace workspace
 -- Uses hs.task for async execution to avoid blocking Hammerspoon
@@ -272,6 +281,9 @@ menuHammerMenuList = {
 					{ cons.act.menu, hammerspoonMenu },
 				},
 			},
+			{ cons.cat.submenu, "", "b", "Menu Bar (Ice)", {
+				{ cons.act.menu, menuBarMenu },
+			} },
 			{ cons.cat.submenu, "", "m", "Media Controls", {
 				{ cons.act.menu, mediaMenu },
 			} },
@@ -983,14 +995,6 @@ menuHammerMenuList = {
 	},
 
 	------------------------------------------------------------------------------------------------
-	-- Resolution Menu
-	------------------------------------------------------------------------------------------------
-	resolutionMenu = {
-		parentMenu = mainMenu,
-		menuHotkey = nil,
-		menuItems = resolutionMenuItems,
-	},
-
 	------------------------------------------------------------------------------------------------
 	-- Scripts Menu
 	------------------------------------------------------------------------------------------------
@@ -1279,4 +1283,112 @@ menuHammerMenuList = {
 			},
 		},
 	},
+
+	------------------------------------------------------------------------------------------------
+	-- Menu Bar Menu (Ice control)
+	------------------------------------------------------------------------------------------------
+	[menuBarMenu] = {
+		parentMenu = mainMenu,
+		menuHotkey = nil,
+		menuItems = {
+			{
+				cons.cat.action,
+				"",
+				"t",
+				"Toggle Hidden Section",
+				{
+					{
+						cons.act.func,
+						function()
+							-- Ice toggle hotkey (configure this in Ice settings)
+							-- Default suggestion: Ctrl+Alt+H
+							hs.eventtap.keyStroke({ "ctrl", "alt" }, "h")
+						end,
+					},
+				},
+			},
+			{
+				cons.cat.action,
+				"",
+				"a",
+				"Toggle Always-Hidden Section",
+				{
+					{
+						cons.act.func,
+						function()
+							-- Ice always-hidden toggle (configure in Ice settings)
+							-- Default suggestion: Ctrl+Alt+Shift+H
+							hs.eventtap.keyStroke({ "ctrl", "alt", "shift" }, "h")
+						end,
+					},
+				},
+			},
+			{
+				cons.cat.action,
+				"",
+				"s",
+				"Ice Settings",
+				{
+					{
+						cons.act.func,
+						function()
+							hs.application.launchOrFocus("Ice")
+						end,
+					},
+				},
+			},
+			{
+				cons.cat.action,
+				"",
+				"r",
+				"Restart Ice",
+				{
+					{
+						cons.act.func,
+						function()
+							hs.execute("killall Ice; sleep 0.5; open -a Ice", true)
+						end,
+					},
+				},
+			},
+			{
+				cons.cat.action,
+				"",
+				"q",
+				"Quit Ice",
+				{
+					{
+						cons.act.func,
+						function()
+							local app = hs.application.get("Ice")
+							if app then
+								app:kill()
+							end
+						end,
+					},
+				},
+			},
+		},
+	},
 }
+
+----------------------------------------------------------------------------------------------------
+-- Calculate fixed row count based on largest menu
+----------------------------------------------------------------------------------------------------
+do
+	local maxItems = 0
+	for _, menuConfig in pairs(menuHammerMenuList) do
+		if menuConfig.menuItems then
+			local itemCount = 0
+			for _ in pairs(menuConfig.menuItems) do
+				itemCount = itemCount + 1
+			end
+			if itemCount > maxItems then
+				maxItems = itemCount
+			end
+		end
+	end
+	local contentColumns = menuNumberOfColumns - 1
+	menuFixedNumberOfRows = math.max(menuMinNumberOfRows or 5, math.ceil(maxItems / contentColumns))
+	print("MenuHammer config: maxItems=" .. maxItems .. ", fixedRows=" .. menuFixedNumberOfRows)
+end

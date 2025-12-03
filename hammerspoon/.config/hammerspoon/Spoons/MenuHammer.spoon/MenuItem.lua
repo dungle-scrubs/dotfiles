@@ -61,10 +61,26 @@ function MenuItem.new(category,
     self.desc = desc
     self.row = row
     self.column = column
-    self.width = tostring(width)
     self.height = tostring(height)
 
-    self.xValue = tostring(self.column * self.width)
+    -- Reserve space for cheat sheet on the right
+    local screenWidth = hs.screen.mainScreen():frame().w
+    local cheatSheetWidth = (menuCheatSheet and menuCheatSheet.width or 200)
+    local cheatSheetMargin = menuTopPadding or 25
+    local reservedRight = (cheatSheetWidth + cheatSheetMargin * 2) / screenWidth
+    local availableWidth = 1 - reservedRight
+
+    -- First column (nav) is narrow, remaining columns share the rest
+    local navWidth = (menuNavColumnWidth or 0.12) * availableWidth
+    local contentWidth = (availableWidth - navWidth) / (menuNumberOfColumns - 1)
+
+    if self.column == 0 then
+        self.width = tostring(navWidth)
+        self.xValue = "0"
+    else
+        self.width = tostring(contentWidth)
+        self.xValue = tostring(navWidth + (self.column - 1) * contentWidth)
+    end
     -- Add top padding offset (as fraction of total canvas height including padding)
     local topPadding = menuTopPadding or 0
     local canvasHeight = menu.windowHeight + topPadding

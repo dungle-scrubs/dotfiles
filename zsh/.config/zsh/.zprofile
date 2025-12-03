@@ -31,6 +31,7 @@ path_dirs=(
   "$PYENV_ROOT/bin", 
   "$HOME/Library/pnpm",
   "$HOME/Library/Application Support/Herd/bin/",
+  "$HOME/.local/bin",
   "$HOME/.config/scripts/",
   "$HOME/.atuin/bin",
   "$HOME/go/bin",

@@ -81,14 +81,10 @@ function Menu:buildMenu()
 	assert(self.menuItemDefinitions, "Menu " .. self.name .. " has no menu items")
 	assert(self.menuManager, "Menu " .. self.name .. " has nil menu manager")
 
-	-- Set the number of columns and number of rows
+	-- Set the number of columns and rows
 	self.numberOfColumns = menuNumberOfColumns
-	self.numberOfRows = math.ceil(tableLength(self.menuItemDefinitions) / (self.numberOfColumns - 1))
-
-	-- Make sure we have the minimum number of rows
-	if self.numberOfRows < menuMinNumberOfRows then
-		self.numberOfRows = menuMinNumberOfRows
-	end
+	-- Use fixed row count calculated from largest menu (set by MenuManager)
+	self.numberOfRows = menuFixedNumberOfRows or menuMinNumberOfRows or 5
 
 	-- Set the window height
 	self.windowHeight = menuRowHeight * self.numberOfRows
@@ -148,8 +144,32 @@ function Menu:buildMenuItemList()
 		table.insert(menuItemList, { cons.cat.navigation, nil, nil, "" })
 	end
 
-	-- Add all the defined menu items
+	-- Sort menu items by key (lowercase first, then uppercase, then special keys)
+	local sortedItems = {}
 	for _, newMenuItem in pairs(self.menuItemDefinitions) do
+		table.insert(sortedItems, newMenuItem)
+	end
+	table.sort(sortedItems, function(a, b)
+		local keyA = a[3] or ""
+		local keyB = b[3] or ""
+
+		-- Categorize keys: 1=lowercase, 2=uppercase, 3=special
+		local function keyCategory(k)
+			if k:match("^%l$") then return 1  -- lowercase letter
+			elseif k:match("^%u$") then return 2  -- uppercase letter
+			else return 3  -- special keys (space, escape, etc.)
+			end
+		end
+
+		local catA, catB = keyCategory(keyA), keyCategory(keyB)
+		if catA ~= catB then
+			return catA < catB
+		end
+		return keyA < keyB
+	end)
+
+	-- Add sorted menu items
+	for _, newMenuItem in ipairs(sortedItems) do
 		table.insert(menuItemList, newMenuItem)
 	end
 
@@ -164,6 +184,18 @@ function Menu:createMenuItems()
 	local boundKeys = {}
 
 	-- Loop through the menu items
+	-- Calculate content item distribution across columns
+	local contentColumns = self.numberOfColumns - 1
+	local contentItemCount = #self.menuItemDefinitions - self.numberOfRows  -- items after nav column
+	local basePerCol = math.floor(contentItemCount / contentColumns)
+	local extraItems = contentItemCount % contentColumns
+
+	-- Build array of how many items in each content column
+	local itemsPerColumn = {}
+	for col = 1, contentColumns do
+		itemsPerColumn[col] = basePerCol + (col <= extraItems and 1 or 0)
+	end
+
 	for index, menuItem in ipairs(self.menuItemDefinitions) do
 		-- Adjust the index to 0 indexed
 		local adjustedIndex = index - 1
@@ -197,11 +229,25 @@ function Menu:createMenuItems()
 			boundKeys[keyCombo] = true
 		end
 
-		-- Calculate the row number
-		local column = math.floor(adjustedIndex / self.numberOfRows)
+		local column, row
 
-		-- Calculate the column number
-		local row = adjustedIndex % self.numberOfRows
+		if adjustedIndex < self.numberOfRows then
+			-- Nav column items (Back/Exit + blanks)
+			column = 0
+			row = adjustedIndex
+		else
+			-- Content items - spread across all columns evenly
+			local contentIndex = adjustedIndex - self.numberOfRows  -- 0-indexed within content
+			local itemsSoFar = 0
+			for col = 1, contentColumns do
+				if contentIndex < itemsSoFar + itemsPerColumn[col] then
+					column = col
+					row = contentIndex - itemsSoFar
+					break
+				end
+				itemsSoFar = itemsSoFar + itemsPerColumn[col]
+			end
+		end
 
 		-- Create the menuItem object
 		self:createMenuItem(category, modifier, key, desc, index, row, column, commands, remainOpen)
@@ -330,7 +376,7 @@ function Menu:getMenuDisplay()
 end
 
 ----------------------------------------------------------------------------------------------------
--- Generate cheat sheet canvas elements
+-- Generate cheat sheet canvas elements (positioned as right-most column)
 function Menu:getCheatSheetCanvases()
 	local canvases = {}
 
@@ -340,24 +386,27 @@ function Menu:getCheatSheetCanvases()
 	end
 
 	local cs = menuCheatSheet
-	local topPadding = menuTopPadding or 0
 	local frame = self:getMenuFrame()
+	local topPadding = menuTopPadding or 0
 
 	-- Calculate cheat sheet dimensions
 	local lineHeight = (cs.fontSize or 12) + 4
 	local titleHeight = (cs.titleFontSize or 13) + 4
-	local numItems = #(cs.items or {})
-	local contentHeight = titleHeight + (numItems * lineHeight) + ((cs.padding or 8) * 2)
-	local boxWidth = 250
-	local boxX = frame.w - boxWidth - 20  -- Right-aligned with margin
-	local boxY = 4  -- Small margin from top
+	local padding = cs.padding or 8
+	local boxWidth = cs.width or 200
 
-	-- Background rectangle
+	-- Position: right column, flush against padding on top, bottom, and right
+	local margin = topPadding
+	local boxX = frame.w - boxWidth - margin  -- Right margin
+	local boxY = margin  -- Top margin
+	local boxHeight = frame.h - (margin * 2)  -- Full height minus top/bottom margins
+
+	-- Background rectangle (full column height)
 	table.insert(canvases, {
 		type = "rectangle",
 		action = "fill",
 		fillColor = { hex = cs.backgroundColor or "#1a1a1a", alpha = 0.95 },
-		frame = { x = boxX, y = boxY, w = boxWidth, h = contentHeight },
+		frame = { x = boxX, y = boxY, w = boxWidth, h = boxHeight },
 		roundedRectRadii = { xRadius = 4, yRadius = 4 },
 	})
 
@@ -367,12 +416,11 @@ function Menu:getCheatSheetCanvases()
 		action = "stroke",
 		strokeColor = { hex = cs.borderColor or "#444444", alpha = 1 },
 		strokeWidth = cs.borderWidth or 1,
-		frame = { x = boxX, y = boxY, w = boxWidth, h = contentHeight },
+		frame = { x = boxX, y = boxY, w = boxWidth, h = boxHeight },
 		roundedRectRadii = { xRadius = 4, yRadius = 4 },
 	})
 
 	-- Title text
-	local padding = cs.padding or 8
 	table.insert(canvases, {
 		type = "text",
 		text = cs.title or "Cheat Sheet",
