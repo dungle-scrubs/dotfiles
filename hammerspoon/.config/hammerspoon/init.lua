@@ -649,19 +649,21 @@ end
 _G.taskRunner = taskRunner
 
 ----------------------------------------------------------------------------------------------------
--- Linear Tasks Overlay
+-- Attention Dashboard (Linear + Slack)
 ----------------------------------------------------------------------------------------------------
 
-local linearTasks = {}
-linearTasks.canvas = nil
-linearTasks.visible = false
+local attention = {}
+attention.canvas = nil
+attention.visible = false
+attention.cache = { linear = nil, slack = nil }
+attention.lastFetchDate = nil
+attention.dailyTimer = nil
 
--- Get API key from ~/.env/services/.env
-local function getLinearApiKey()
+-- Helper to get env var from ~/.env/services/.env
+local function getEnvVar(varName)
 	local envFile = os.getenv("HOME") .. "/.env/services/.env"
-	local output, status = hs.execute("grep '^LINEAR_API_KEY=' " .. envFile .. " | cut -d= -f2-")
+	local output, status = hs.execute("grep '^" .. varName .. "=' " .. envFile .. " | cut -d= -f2-")
 	if status and output and #output > 0 then
-		-- Strip whitespace and quotes
 		local value = output:gsub("^%s+", ""):gsub("%s+$", "")
 		value = value:gsub('^"', ""):gsub('"$', ""):gsub("^'", ""):gsub("'$", "")
 		if #value > 0 then
@@ -671,10 +673,11 @@ local function getLinearApiKey()
 	return nil
 end
 
-function linearTasks.fetch(callback)
-	local apiKey = getLinearApiKey()
+-- Fetch Linear in-progress issues
+local function fetchLinear(callback)
+	local apiKey = getEnvVar("LINEAR_API_KEY")
 	if not apiKey then
-		hs.alert.show("LINEAR_API_KEY not found in ~/.env/services/.env")
+		callback(nil, "LINEAR_API_KEY not found")
 		return
 	end
 
@@ -684,44 +687,161 @@ function linearTasks.fetch(callback)
 				nodes {
 					identifier
 					title
-					state { name }
 					project { name }
 				}
 			}
 		}
 	]]
 
-	local headers = {
-		["Authorization"] = apiKey,
-		["Content-Type"] = "application/json",
-	}
-
-	local body = hs.json.encode({ query = query })
-
 	hs.http.asyncPost(
 		"https://api.linear.app/graphql",
-		body,
-		headers,
-		function(status, response, responseHeaders)
+		hs.json.encode({ query = query }),
+		{ ["Authorization"] = apiKey, ["Content-Type"] = "application/json" },
+		function(status, response)
 			if status ~= 200 then
-				hs.alert.show("Linear API error: " .. tostring(status))
-				print("Linear error response:", response)
+				callback(nil, "Linear API error: " .. tostring(status))
 				return
 			end
-
 			local data = hs.json.decode(response)
 			if data and data.data and data.data.issues then
-				local issues = data.data.issues.nodes
-				callback(issues)
+				callback(data.data.issues.nodes)
 			else
-				hs.alert.show("Failed to parse Linear response")
-				print("Linear parse error:", response)
+				callback(nil, "Failed to parse Linear response")
 			end
 		end
 	)
 end
 
-function linearTasks.showLoader()
+-- Fetch Slack mentions and DMs
+local function fetchSlack(callback)
+	local token = getEnvVar("SLACK_USER_TOKEN")
+	if not token then
+		callback(nil, "SLACK_USER_TOKEN not found")
+		return
+	end
+
+	-- First get user ID for @mention search
+	hs.http.asyncGet(
+		"https://slack.com/api/auth.test",
+		{ ["Authorization"] = "Bearer " .. token },
+		function(status, response)
+			if status ~= 200 then
+				callback(nil, "Slack auth error")
+				return
+			end
+			local authData = hs.json.decode(response)
+			if not authData or not authData.user_id then
+				callback(nil, "Failed to get Slack user ID")
+				return
+			end
+
+			local userId = authData.user_id
+			local results = { dms = {}, channels = {} }
+			local pending = 2
+
+			local function checkDone()
+				pending = pending - 1
+				if pending == 0 then
+					callback(results)
+				end
+			end
+
+			-- Deduplicate by sender, keeping most recent
+			local function dedupeByUser(messages)
+				local seen = {}
+				local deduped = {}
+				for _, msg in ipairs(messages or {}) do
+					local username = msg.username or "unknown"
+					if not seen[username] then
+						seen[username] = true
+						table.insert(deduped, msg)
+					end
+				end
+				return deduped
+			end
+
+			-- Fetch DMs (to:me)
+			hs.http.asyncGet(
+				"https://slack.com/api/search.messages?query=to:me&count=20&sort=timestamp",
+				{ ["Authorization"] = "Bearer " .. token },
+				function(s, r)
+					if s == 200 then
+						local data = hs.json.decode(r)
+						if data and data.ok and data.messages then
+							-- Filter to only DMs
+							local dms = {}
+							for _, msg in ipairs(data.messages.matches or {}) do
+								if msg.channel and msg.channel.is_im then
+									table.insert(dms, msg)
+								end
+							end
+							results.dms = dedupeByUser(dms)
+						end
+					end
+					checkDone()
+				end
+			)
+
+			-- Fetch channel @mentions
+			hs.http.asyncGet(
+				"https://slack.com/api/search.messages?query=<@" .. userId .. ">&count=20&sort=timestamp",
+				{ ["Authorization"] = "Bearer " .. token },
+				function(s, r)
+					if s == 200 then
+						local data = hs.json.decode(r)
+						if data and data.ok and data.messages then
+							-- Filter to only channels (not DMs)
+							local channels = {}
+							for _, msg in ipairs(data.messages.matches or {}) do
+								if msg.channel and not msg.channel.is_im then
+									table.insert(channels, msg)
+								end
+							end
+							results.channels = dedupeByUser(channels)
+						end
+					end
+					checkDone()
+				end
+			)
+		end
+	)
+end
+
+-- Fetch all sources
+function attention.fetchAll(callback)
+	local results = { linear = nil, slack = nil }
+	local pending = 2
+
+	local function checkDone()
+		pending = pending - 1
+		if pending == 0 then
+			attention.cache = results
+			attention.lastFetchDate = os.date("%Y-%m-%d")
+			callback(results)
+		end
+	end
+
+	fetchLinear(function(data, err)
+		results.linear = data or {}
+		if err then print("Linear fetch error:", err) end
+		checkDone()
+	end)
+
+	fetchSlack(function(data, err)
+		results.slack = data or {}
+		if err then print("Slack fetch error:", err) end
+		checkDone()
+	end)
+end
+
+-- Check if we need to fetch (new day)
+function attention.needsFetch()
+	local today = os.date("%Y-%m-%d")
+	return attention.lastFetchDate ~= today
+end
+
+-- Show loader
+function attention.showLoader()
 	local font = "CaskaydiaCove Nerd Font Mono"
 	local fontSize = 13
 	local padding = 16
@@ -733,238 +853,256 @@ function linearTasks.showLoader()
 	local boxX = frame.x + (frame.w - boxWidth) / 2
 	local boxY = frame.y + (frame.h - boxHeight) / 2
 
-	if linearTasks.canvas then
-		linearTasks.canvas:delete()
+	if attention.canvas then
+		attention.canvas:delete()
 	end
 
-	linearTasks.canvas = hs.canvas.new({ x = boxX, y = boxY, w = boxWidth, h = boxHeight })
-	local c = linearTasks.canvas
+	attention.canvas = hs.canvas.new({ x = boxX, y = boxY, w = boxWidth, h = boxHeight })
+	local c = attention.canvas
 
-	c[1] = {
-		type = "rectangle",
-		action = "fill",
-		fillColor = { hex = "#1a1a1a", alpha = 0.95 },
-		roundedRectRadii = { xRadius = 8, yRadius = 8 },
-	}
-	c[2] = {
-		type = "rectangle",
-		action = "stroke",
-		strokeColor = { hex = "#5e6ad2", alpha = 0.9 },
-		strokeWidth = 2,
-		roundedRectRadii = { xRadius = 8, yRadius = 8 },
-	}
-	c[3] = {
-		type = "text",
-		text = "Loading Linear tasks...",
-		textFont = font,
-		textSize = fontSize,
-		textColor = { hex = "#5e6ad2", alpha = 1 },
-		textAlignment = "center",
-		frame = { x = padding, y = (boxHeight - fontSize) / 2, w = boxWidth - (padding * 2), h = fontSize + 4 },
-	}
+	c[1] = { type = "rectangle", action = "fill", fillColor = { hex = "#1a1a1a", alpha = 0.95 }, roundedRectRadii = { xRadius = 8, yRadius = 8 } }
+	c[2] = { type = "rectangle", action = "stroke", strokeColor = { hex = "#5e6ad2", alpha = 0.9 }, strokeWidth = 2, roundedRectRadii = { xRadius = 8, yRadius = 8 } }
+	c[3] = { type = "text", text = "Loading...", textFont = font, textSize = fontSize, textColor = { hex = "#5e6ad2", alpha = 1 }, textAlignment = "center", frame = { x = padding, y = (boxHeight - fontSize) / 2, w = boxWidth - (padding * 2), h = fontSize + 4 } }
 
 	c:level(hs.canvas.windowLevels.overlay)
 	c:clickActivating(false)
 	c:show()
-	linearTasks.visible = true
+	attention.visible = true
 end
 
-function linearTasks.show()
-	linearTasks.showLoader()
-	linearTasks.fetch(function(issues)
-		if not issues or #issues == 0 then
-			linearTasks.hide()
-			hs.alert.show("No in-progress tasks")
-			return
+-- Render the dashboard
+function attention.render(data)
+	local font = "CaskaydiaCove Nerd Font Mono"
+	local fontSize = 13
+	local lineHeight = fontSize + 8
+	local sectionHeaderHeight = fontSize + 14
+	local groupHeaderHeight = fontSize + 10
+	local padding = 16
+	local titleHeight = 28
+	local sectionSpacing = 16
+	local groupSpacing = 6
+
+	-- Group Linear by project
+	local linearProjects = {}
+	local linearProjectOrder = {}
+	for _, issue in ipairs(data.linear or {}) do
+		local projectName = issue.project and issue.project.name or "No Project"
+		if not linearProjects[projectName] then
+			linearProjects[projectName] = {}
+			table.insert(linearProjectOrder, projectName)
 		end
+		table.insert(linearProjects[projectName], issue)
+	end
 
-		-- Group issues by project
-		local projects = {}
-		local projectOrder = {}
-		for _, issue in ipairs(issues) do
-			local projectName = issue.project and issue.project.name or "No Project"
-			if not projects[projectName] then
-				projects[projectName] = {}
-				table.insert(projectOrder, projectName)
-			end
-			table.insert(projects[projectName], issue)
+	-- Calculate content height
+	local linearLines = #(data.linear or {})
+	local linearGroups = #linearProjectOrder
+	local slackDms = data.slack and data.slack.dms or {}
+	local slackChannels = data.slack and data.slack.channels or {}
+	local slackDmLines = math.min(#slackDms, 5)
+	local slackChannelLines = math.min(#slackChannels, 5)
+
+	local contentHeight = titleHeight + padding * 2 + 8
+	if linearLines > 0 then
+		contentHeight = contentHeight + sectionHeaderHeight + (linearLines * lineHeight) + (linearGroups * (groupHeaderHeight + groupSpacing)) + sectionSpacing
+	end
+	if slackChannelLines > 0 or slackDmLines > 0 then
+		contentHeight = contentHeight + sectionHeaderHeight
+		if slackChannelLines > 0 then
+			contentHeight = contentHeight + groupHeaderHeight + (slackChannelLines * lineHeight) + groupSpacing
 		end
-
-		-- Calculate dimensions
-		local font = "CaskaydiaCove Nerd Font Mono"
-		local fontSize = 13
-		local lineHeight = fontSize + 8
-		local projectHeaderHeight = fontSize + 12
-		local padding = 16
-		local titleHeight = 28
-		local projectSpacing = 8
-
-		local maxTitleLen = 0
-		for _, issue in ipairs(issues) do
-			local displayText = issue.identifier .. " " .. issue.title
-			if #displayText > maxTitleLen then
-				maxTitleLen = #displayText
-			end
+		if slackDmLines > 0 then
+			contentHeight = contentHeight + groupHeaderHeight + (slackDmLines * lineHeight)
 		end
+	end
 
-		local boxWidth = math.min(math.max(maxTitleLen * 8 + padding * 2, 400), 700)
-		local contentHeight = titleHeight + (#issues * lineHeight) + (#projectOrder * (projectHeaderHeight + projectSpacing)) + (padding * 2) + 8
+	local boxWidth = 650
 
-		-- Get screen dimensions
-		local screen = hs.screen.mainScreen()
-		local frame = screen:frame()
+	local screen = hs.screen.mainScreen()
+	local frame = screen:frame()
+	local boxX = frame.x + (frame.w - boxWidth) / 2
+	local boxY = frame.y + (frame.h - contentHeight) / 2
 
-		-- Center on screen
-		local boxX = frame.x + (frame.w - boxWidth) / 2
-		local boxY = frame.y + (frame.h - contentHeight) / 2
+	if attention.canvas then
+		attention.canvas:delete()
+	end
 
-		-- Create or reuse canvas
-		if linearTasks.canvas then
-			linearTasks.canvas:delete()
-		end
+	attention.canvas = hs.canvas.new({ x = boxX, y = boxY, w = boxWidth, h = contentHeight })
+	local c = attention.canvas
 
-		linearTasks.canvas = hs.canvas.new({ x = boxX, y = boxY, w = boxWidth, h = contentHeight })
-		local c = linearTasks.canvas
+	-- Background & border
+	c[1] = { type = "rectangle", action = "fill", fillColor = { hex = "#1a1a1a", alpha = 0.95 }, roundedRectRadii = { xRadius = 8, yRadius = 8 } }
+	c[2] = { type = "rectangle", action = "stroke", strokeColor = { hex = "#5e6ad2", alpha = 0.9 }, strokeWidth = 2, roundedRectRadii = { xRadius = 8, yRadius = 8 } }
 
-		-- Background
-		c[1] = {
-			type = "rectangle",
-			action = "fill",
-			fillColor = { hex = "#1a1a1a", alpha = 0.95 },
-			roundedRectRadii = { xRadius = 8, yRadius = 8 },
-		}
+	-- Title
+	local totalItems = linearLines + slackChannelLines + slackDmLines
+	c[3] = { type = "text", text = "Attention (" .. totalItems .. ")", textFont = font, textSize = fontSize + 2, textColor = { hex = "#5e6ad2", alpha = 1 }, textAlignment = "center", frame = { x = padding, y = padding, w = boxWidth - (padding * 2), h = titleHeight } }
+	c[4] = { type = "rectangle", action = "fill", fillColor = { hex = "#444444", alpha = 1 }, frame = { x = padding, y = padding + titleHeight, w = boxWidth - (padding * 2), h = 1 } }
 
-		-- Border
-		c[2] = {
-			type = "rectangle",
-			action = "stroke",
-			strokeColor = { hex = "#5e6ad2", alpha = 0.9 },
-			strokeWidth = 2,
-			roundedRectRadii = { xRadius = 8, yRadius = 8 },
-		}
+	local yPos = padding + titleHeight + 12
 
-		-- Title
-		c[3] = {
-			type = "text",
-			text = "Linear - In Progress (" .. #issues .. ")",
-			textFont = font,
-			textSize = fontSize + 2,
-			textColor = { hex = "#5e6ad2", alpha = 1 },
-			textAlignment = "center",
-			frame = { x = padding, y = padding, w = boxWidth - (padding * 2), h = titleHeight },
-		}
+	-- Linear section
+	if #(data.linear or {}) > 0 then
+		c[#c + 1] = { type = "text", text = "Linear", textFont = font, textSize = fontSize + 1, textColor = { hex = "#5e6ad2", alpha = 1 }, textAlignment = "left", frame = { x = padding, y = yPos, w = boxWidth - (padding * 2), h = sectionHeaderHeight } }
+		yPos = yPos + sectionHeaderHeight
 
-		-- Separator line
-		c[4] = {
-			type = "rectangle",
-			action = "fill",
-			fillColor = { hex = "#444444", alpha = 1 },
-			frame = { x = padding, y = padding + titleHeight, w = boxWidth - (padding * 2), h = 1 },
-		}
+		for _, projectName in ipairs(linearProjectOrder) do
+			c[#c + 1] = { type = "text", text = projectName, textFont = font, textSize = fontSize - 1, textColor = { hex = "#f97316", alpha = 1 }, textAlignment = "left", frame = { x = padding + 8, y = yPos, w = boxWidth - (padding * 2), h = groupHeaderHeight } }
+			yPos = yPos + groupHeaderHeight
 
-		-- Render issues grouped by project
-		local yPos = padding + titleHeight + 12
+			for _, issue in ipairs(linearProjects[projectName]) do
+				c[#c + 1] = { type = "text", text = issue.identifier, textFont = font, textSize = fontSize, textColor = { hex = "#8b8b8b", alpha = 1 }, textAlignment = "left", frame = { x = padding + 16, y = yPos, w = 80, h = lineHeight } }
 
-		for _, projectName in ipairs(projectOrder) do
-			-- Project header
-			c[#c + 1] = {
-				type = "text",
-				text = projectName,
-				textFont = font,
-				textSize = fontSize,
-				textColor = { hex = "#f97316", alpha = 1 },
-				textAlignment = "left",
-				frame = { x = padding, y = yPos, w = boxWidth - (padding * 2), h = projectHeaderHeight },
-			}
-			yPos = yPos + projectHeaderHeight
-
-			-- Project issues
-			for _, issue in ipairs(projects[projectName]) do
-				-- Issue identifier
-				c[#c + 1] = {
-					type = "text",
-					text = issue.identifier,
-					textFont = font,
-					textSize = fontSize,
-					textColor = { hex = "#8b8b8b", alpha = 1 },
-					textAlignment = "left",
-					frame = { x = padding + 12, y = yPos, w = 80, h = lineHeight },
-				}
-
-				-- Issue title (truncate if needed)
 				local title = issue.title
-				local maxChars = math.floor((boxWidth - padding * 2 - 100) / 7)
-				if #title > maxChars then
-					title = title:sub(1, maxChars - 1) .. "…"
-				end
-
-				c[#c + 1] = {
-					type = "text",
-					text = title,
-					textFont = font,
-					textSize = fontSize,
-					textColor = { hex = "#ffffff", alpha = 1 },
-					textAlignment = "left",
-					frame = { x = padding + 97, y = yPos, w = boxWidth - padding - 102, h = lineHeight },
-				}
+				local maxChars = 70
+				if #title > maxChars then title = title:sub(1, maxChars - 1) .. "…" end
+				c[#c + 1] = { type = "text", text = title, textFont = font, textSize = fontSize, textColor = { hex = "#ffffff", alpha = 1 }, textAlignment = "left", frame = { x = padding + 100, y = yPos, w = boxWidth - padding - 110, h = lineHeight } }
 
 				yPos = yPos + lineHeight
 			end
+			yPos = yPos + groupSpacing
+		end
+		yPos = yPos + sectionSpacing - groupSpacing
+	end
 
-			yPos = yPos + projectSpacing
+	-- Slack section
+	local slackDms = data.slack and data.slack.dms or {}
+	local slackChannels = data.slack and data.slack.channels or {}
+
+	if #slackChannels > 0 or #slackDms > 0 then
+		c[#c + 1] = { type = "text", text = "Slack", textFont = font, textSize = fontSize + 1, textColor = { hex = "#e01e5a", alpha = 1 }, textAlignment = "left", frame = { x = padding, y = yPos, w = boxWidth - (padding * 2), h = sectionHeaderHeight } }
+		yPos = yPos + sectionHeaderHeight
+
+		-- Channel mentions
+		if #slackChannels > 0 then
+			c[#c + 1] = { type = "text", text = "Mentions", textFont = font, textSize = fontSize - 1, textColor = { hex = "#f97316", alpha = 1 }, textAlignment = "left", frame = { x = padding + 8, y = yPos, w = boxWidth - (padding * 2), h = groupHeaderHeight } }
+			yPos = yPos + groupHeaderHeight
+
+			for i, msg in ipairs(slackChannels) do
+				if i > 5 then break end
+				local from = msg.username or "unknown"
+				local channel = msg.channel and msg.channel.name or ""
+				local text = msg.text or ""
+				text = text:gsub("<@[^>]+[^>]*>", ""):gsub("<[^>]+>", ""):gsub("%s+", " "):gsub("^%s+", "")
+				local maxChars = 45
+				if #text > maxChars then text = text:sub(1, maxChars - 1) .. "…" end
+
+				c[#c + 1] = { type = "text", text = "#" .. channel, textFont = font, textSize = fontSize, textColor = { hex = "#8b8b8b", alpha = 1 }, textAlignment = "left", frame = { x = padding + 16, y = yPos, w = 90, h = lineHeight } }
+				c[#c + 1] = { type = "text", text = from .. ": " .. text, textFont = font, textSize = fontSize, textColor = { hex = "#ffffff", alpha = 1 }, textAlignment = "left", frame = { x = padding + 110, y = yPos, w = boxWidth - padding - 120, h = lineHeight } }
+
+				yPos = yPos + lineHeight
+			end
+			yPos = yPos + groupSpacing
 		end
 
-		c:level(hs.canvas.windowLevels.overlay)
-		c:clickActivating(false)
-		c:show()
-		linearTasks.visible = true
+		-- DMs
+		if #slackDms > 0 then
+			c[#c + 1] = { type = "text", text = "DMs", textFont = font, textSize = fontSize - 1, textColor = { hex = "#f97316", alpha = 1 }, textAlignment = "left", frame = { x = padding + 8, y = yPos, w = boxWidth - (padding * 2), h = groupHeaderHeight } }
+			yPos = yPos + groupHeaderHeight
 
-		-- Auto-hide on click anywhere or after timeout
-		linearTasks.escapeWatcher = hs.eventtap.new({ hs.eventtap.event.types.keyDown }, function(event)
-			local keyCode = event:getKeyCode()
-			if keyCode == 53 then -- Escape key
-				linearTasks.hide()
-				return true
+			for i, msg in ipairs(slackDms) do
+				if i > 5 then break end
+				local from = msg.username or "unknown"
+				local text = msg.text or ""
+				text = text:gsub("<@[^>]+[^>]*>", ""):gsub("<[^>]+>", ""):gsub("%s+", " "):gsub("^%s+", "")
+				local maxChars = 50
+				if #text > maxChars then text = text:sub(1, maxChars - 1) .. "…" end
+
+				c[#c + 1] = { type = "text", text = from, textFont = font, textSize = fontSize, textColor = { hex = "#8b8b8b", alpha = 1 }, textAlignment = "left", frame = { x = padding + 16, y = yPos, w = 90, h = lineHeight } }
+				c[#c + 1] = { type = "text", text = text, textFont = font, textSize = fontSize, textColor = { hex = "#ffffff", alpha = 1 }, textAlignment = "left", frame = { x = padding + 110, y = yPos, w = boxWidth - padding - 120, h = lineHeight } }
+
+				yPos = yPos + lineHeight
 			end
-			return false
-		end)
-		linearTasks.escapeWatcher:start()
+		end
+	end
 
-		linearTasks.clickWatcher = hs.eventtap.new({ hs.eventtap.event.types.leftMouseDown }, function()
-			linearTasks.hide()
-			return false
+	c:level(hs.canvas.windowLevels.overlay)
+	c:clickActivating(false)
+	c:show()
+	attention.visible = true
+
+	-- Dismiss handlers
+	attention.escapeWatcher = hs.eventtap.new({ hs.eventtap.event.types.keyDown }, function(event)
+		if event:getKeyCode() == 53 then
+			attention.hide()
+			return true
+		end
+		return false
+	end)
+	attention.escapeWatcher:start()
+
+	attention.clickWatcher = hs.eventtap.new({ hs.eventtap.event.types.leftMouseDown }, function()
+		attention.hide()
+		return false
+	end)
+	attention.clickWatcher:start()
+end
+
+function attention.show()
+	attention.showLoader()
+	if attention.cache.linear and attention.cache.slack and not attention.needsFetch() then
+		attention.render(attention.cache)
+	else
+		attention.fetchAll(function(data)
+			attention.render(data)
 		end)
-		linearTasks.clickWatcher:start()
+	end
+end
+
+function attention.hide()
+	if attention.canvas then
+		attention.canvas:hide()
+		attention.canvas:delete()
+		attention.canvas = nil
+		attention.visible = false
+	end
+	if attention.escapeWatcher then
+		attention.escapeWatcher:stop()
+		attention.escapeWatcher = nil
+	end
+	if attention.clickWatcher then
+		attention.clickWatcher:stop()
+		attention.clickWatcher = nil
+	end
+end
+
+function attention.toggle()
+	if attention.visible then
+		attention.hide()
+	else
+		attention.show()
+	end
+end
+
+function attention.refresh()
+	attention.fetchAll(function()
+		print("Attention dashboard refreshed at " .. os.date("%Y-%m-%d %H:%M"))
 	end)
 end
 
-function linearTasks.hide()
-	if linearTasks.canvas then
-		linearTasks.canvas:hide()
-		linearTasks.canvas:delete()
-		linearTasks.canvas = nil
-		linearTasks.visible = false
+-- Schedule daily refresh at 6am
+function attention.scheduleDailyRefresh()
+	if attention.dailyTimer then
+		attention.dailyTimer:stop()
 	end
-	if linearTasks.escapeWatcher then
-		linearTasks.escapeWatcher:stop()
-		linearTasks.escapeWatcher = nil
-	end
-	if linearTasks.clickWatcher then
-		linearTasks.clickWatcher:stop()
-		linearTasks.clickWatcher = nil
-	end
+	attention.dailyTimer = hs.timer.doAt("06:00", "1d", function()
+		attention.refresh()
+	end)
 end
 
-function linearTasks.toggle()
-	if linearTasks.visible then
-		linearTasks.hide()
-	else
-		linearTasks.show()
+-- Initial fetch on startup if new day
+function attention.init()
+	attention.scheduleDailyRefresh()
+	if attention.needsFetch() then
+		attention.refresh()
 	end
 end
 
 -- Expose globally
-_G.linearTasks = linearTasks
+_G.attention = attention
+
+-- Initialize on load
+attention.init()
 
 ----------------------------------------------------------------------------------------------------
 
@@ -1044,7 +1182,7 @@ shiftCtrl("a", function()
 end)
 
 shiftCtrl("l", function()
-	linearTasks.toggle()
+	attention.toggle()
 end)
 
 -- shiftCtrl("e", function()
