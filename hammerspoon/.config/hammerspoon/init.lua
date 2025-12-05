@@ -649,6 +649,324 @@ end
 _G.taskRunner = taskRunner
 
 ----------------------------------------------------------------------------------------------------
+-- Linear Tasks Overlay
+----------------------------------------------------------------------------------------------------
+
+local linearTasks = {}
+linearTasks.canvas = nil
+linearTasks.visible = false
+
+-- Get API key from ~/.env/services/.env
+local function getLinearApiKey()
+	local envFile = os.getenv("HOME") .. "/.env/services/.env"
+	local output, status = hs.execute("grep '^LINEAR_API_KEY=' " .. envFile .. " | cut -d= -f2-")
+	if status and output and #output > 0 then
+		-- Strip whitespace and quotes
+		local value = output:gsub("^%s+", ""):gsub("%s+$", "")
+		value = value:gsub('^"', ""):gsub('"$', ""):gsub("^'", ""):gsub("'$", "")
+		if #value > 0 then
+			return value
+		end
+	end
+	return nil
+end
+
+function linearTasks.fetch(callback)
+	local apiKey = getLinearApiKey()
+	if not apiKey then
+		hs.alert.show("LINEAR_API_KEY not found in ~/.env/services/.env")
+		return
+	end
+
+	local query = [[
+		query InProgressIssues {
+			issues(filter: { state: { type: { eq: "started" } } }, first: 20) {
+				nodes {
+					identifier
+					title
+					state { name }
+					project { name }
+				}
+			}
+		}
+	]]
+
+	local headers = {
+		["Authorization"] = apiKey,
+		["Content-Type"] = "application/json",
+	}
+
+	local body = hs.json.encode({ query = query })
+
+	hs.http.asyncPost(
+		"https://api.linear.app/graphql",
+		body,
+		headers,
+		function(status, response, responseHeaders)
+			if status ~= 200 then
+				hs.alert.show("Linear API error: " .. tostring(status))
+				print("Linear error response:", response)
+				return
+			end
+
+			local data = hs.json.decode(response)
+			if data and data.data and data.data.issues then
+				local issues = data.data.issues.nodes
+				callback(issues)
+			else
+				hs.alert.show("Failed to parse Linear response")
+				print("Linear parse error:", response)
+			end
+		end
+	)
+end
+
+function linearTasks.showLoader()
+	local font = "CaskaydiaCove Nerd Font Mono"
+	local fontSize = 13
+	local padding = 16
+	local boxWidth = 300
+	local boxHeight = 80
+
+	local screen = hs.screen.mainScreen()
+	local frame = screen:frame()
+	local boxX = frame.x + (frame.w - boxWidth) / 2
+	local boxY = frame.y + (frame.h - boxHeight) / 2
+
+	if linearTasks.canvas then
+		linearTasks.canvas:delete()
+	end
+
+	linearTasks.canvas = hs.canvas.new({ x = boxX, y = boxY, w = boxWidth, h = boxHeight })
+	local c = linearTasks.canvas
+
+	c[1] = {
+		type = "rectangle",
+		action = "fill",
+		fillColor = { hex = "#1a1a1a", alpha = 0.95 },
+		roundedRectRadii = { xRadius = 8, yRadius = 8 },
+	}
+	c[2] = {
+		type = "rectangle",
+		action = "stroke",
+		strokeColor = { hex = "#5e6ad2", alpha = 0.9 },
+		strokeWidth = 2,
+		roundedRectRadii = { xRadius = 8, yRadius = 8 },
+	}
+	c[3] = {
+		type = "text",
+		text = "Loading Linear tasks...",
+		textFont = font,
+		textSize = fontSize,
+		textColor = { hex = "#5e6ad2", alpha = 1 },
+		textAlignment = "center",
+		frame = { x = padding, y = (boxHeight - fontSize) / 2, w = boxWidth - (padding * 2), h = fontSize + 4 },
+	}
+
+	c:level(hs.canvas.windowLevels.overlay)
+	c:clickActivating(false)
+	c:show()
+	linearTasks.visible = true
+end
+
+function linearTasks.show()
+	linearTasks.showLoader()
+	linearTasks.fetch(function(issues)
+		if not issues or #issues == 0 then
+			linearTasks.hide()
+			hs.alert.show("No in-progress tasks")
+			return
+		end
+
+		-- Group issues by project
+		local projects = {}
+		local projectOrder = {}
+		for _, issue in ipairs(issues) do
+			local projectName = issue.project and issue.project.name or "No Project"
+			if not projects[projectName] then
+				projects[projectName] = {}
+				table.insert(projectOrder, projectName)
+			end
+			table.insert(projects[projectName], issue)
+		end
+
+		-- Calculate dimensions
+		local font = "CaskaydiaCove Nerd Font Mono"
+		local fontSize = 13
+		local lineHeight = fontSize + 8
+		local projectHeaderHeight = fontSize + 12
+		local padding = 16
+		local titleHeight = 28
+		local projectSpacing = 8
+
+		local maxTitleLen = 0
+		for _, issue in ipairs(issues) do
+			local displayText = issue.identifier .. " " .. issue.title
+			if #displayText > maxTitleLen then
+				maxTitleLen = #displayText
+			end
+		end
+
+		local boxWidth = math.min(math.max(maxTitleLen * 8 + padding * 2, 400), 700)
+		local contentHeight = titleHeight + (#issues * lineHeight) + (#projectOrder * (projectHeaderHeight + projectSpacing)) + (padding * 2) + 8
+
+		-- Get screen dimensions
+		local screen = hs.screen.mainScreen()
+		local frame = screen:frame()
+
+		-- Center on screen
+		local boxX = frame.x + (frame.w - boxWidth) / 2
+		local boxY = frame.y + (frame.h - contentHeight) / 2
+
+		-- Create or reuse canvas
+		if linearTasks.canvas then
+			linearTasks.canvas:delete()
+		end
+
+		linearTasks.canvas = hs.canvas.new({ x = boxX, y = boxY, w = boxWidth, h = contentHeight })
+		local c = linearTasks.canvas
+
+		-- Background
+		c[1] = {
+			type = "rectangle",
+			action = "fill",
+			fillColor = { hex = "#1a1a1a", alpha = 0.95 },
+			roundedRectRadii = { xRadius = 8, yRadius = 8 },
+		}
+
+		-- Border
+		c[2] = {
+			type = "rectangle",
+			action = "stroke",
+			strokeColor = { hex = "#5e6ad2", alpha = 0.9 },
+			strokeWidth = 2,
+			roundedRectRadii = { xRadius = 8, yRadius = 8 },
+		}
+
+		-- Title
+		c[3] = {
+			type = "text",
+			text = "Linear - In Progress (" .. #issues .. ")",
+			textFont = font,
+			textSize = fontSize + 2,
+			textColor = { hex = "#5e6ad2", alpha = 1 },
+			textAlignment = "center",
+			frame = { x = padding, y = padding, w = boxWidth - (padding * 2), h = titleHeight },
+		}
+
+		-- Separator line
+		c[4] = {
+			type = "rectangle",
+			action = "fill",
+			fillColor = { hex = "#444444", alpha = 1 },
+			frame = { x = padding, y = padding + titleHeight, w = boxWidth - (padding * 2), h = 1 },
+		}
+
+		-- Render issues grouped by project
+		local yPos = padding + titleHeight + 12
+
+		for _, projectName in ipairs(projectOrder) do
+			-- Project header
+			c[#c + 1] = {
+				type = "text",
+				text = projectName,
+				textFont = font,
+				textSize = fontSize,
+				textColor = { hex = "#f97316", alpha = 1 },
+				textAlignment = "left",
+				frame = { x = padding, y = yPos, w = boxWidth - (padding * 2), h = projectHeaderHeight },
+			}
+			yPos = yPos + projectHeaderHeight
+
+			-- Project issues
+			for _, issue in ipairs(projects[projectName]) do
+				-- Issue identifier
+				c[#c + 1] = {
+					type = "text",
+					text = issue.identifier,
+					textFont = font,
+					textSize = fontSize,
+					textColor = { hex = "#8b8b8b", alpha = 1 },
+					textAlignment = "left",
+					frame = { x = padding + 12, y = yPos, w = 80, h = lineHeight },
+				}
+
+				-- Issue title (truncate if needed)
+				local title = issue.title
+				local maxChars = math.floor((boxWidth - padding * 2 - 100) / 7)
+				if #title > maxChars then
+					title = title:sub(1, maxChars - 1) .. "…"
+				end
+
+				c[#c + 1] = {
+					type = "text",
+					text = title,
+					textFont = font,
+					textSize = fontSize,
+					textColor = { hex = "#ffffff", alpha = 1 },
+					textAlignment = "left",
+					frame = { x = padding + 97, y = yPos, w = boxWidth - padding - 102, h = lineHeight },
+				}
+
+				yPos = yPos + lineHeight
+			end
+
+			yPos = yPos + projectSpacing
+		end
+
+		c:level(hs.canvas.windowLevels.overlay)
+		c:clickActivating(false)
+		c:show()
+		linearTasks.visible = true
+
+		-- Auto-hide on click anywhere or after timeout
+		linearTasks.escapeWatcher = hs.eventtap.new({ hs.eventtap.event.types.keyDown }, function(event)
+			local keyCode = event:getKeyCode()
+			if keyCode == 53 then -- Escape key
+				linearTasks.hide()
+				return true
+			end
+			return false
+		end)
+		linearTasks.escapeWatcher:start()
+
+		linearTasks.clickWatcher = hs.eventtap.new({ hs.eventtap.event.types.leftMouseDown }, function()
+			linearTasks.hide()
+			return false
+		end)
+		linearTasks.clickWatcher:start()
+	end)
+end
+
+function linearTasks.hide()
+	if linearTasks.canvas then
+		linearTasks.canvas:hide()
+		linearTasks.canvas:delete()
+		linearTasks.canvas = nil
+		linearTasks.visible = false
+	end
+	if linearTasks.escapeWatcher then
+		linearTasks.escapeWatcher:stop()
+		linearTasks.escapeWatcher = nil
+	end
+	if linearTasks.clickWatcher then
+		linearTasks.clickWatcher:stop()
+		linearTasks.clickWatcher = nil
+	end
+end
+
+function linearTasks.toggle()
+	if linearTasks.visible then
+		linearTasks.hide()
+	else
+		linearTasks.show()
+	end
+end
+
+-- Expose globally
+_G.linearTasks = linearTasks
+
+----------------------------------------------------------------------------------------------------
 
 -- Override the modal binding function to preserve case of keys (add this before loading MenuHammer)
 local originalBind = hs.hotkey.modal.bind
@@ -723,6 +1041,10 @@ shiftCtrl("a", function()
 			end
 		end, { "enable", "toggle" })
 		:start()
+end)
+
+shiftCtrl("l", function()
+	linearTasks.toggle()
 end)
 
 -- shiftCtrl("e", function()
