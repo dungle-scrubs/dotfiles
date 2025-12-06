@@ -1,82 +1,35 @@
 --- Attention.spoon/api/linear.lua
---- Linear API integration for fetching issues and details
+--- Linear API functions
 
-local utils = dofile(_G.AttentionSpoonPath .. "/utils.lua")
-
----@class AttentionLinearApi
 local M = {}
 
---- GraphQL query for fetching assigned issues
---- @private
-local ISSUES_QUERY = [[
-	query {
-		viewer {
-			assignedIssues(
-				filter: {
-					state: { type: { nin: ["completed", "canceled"] } }
-				}
-				orderBy: updatedAt
-				first: 20
-			) {
-				nodes {
-					identifier
-					title
-					state { name }
-					priority
-					project { name }
-					url
-				}
-			}
-		}
-	}
-]]
+-- Will be set by init.lua
+M.getEnvVar = nil
 
---- GraphQL query for fetching issue details with comments
---- @private
-local DETAIL_QUERY = [[
-	query IssueDetail($id: String!) {
-		issue(id: $id) {
-			identifier
-			title
-			description
-			state { name }
-			priority
-			project { name }
-			url
-			comments(first: 10) {
-				nodes {
-					body
-					user { name }
-					createdAt
-				}
-			}
-		}
-	}
-]]
-
---- Fetch all assigned issues from Linear
---- Returns issues that are not completed or canceled
---- @param callback function Callback function(issues, error)
----   - issues: Array of issue objects, or nil on error
----   - error: Error message string, or nil on success
---- @example
----   linear.fetchIssues(function(issues, err)
----     if issues then
----       for _, issue in ipairs(issues) do
----         print(issue.identifier, issue.title)
----       end
----     end
----   end)
+--- Fetch Linear in-progress issues
+--- @param callback function Callback with (issues, error)
 function M.fetchIssues(callback)
-	local apiKey = utils.getEnvVar("LINEAR_API_KEY")
+	local apiKey = M.getEnvVar("LINEAR_API_KEY")
 	if not apiKey then
 		callback(nil, "LINEAR_API_KEY not found")
 		return
 	end
 
+	local query = [[
+		query InProgressIssues {
+			issues(filter: { state: { type: { eq: "started" } } }, first: 20) {
+				nodes {
+					identifier
+					title
+					project { name }
+				}
+			}
+		}
+	]]
+
 	hs.http.asyncPost(
 		"https://api.linear.app/graphql",
-		hs.json.encode({ query = ISSUES_QUERY }),
+		hs.json.encode({ query = query }),
 		{ ["Authorization"] = apiKey, ["Content-Type"] = "application/json" },
 		function(status, response)
 			if status ~= 200 then
@@ -84,8 +37,8 @@ function M.fetchIssues(callback)
 				return
 			end
 			local data = hs.json.decode(response)
-			if data and data.data and data.data.viewer then
-				callback(data.data.viewer.assignedIssues.nodes)
+			if data and data.data and data.data.issues then
+				callback(data.data.issues.nodes)
 			else
 				callback(nil, "Failed to parse Linear response")
 			end
@@ -93,31 +46,40 @@ function M.fetchIssues(callback)
 	)
 end
 
---- Fetch detailed information for a specific issue
---- Includes description and comments
+--- Fetch Linear issue details
 --- @param identifier string The issue identifier (e.g., "PROJ-123")
---- @param callback function Callback function(issue, error)
----   - issue: Issue object with full details, or nil on error
----   - error: Error message string, or nil on success
---- @example
----   linear.fetchDetail("PROJ-123", function(issue, err)
----     if issue then
----       print(issue.description)
----       for _, comment in ipairs(issue.comments.nodes) do
----         print(comment.user.name, comment.body)
----       end
----     end
----   end)
+--- @param callback function Callback with (issue, error)
 function M.fetchDetail(identifier, callback)
-	local apiKey = utils.getEnvVar("LINEAR_API_KEY")
+	local apiKey = M.getEnvVar("LINEAR_API_KEY")
 	if not apiKey then
 		callback(nil, "LINEAR_API_KEY not found")
 		return
 	end
 
+	local query = [[
+		query IssueDetail($id: String!) {
+			issue(id: $id) {
+				identifier
+				title
+				description
+				state { name }
+				priority
+				project { name }
+				url
+				comments(first: 10) {
+					nodes {
+						body
+						user { name }
+						createdAt
+					}
+				}
+			}
+		}
+	]]
+
 	hs.http.asyncPost(
 		"https://api.linear.app/graphql",
-		hs.json.encode({ query = DETAIL_QUERY, variables = { id = identifier } }),
+		hs.json.encode({ query = query, variables = { id = identifier } }),
 		{ ["Authorization"] = apiKey, ["Content-Type"] = "application/json" },
 		function(status, response)
 			if status ~= 200 then
@@ -132,25 +94,6 @@ function M.fetchDetail(identifier, callback)
 			end
 		end
 	)
-end
-
---- Get priority label and color for a priority level
---- @param priority number Priority level (0-4, where 0 is no priority)
---- @return string label Human-readable priority label
---- @return string color Hex color code for the priority
---- @example
----   local label, color = linear.getPriorityInfo(1)
----   -- label = "Urgent", color = "#f87171"
-function M.getPriorityInfo(priority)
-	local priorities = {
-		[0] = { label = "No Priority", color = "#666666" },
-		[1] = { label = "Urgent", color = "#f87171" },
-		[2] = { label = "High", color = "#fb923c" },
-		[3] = { label = "Medium", color = "#facc15" },
-		[4] = { label = "Low", color = "#94a3b8" },
-	}
-	local info = priorities[priority] or priorities[0]
-	return info.label, info.color
 end
 
 return M

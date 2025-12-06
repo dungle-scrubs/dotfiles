@@ -107,10 +107,23 @@ function M.load(config)
 							behind = tonumber(behind) or 0
 						end
 
+						-- Get project name from cwd and truncate to 7 chars
+						local project_name = utils.basename(cwd_path)
+						if project_name and #project_name > 7 then
+							project_name = project_name:sub(1, 7) .. "…"
+						end
+
+						-- Add project name
+						if project_name and project_name ~= "" then
+							table.insert(elements, { Foreground = { Color = "#c678dd" } })
+							table.insert(elements, { Background = { Color = bg } })
+							table.insert(elements, { Text = " " .. project_name .. " " })
+						end
+
 						-- Add git icon and branch name
 						table.insert(elements, { Foreground = { Color = "#98c379" } })
 						table.insert(elements, { Background = { Color = bg } })
-						table.insert(elements, { Text = " " .. Wezterm.nerdfonts.dev_git_branch .. " " .. branch })
+						table.insert(elements, { Text = Wezterm.nerdfonts.dev_git_branch .. " " .. branch })
 
 						-- Add ahead/behind info if applicable
 						if ahead > 0 or behind > 0 then

@@ -1,24 +1,28 @@
 --- Attention.spoon/api/slack.lua
---- Slack API integration for fetching messages, threads, and user info
+--- Slack API functions
 
-local utils = dofile(_G.AttentionSpoonPath .. "/utils.lua")
-
----@class AttentionSlackApi
 local M = {}
 
---- Cache for resolved user IDs to display names
---- Shared across all API calls to avoid redundant lookups
---- @type table<string, string>
-M.userCache = {}
+-- Will be set by init.lua
+M.getEnvVar = nil
 
---- Fetch a single user's info and cache it
---- @param userId string The Slack user ID (e.g., "U1234567")
---- @param token string The Slack API token
---- @param callback function Callback function(displayName)
---- @private
+-- User cache for resolving IDs to names
+local userCache = {}
+
+--- Get a user's name from cache
+--- @param userId string The Slack user ID
+--- @return string name The user's name (or userId if not cached)
+function M.getUserName(userId)
+	return userCache[userId] or userId
+end
+
+--- Fetch a single Slack user's info
+--- @param userId string The user ID
+--- @param token string The Slack token
+--- @param callback function Callback with (name)
 local function fetchUser(userId, token, callback)
-	if M.userCache[userId] then
-		callback(M.userCache[userId])
+	if userCache[userId] then
+		callback(userCache[userId])
 		return
 	end
 
@@ -30,34 +34,26 @@ local function fetchUser(userId, token, callback)
 				local data = hs.json.decode(response)
 				if data and data.ok and data.user then
 					local name = data.user.real_name or data.user.name or userId
-					M.userCache[userId] = name
+					userCache[userId] = name
 					callback(name)
 					return
 				end
 			end
-			callback(userId) -- fallback to ID
+			callback(userId)
 		end
 	)
 end
 
---- Resolve multiple user IDs to display names
---- Fetches uncached users in parallel (up to 10 at a time)
---- @param messages table Array of message objects with 'user' field
---- @param callback function Callback function() called when all resolved
---- @private
-local function resolveUsers(messages, callback)
-	local token = utils.getEnvVar("SLACK_USER_TOKEN")
-	if not token then
-		callback()
-		return
-	end
-
-	-- Collect unique uncached user IDs
+--- Resolve user IDs to names for a list of messages
+--- @param messages table The messages containing user IDs
+--- @param token string The Slack token
+--- @param callback function Callback when done
+local function resolveUsers(messages, token, callback)
 	local userIds = {}
 	local seen = {}
 	for _, msg in ipairs(messages or {}) do
 		local uid = msg.user
-		if uid and not seen[uid] and not M.userCache[uid] then
+		if uid and not seen[uid] and not userCache[uid] then
 			seen[uid] = true
 			table.insert(userIds, uid)
 		end
@@ -68,7 +64,6 @@ local function resolveUsers(messages, callback)
 		return
 	end
 
-	-- Fetch in parallel (limit to 10)
 	local pending = math.min(#userIds, 10)
 	for i = 1, pending do
 		fetchUser(userIds[i], token, function()
@@ -80,115 +75,110 @@ local function resolveUsers(messages, callback)
 	end
 end
 
---- Get display name for a user ID from cache
---- @param userId string The Slack user ID
---- @return string name The display name, or the userId if not cached
-function M.getUserName(userId)
-	if not userId then return "unknown" end
-	return M.userCache[userId] or userId
-end
-
---- Search for Slack messages mentioning the current user
---- Combines DM search and mention search results
---- @param callback function Callback function(messages, error)
----   - messages: Array of message objects, or nil on error
----   - error: Error message string, or nil on success
---- @example
----   slack.fetchMentions(function(messages, err)
----     if messages then
----       for _, msg in ipairs(messages) do
----         print(msg.channel.name, msg.text)
----       end
----     end
----   end)
+--- Fetch Slack mentions and DMs
+--- @param callback function Callback with ({dms, channels}, error)
 function M.fetchMentions(callback)
-	local token = utils.getEnvVar("SLACK_USER_TOKEN")
+	local token = M.getEnvVar("SLACK_USER_TOKEN")
 	if not token then
 		callback(nil, "SLACK_USER_TOKEN not found")
 		return
 	end
 
-	local allMessages = {}
-	local pendingRequests = 2
-
-	local function checkComplete()
-		pendingRequests = pendingRequests - 1
-		if pendingRequests == 0 then
-			-- Sort by timestamp, newest first
-			table.sort(allMessages, function(a, b)
-				return (a.ts or "0") > (b.ts or "0")
-			end)
-			-- Limit to 15 messages
-			local limited = {}
-			for i = 1, math.min(15, #allMessages) do
-				table.insert(limited, allMessages[i])
-			end
-			callback(limited)
-		end
-	end
-
-	-- Search DMs
 	hs.http.asyncGet(
-		"https://slack.com/api/search.messages?query=in%3A%40me&count=10&sort=timestamp",
+		"https://slack.com/api/auth.test",
 		{ ["Authorization"] = "Bearer " .. token },
 		function(status, response)
-			if status == 200 then
-				local data = hs.json.decode(response)
-				if data and data.ok and data.messages and data.messages.matches then
-					for _, msg in ipairs(data.messages.matches) do
-						msg.isDM = true
-						table.insert(allMessages, msg)
-					end
-				end
+			if status ~= 200 then
+				callback(nil, "Slack auth error")
+				return
 			end
-			checkComplete()
-		end
-	)
+			local authData = hs.json.decode(response)
+			if not authData or not authData.user_id then
+				callback(nil, "Failed to get Slack user ID")
+				return
+			end
 
-	-- Search mentions
-	hs.http.asyncGet(
-		"https://slack.com/api/search.messages?query=to%3Ame&count=10&sort=timestamp",
-		{ ["Authorization"] = "Bearer " .. token },
-		function(status, response)
-			if status == 200 then
-				local data = hs.json.decode(response)
-				if data and data.ok and data.messages and data.messages.matches then
-					for _, msg in ipairs(data.messages.matches) do
-						table.insert(allMessages, msg)
-					end
+			local userId = authData.user_id
+			local results = { dms = {}, channels = {} }
+			local pending = 2
+
+			local function checkDone()
+				pending = pending - 1
+				if pending == 0 then
+					callback(results)
 				end
 			end
-			checkComplete()
+
+			local function dedupeByUser(messages)
+				local seen = {}
+				local deduped = {}
+				for _, msg in ipairs(messages or {}) do
+					local username = msg.username or "unknown"
+					if not seen[username] then
+						seen[username] = true
+						table.insert(deduped, msg)
+					end
+				end
+				return deduped
+			end
+
+			-- Fetch DMs
+			hs.http.asyncGet(
+				"https://slack.com/api/search.messages?query=to:me&count=20&sort=timestamp",
+				{ ["Authorization"] = "Bearer " .. token },
+				function(s, r)
+					if s == 200 then
+						local data = hs.json.decode(r)
+						if data and data.ok and data.messages then
+							local dms = {}
+							for _, msg in ipairs(data.messages.matches or {}) do
+								if msg.channel and msg.channel.is_im then
+									table.insert(dms, msg)
+								end
+							end
+							results.dms = dedupeByUser(dms)
+						end
+					end
+					checkDone()
+				end
+			)
+
+			-- Fetch channel @mentions
+			hs.http.asyncGet(
+				"https://slack.com/api/search.messages?query=<@" .. userId .. ">&count=20&sort=timestamp",
+				{ ["Authorization"] = "Bearer " .. token },
+				function(s, r)
+					if s == 200 then
+						local data = hs.json.decode(r)
+						if data and data.ok and data.messages then
+							local channels = {}
+							for _, msg in ipairs(data.messages.matches or {}) do
+								if msg.channel and not msg.channel.is_im then
+									table.insert(channels, msg)
+								end
+							end
+							results.channels = dedupeByUser(channels)
+						end
+					end
+					checkDone()
+				end
+			)
 		end
 	)
 end
 
---- Fetch thread replies for a specific message
+--- Fetch thread replies
 --- @param channelId string The channel ID
---- @param threadTs string The parent message timestamp
---- @param callback function Callback function(messages, error)
---- @param latest string|nil Optional: fetch messages older than this timestamp
---- @example
----   slack.fetchThread("C1234567", "1234567890.123456", function(msgs, err)
----     if msgs then
----       for _, msg in ipairs(msgs) do
----         print(msg.user, msg.text)
----       end
----     end
----   end)
-function M.fetchThread(channelId, threadTs, callback, latest)
-	local token = utils.getEnvVar("SLACK_USER_TOKEN")
+--- @param threadTs string The thread timestamp
+--- @param callback function Callback with (messages, error)
+function M.fetchThread(channelId, threadTs, callback)
+	local token = M.getEnvVar("SLACK_USER_TOKEN")
 	if not token then
 		callback(nil, "SLACK_USER_TOKEN not found")
 		return
 	end
 
-	local url = "https://slack.com/api/conversations.replies?channel="
-		.. channelId .. "&ts=" .. threadTs .. "&limit=50"
-	if latest then
-		url = url .. "&latest=" .. latest
-	end
-
+	local url = "https://slack.com/api/conversations.replies?channel=" .. channelId .. "&ts=" .. threadTs .. "&limit=50"
 	hs.http.asyncGet(
 		url,
 		{ ["Authorization"] = "Bearer " .. token },
@@ -199,7 +189,7 @@ function M.fetchThread(channelId, threadTs, callback, latest)
 			end
 			local data = hs.json.decode(response)
 			if data and data.ok and data.messages then
-				resolveUsers(data.messages, function()
+				resolveUsers(data.messages, token, function()
 					callback(data.messages)
 				end)
 			else
@@ -209,32 +199,21 @@ function M.fetchThread(channelId, threadTs, callback, latest)
 	)
 end
 
---- Fetch conversation history for a channel or DM
+--- Fetch channel history
 --- @param channelId string The channel ID
---- @param callback function Callback function(messages, error)
---- @param latest string|nil Optional: fetch messages older than this timestamp
---- @example
----   slack.fetchHistory("C1234567", function(msgs, err)
----     if msgs then
----       -- msgs are in chronological order (oldest first)
----       for _, msg in ipairs(msgs) do
----         print(msg.user, msg.text)
----       end
----     end
----   end)
-function M.fetchHistory(channelId, callback, latest)
-	local token = utils.getEnvVar("SLACK_USER_TOKEN")
+--- @param callback function Callback with (messages, error)
+--- @param oldest string|nil Optional oldest timestamp to fetch messages before
+function M.fetchHistory(channelId, callback, oldest)
+	local token = M.getEnvVar("SLACK_USER_TOKEN")
 	if not token then
 		callback(nil, "SLACK_USER_TOKEN not found")
 		return
 	end
 
-	local url = "https://slack.com/api/conversations.history?channel="
-		.. channelId .. "&limit=30"
-	if latest then
-		url = url .. "&latest=" .. latest
+	local url = "https://slack.com/api/conversations.history?channel=" .. channelId .. "&limit=30"
+	if oldest then
+		url = url .. "&latest=" .. oldest
 	end
-
 	hs.http.asyncGet(
 		url,
 		{ ["Authorization"] = "Bearer " .. token },
@@ -245,12 +224,11 @@ function M.fetchHistory(channelId, callback, latest)
 			end
 			local data = hs.json.decode(response)
 			if data and data.ok and data.messages then
-				-- Reverse to get chronological order (API returns newest first)
 				local reversed = {}
 				for i = #data.messages, 1, -1 do
 					table.insert(reversed, data.messages[i])
 				end
-				resolveUsers(reversed, function()
+				resolveUsers(reversed, token, function()
 					callback(reversed)
 				end)
 			else

@@ -1,0 +1,17 @@
+{
+  "name": "attention-webview",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/app.tsx --bundle --minify --outfile=dist/bundle.js --format=iife --target=safari14",
+    "watch": "esbuild src/app.tsx --bundle --outfile=dist/bundle.js --format=iife --target=safari14 --watch"
+  },
+  "dependencies": {
+    "preact": "^10.19.3"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0",
+    "typescript": "^5.3.3"
+  }
+}

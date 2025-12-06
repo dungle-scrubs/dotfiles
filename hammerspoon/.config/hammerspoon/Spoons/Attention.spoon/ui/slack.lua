@@ -1,39 +1,36 @@
 --- Attention.spoon/ui/slack.lua
 --- Slack message detail webview rendering
 
-local styles = dofile(_G.AttentionSpoonPath .. "/ui/styles.lua")
-local slackApi = dofile(_G.AttentionSpoonPath .. "/api/slack.lua")
+-- Use global path set by init.lua
+local spoonPath = _G.AttentionSpoonPath
+local styles = dofile(spoonPath .. "/ui/styles.lua")
 
 ---@class AttentionSlackUI
 local M = {}
 
+-- Will be set by init.lua to share the same instance
+M.slackApi = nil
+
 --- Escape HTML special characters
 --- @param text string The text to escape
 --- @return string escaped The escaped text
---- @private
 local function escapeHtml(text)
-	if not text then
-		return ""
-	end
-	local result = text:gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&gt;"):gsub('"', "&quot;"):gsub("'", "&#39;")
-	return result
+	if not text then return "" end
+	return text:gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&gt;"):gsub('"', "&quot;"):gsub("'", "&#39;")
 end
 
 --- Format Slack message text with mentions, links, and formatting
 --- @param text string The raw Slack message text
 --- @return string formatted The HTML-formatted text
---- @private
 local function formatSlackText(text)
-	if not text then
-		return ""
-	end
+	if not text then return "" end
 	-- Process Slack formatting BEFORE escaping HTML
 	-- User mentions: <@U123ABC|displayname> or <@U123ABC>
 	text = text:gsub("<@([^|>]+)|([^>]+)>", function(uid, name)
 		return "@" .. name
 	end)
 	text = text:gsub("<@([^>]+)>", function(uid)
-		local name = slackApi.getUserName(uid)
+		local name = M.slackApi.getUserName(uid)
 		return "@" .. name
 	end)
 	-- Channel links: <#C123|channel-name>
@@ -49,9 +46,14 @@ local function formatSlackText(text)
 	text = escapeHtml(text)
 
 	-- Convert our link placeholders to actual links (after escaping)
-	text = text:gsub('LINK%[([^%]]+)%]%(([^%)]+)%)', '<a href="%1" target="_blank">%2</a>')
+	-- Use onclick to post message to Hammerspoon for link handling
+	text = text:gsub('LINK%[([^%]]+)%]%(([^%)]+)%)', function(url, display)
+		return '<a href="#" class="link" data-url="' .. url .. '">' .. display .. '</a>'
+	end)
 	-- Make plain URLs clickable
-	text = text:gsub("(https?://[%w%-%./_~:/?#%[%]@!$&amp;'()*+,;=%%]+)", '<a href="%1" target="_blank">%1</a>')
+	text = text:gsub("(https?://[%w%-%./_~:/?#%[%]@!$&;'()*+,;=%%]+)", function(url)
+		return '<a href="#" class="link" data-url="' .. url .. '">' .. url .. '</a>'
+	end)
 	-- Style @mentions
 	text = text:gsub("@([%w%-_%.]+)", '<span class="mention">@%1</span>')
 	-- Convert newlines to <br>
@@ -62,11 +64,8 @@ end
 --- Format a Slack timestamp to human-readable date/time
 --- @param ts string The Slack timestamp (e.g., "1234567890.123456")
 --- @return string formatted The formatted date/time string
---- @private
 local function formatTs(ts)
-	if not ts then
-		return ""
-	end
+	if not ts then return "" end
 	local timestamp = tonumber(ts:match("^(%d+)"))
 	if timestamp then
 		return os.date("%b %d, %H:%M", timestamp)
@@ -81,16 +80,14 @@ end
 --- @param keepScrollPosition boolean|nil If true, don't scroll to bottom
 --- @param callbacks table Callback functions for actions
 --- @return hs.webview webview The rendered webview
---- @example
----   local webview = slack.renderWebview(state, msg, thread, false, {
----     onBack = function() ... end,
----     onClose = function() ... end,
----     onOpenSlack = function(permalink) ... end,
----     onChannelUp = function() ... end,
----     onLoadMore = function() ... end,
----     onThreadClick = function(threadTs) ... end,
----   })
+-- Counter to track webview instances
+local webviewInstanceId = 0
+
 function M.renderWebview(state, msg, thread, keepScrollPosition, callbacks)
+	webviewInstanceId = webviewInstanceId + 1
+	local currentInstanceId = webviewInstanceId
+	print("[SlackUI] renderWebview called - CREATING WEBVIEW #" .. currentInstanceId)
+	state.webviewInstanceId = currentInstanceId
 	callbacks = callbacks or {}
 
 	-- Store for later use
@@ -101,9 +98,7 @@ function M.renderWebview(state, msg, thread, keepScrollPosition, callbacks)
 		msg = state.currentSlackMsg
 		thread = state.currentSlackThread or {}
 	end
-	if not msg then
-		return nil
-	end
+	if not msg then return nil end
 
 	-- Store oldest timestamp for pagination
 	if thread and #thread > 0 and thread[1].ts then
@@ -158,13 +153,14 @@ function M.renderWebview(state, msg, thread, keepScrollPosition, callbacks)
 		</div>
 	</div>
 	<div class="content" id="content">
+		<div class="loading-indicator" id="loadingIndicator">Loading older messages...</div>
 ]]
 
 	-- Add messages based on view mode
 	if state.slackViewMode == "history" then
 		-- History mode: show messages with "X replies" links
 		for _, threadMsg in ipairs(thread or {}) do
-			local sender = escapeHtml(slackApi.getUserName(threadMsg.user))
+			local sender = escapeHtml(M.slackApi.getUserName(threadMsg.user))
 			local msgTime = formatTs(threadMsg.ts)
 			local msgText = formatSlackText(threadMsg.text)
 			local replyCount = threadMsg.reply_count or 0
@@ -179,11 +175,8 @@ function M.renderWebview(state, msg, thread, keepScrollPosition, callbacks)
 			<div class="message-text">]] .. msgText .. [[</div>
 ]]
 			if replyCount > 0 then
-				html = html
-					.. [[
-			<span class="thread-link" onclick="window.webkit.messageHandlers.hammerspoon.postMessage('thread:]]
-					.. threadTs
-					.. [[')">]] .. replyCount .. [[ replies</span>
+				html = html .. [[
+			<span class="thread-link" onclick="window.webkit.messageHandlers.hammerspoon.postMessage('thread:]] .. threadTs .. [[')">]] .. replyCount .. [[ replies</span>
 ]]
 			end
 			html = html .. [[
@@ -193,7 +186,7 @@ function M.renderWebview(state, msg, thread, keepScrollPosition, callbacks)
 	elseif thread and #thread > 0 then
 		-- Thread mode: show all messages
 		for i, threadMsg in ipairs(thread) do
-			local sender = escapeHtml(slackApi.getUserName(threadMsg.user))
+			local sender = escapeHtml(M.slackApi.getUserName(threadMsg.user))
 			local msgTime = formatTs(threadMsg.ts)
 			local msgText = formatSlackText(threadMsg.text)
 
@@ -245,31 +238,94 @@ function M.renderWebview(state, msg, thread, keepScrollPosition, callbacks)
 	</div>
 	<div class="footer">
 		<span class="hint"><span class="key">j/k</span> <span class="label">scroll</span></span>
+		<span class="hint"><span class="key">gg/G</span> <span class="label">top/btm</span></span>
 		<span class="hint"><span class="key">^d/^u</span> <span class="label">page</span></span>
 		<span class="hint"><span class="key">o</span> <span class="label">open</span></span>
 		<span class="hint"><span class="key">b</span> <span class="label">back</span></span>
 ]] .. (showChannelUp and [[		<span class="hint"><span class="key">u</span> <span class="label">channel</span></span>
 ]] or "") .. [[
-		<span class="hint"><span class="key">esc</span> <span class="label">close</span></span>
 	</div>
 </div>
 <script>
 var isLoadingMore = false;
+var loadMoreSentAt = 0;
+var loadingIndicator = document.getElementById('loadingIndicator');
+
 window.onload = function() {
+	console.log('[slack-webview] window.onload fired');
 	var content = document.getElementById('content');
-	]] .. (keepScrollPosition and "isLoadingMore = false;" or "content.scrollTop = content.scrollHeight;") .. [[
+	]] .. (keepScrollPosition and [[
+	// After prepending content, scroll down past the trigger zone and block immediate re-load
+	console.log('[slack-webview] keepScrollPosition=true, setting scrollTop=150');
+	isLoadingMore = true;
+	content.scrollTop = 150;
+	// Allow loading more after a brief delay
+	setTimeout(function() {
+		console.log('[slack-webview] Allowing load more after delay');
+		isLoadingMore = false;
+	}, 500);
+	]] or [[
+	console.log('[slack-webview] keepScrollPosition=false, scrolling to bottom');
+	content.scrollTop = content.scrollHeight;
+	]]) .. [[
 };
+
+// Handle link clicks
+document.addEventListener('click', function(e) {
+	var link = e.target.closest('a.link');
+	if (link) {
+		e.preventDefault();
+		var url = link.getAttribute('data-url');
+		if (url) {
+			window.webkit.messageHandlers.hammerspoon.postMessage('openUrl:' + url);
+		}
+	}
+});
+
 document.getElementById('content').addEventListener('scroll', function() {
 	var content = this;
-	if (content.scrollTop < 50 && !isLoadingMore) {
+	var now = Date.now();
+	if (content.scrollTop < 50 && !isLoadingMore && (now - loadMoreSentAt > 1000)) {
+		console.log('[slack-webview] Scroll triggered loadMore, scrollTop:', content.scrollTop);
 		isLoadingMore = true;
+		loadMoreSentAt = now;
+		loadingIndicator.classList.add('visible');
 		window.webkit.messageHandlers.hammerspoon.postMessage('loadMore');
 	}
 });
+
+var lastKeyTime = 0;
+var lastKey = '';
+
 document.addEventListener('keydown', function(e) {
 	var content = document.getElementById('content');
 	var scrollAmount = 60;
 	var pageAmount = content.clientHeight * 0.8;
+	var now = Date.now();
+
+	// Handle gg (go to top) - two g's within 500ms
+	if (e.key === 'g' && !e.shiftKey) {
+		if (lastKey === 'g' && (now - lastKeyTime) < 500) {
+			content.scrollTop = 0;
+			lastKey = '';
+			e.preventDefault();
+			return;
+		}
+		lastKey = 'g';
+		lastKeyTime = now;
+		e.preventDefault();
+		return;
+	}
+
+	// Handle G (go to bottom)
+	if (e.key === 'G' && e.shiftKey) {
+		content.scrollTop = content.scrollHeight;
+		e.preventDefault();
+		return;
+	}
+
+	// Reset g sequence on other keys
+	lastKey = '';
 
 	if (e.key === 'j') {
 		content.scrollTop += scrollAmount;
@@ -293,10 +349,16 @@ document.addEventListener('keydown', function(e) {
 		window.webkit.messageHandlers.hammerspoon.postMessage('openSlack');
 		e.preventDefault();
 	} else if (e.key === 'Escape') {
-		window.webkit.messageHandlers.hammerspoon.postMessage('close');
+		window.webkit.messageHandlers.hammerspoon.postMessage('back');
 		e.preventDefault();
 	}
 });
+
+// Function to hide loading indicator (called from Lua)
+function hideLoading() {
+	loadingIndicator.classList.remove('visible');
+	isLoadingMore = false;
+}
 </script>
 </body>
 </html>
@@ -332,120 +394,46 @@ document.addEventListener('keydown', function(e) {
 	state.webviewUC:setCallback(function(message)
 		local action = message.body
 		if action == "back" then
-			if callbacks.onBack then
-				callbacks.onBack()
-			end
+			if callbacks.onBack then callbacks.onBack() end
 		elseif action == "close" then
-			if callbacks.onClose then
-				callbacks.onClose()
-			end
+			if callbacks.onClose then callbacks.onClose() end
 		elseif action == "openSlack" then
-			if callbacks.onOpenSlack then
-				callbacks.onOpenSlack(msgPermalink)
-			end
+			if callbacks.onOpenSlack then callbacks.onOpenSlack(msgPermalink) end
 		elseif action == "channelUp" then
-			if callbacks.onChannelUp then
-				callbacks.onChannelUp()
-			end
+			if callbacks.onChannelUp then callbacks.onChannelUp() end
 		elseif action:match("^thread:") then
 			local threadTs = action:match("^thread:(.+)$")
 			if threadTs and callbacks.onThreadClick then
 				callbacks.onThreadClick(threadTs)
 			end
-		elseif action == "loadMore" then
-			if callbacks.onLoadMore then
-				callbacks.onLoadMore()
+		elseif action:match("^openUrl:") then
+			local url = action:match("^openUrl:(.+)$")
+			if url then
+				hs.urlevent.openURL(url)
 			end
+		elseif action == "loadMore" then
+			if callbacks.onLoadMore then callbacks.onLoadMore() end
 		end
 	end)
 
-	state.webview =
-		hs.webview.new({ x = boxX, y = boxY, w = boxWidth, h = boxHeight }, { developerExtrasEnabled = false }, state.webviewUC)
+	state.webview = hs.webview.new(
+		{ x = boxX, y = boxY, w = boxWidth, h = boxHeight },
+		{ developerExtrasEnabled = false },
+		state.webviewUC
+	)
 	state.webview:windowStyle({ "borderless", "closable" })
 	state.webview:level(hs.canvas.windowLevels.overlay)
 	state.webview:allowTextEntry(true)
 	state.webview:allowNewWindows(false)
-	state.webview:transparent(false)
-
-	-- Handle link clicks - open in browser instead of navigating
-	state.webview:navigationCallback(function(action, wv, navType, url)
-		if action == "navigationAction" and url and url ~= "about:blank" and not url:match("^data:") then
-			hs.urlevent.openURL(url)
-			return false
-		end
-		return true
-	end)
+	state.webview:transparent(true)
 
 	state.webview:html(html)
 	state.webview:show()
 	state.webview:bringToFront()
+	-- Make webview the key window to receive keyboard events
+	state.webview:hswindow():focus()
 	state.visible = true
 	state.canvasFrame = { x = boxX, y = boxY, w = boxWidth, h = boxHeight }
-
-	-- Create eventtap for keyboard handling
-	state.webviewKeyWatcher = hs.eventtap.new({ hs.eventtap.event.types.keyDown }, function(event)
-		local keyCode = event:getKeyCode()
-		local flags = event:getFlags()
-
-		-- Escape - close
-		if keyCode == 53 then
-			if callbacks.onClose then
-				callbacks.onClose()
-			end
-			return true
-		end
-
-		-- 'b' - back (keycode 11)
-		if keyCode == 11 and not flags.ctrl and not flags.cmd then
-			if callbacks.onBack then
-				callbacks.onBack()
-			end
-			return true
-		end
-
-		-- 'o' - open in Slack (keycode 31)
-		if keyCode == 31 and not flags.ctrl and not flags.cmd then
-			if callbacks.onOpenSlack then
-				callbacks.onOpenSlack(msgPermalink)
-			end
-			return true
-		end
-
-		-- 'u' - channel up (keycode 32) - only in thread mode
-		if keyCode == 32 and not flags.ctrl and not flags.cmd and showChannelUp then
-			if callbacks.onChannelUp then
-				callbacks.onChannelUp()
-			end
-			return true
-		end
-
-		-- 'j' - scroll down (keycode 38)
-		if keyCode == 38 and not flags.ctrl then
-			state.webview:evaluateJavaScript("document.getElementById('content').scrollTop += 60;", nil)
-			return true
-		end
-
-		-- 'k' - scroll up (keycode 40)
-		if keyCode == 40 and not flags.ctrl then
-			state.webview:evaluateJavaScript("document.getElementById('content').scrollTop -= 60;", nil)
-			return true
-		end
-
-		-- Ctrl+d - page down (keycode 2)
-		if keyCode == 2 and flags.ctrl then
-			state.webview:evaluateJavaScript("var c = document.getElementById('content'); c.scrollTop += c.clientHeight * 0.8;", nil)
-			return true
-		end
-
-		-- Ctrl+u - page up (keycode 32)
-		if keyCode == 32 and flags.ctrl then
-			state.webview:evaluateJavaScript("var c = document.getElementById('content'); c.scrollTop -= c.clientHeight * 0.8;", nil)
-			return true
-		end
-
-		return true -- block all other keys
-	end)
-	state.webviewKeyWatcher:start()
 
 	return state.webview
 end
@@ -453,22 +441,133 @@ end
 --- Close the Slack webview and clean up resources
 --- @param state table The state table
 function M.closeWebview(state)
-	if state.webviewKeyWatcher then
-		state.webviewKeyWatcher:stop()
-		state.webviewKeyWatcher = nil
-	end
+	print("[SlackUI] closeWebview called")
+	print("[SlackUI] Stack trace: " .. debug.traceback())
 	if state.webview then
 		state.webview:delete()
 		state.webview = nil
 	end
 end
 
---- Reset the loading flag in the webview (for pagination)
+--- Reset the loading flag and hide indicator in the webview (for pagination)
 --- @param state table The state table
 function M.resetLoadingFlag(state)
 	if state.webview then
-		state.webview:evaluateJavaScript("isLoadingMore = false;", nil)
+		state.webview:evaluateJavaScript("hideLoading();", function() end)
 	end
+end
+
+--- Generate HTML for a single message in history mode
+--- @param msg table The message object
+--- @return string html The HTML for the message
+local function generateMessageHtml(msg)
+	local sender = escapeHtml(M.slackApi.getUserName(msg.user))
+	local msgTime = formatTs(msg.ts)
+	local msgText = formatSlackText(msg.text)
+	local replyCount = msg.reply_count or 0
+	local threadTs = msg.thread_ts or msg.ts
+
+	local html = [[
+<div class="message">
+	<div class="message-header">
+		<span class="sender">]] .. sender .. [[</span>
+		<span class="time">]] .. msgTime .. [[</span>
+	</div>
+	<div class="message-text">]] .. msgText .. [[</div>
+]]
+	if replyCount > 0 then
+		html = html .. [[
+	<span class="thread-link" onclick="window.webkit.messageHandlers.hammerspoon.postMessage('thread:]] .. threadTs .. [[')">]] .. replyCount .. [[ replies</span>
+]]
+	end
+	html = html .. [[
+</div>
+]]
+	return html
+end
+
+--- Prepend messages to the existing webview without re-rendering
+--- @param state table The state table
+--- @param messages table The messages to prepend
+function M.prependMessages(state, messages)
+	print("[SlackUI] prependMessages called for webview #" .. tostring(state.webviewInstanceId))
+	print("[SlackUI] Global webview counter: " .. tostring(webviewInstanceId))
+	print("[SlackUI] webview exists: " .. tostring(state.webview ~= nil))
+	print("[SlackUI] messages count: " .. tostring(messages and #messages or 0))
+	if not state.webview or not messages or #messages == 0 then
+		print("[SlackUI] Early return: no webview or no messages")
+		M.resetLoadingFlag(state)
+		return
+	end
+
+	-- Generate HTML for all new messages
+	local html = ""
+	for _, msg in ipairs(messages) do
+		html = html .. generateMessageHtml(msg)
+	end
+	print("[SlackUI] Generated HTML length: " .. #html)
+
+	-- Base64 encode to avoid any escaping issues
+	local base64Html = hs.base64.encode(html)
+	print("[SlackUI] Base64 encoded, length: " .. #base64Html)
+
+	-- JavaScript to prepend messages with scroll preservation
+	-- Uses a technique that anchors to the first visible message
+	local js = [[
+		(function() {
+			try {
+				var content = document.getElementById('content');
+				var loadingIndicator = document.getElementById('loadingIndicator');
+
+				if (!content) return 'error: no content';
+				if (!loadingIndicator) return 'error: no indicator';
+
+				// Find the first visible message BEFORE we insert anything
+				var messages = content.querySelectorAll('.message');
+				var firstVisibleMsg = null;
+				var firstVisibleOffset = 0;
+				for (var i = 0; i < messages.length; i++) {
+					var msg = messages[i];
+					var rect = msg.getBoundingClientRect();
+					var contentRect = content.getBoundingClientRect();
+					if (rect.top >= contentRect.top) {
+						firstVisibleMsg = msg;
+						firstVisibleOffset = rect.top - contentRect.top;
+						break;
+					}
+				}
+
+				// Decode and insert new messages
+				var html = atob(']] .. base64Html .. [[');
+				loadingIndicator.insertAdjacentHTML('afterend', html);
+
+				// Scroll to keep the first visible message in the same position
+				if (firstVisibleMsg) {
+					var newRect = firstVisibleMsg.getBoundingClientRect();
+					var newContentRect = content.getBoundingClientRect();
+					var currentOffset = newRect.top - newContentRect.top;
+					var adjustment = currentOffset - firstVisibleOffset;
+					content.scrollTop += adjustment;
+				}
+
+				hideLoading();
+				return 'success';
+			} catch(e) {
+				return 'error: ' + e.message;
+			}
+		})();
+	]]
+
+	print("[SlackUI] About to call evaluateJavaScript")
+	state.webview:evaluateJavaScript(js, function(result, err)
+		if err then
+			print("[SlackUI] JS error:", hs.inspect(err))
+		else
+			print("[SlackUI] JS result:", tostring(result))
+		end
+		print("[SlackUI] evaluateJavaScript callback completed")
+	end)
+	print("[SlackUI] evaluateJavaScript called (async)")
 end
 
 return M
