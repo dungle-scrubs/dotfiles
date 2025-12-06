@@ -1,7 +1,7 @@
 --- Attention.spoon/ui/styles.lua
 --- Shared styles, colors, and CSS for the Attention dashboard
---- @module ui.styles
 
+---@class AttentionStyles
 local M = {}
 
 --- Color palette used throughout the UI

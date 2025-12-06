@@ -1,8 +1,8 @@
 --- Attention.spoon/state.lua
 --- State management for the Attention dashboard
 --- Centralizes all mutable state to make it easier to track and debug
---- @module state
 
+---@class AttentionState
 local M = {}
 
 --- Initialize or reset all state to defaults

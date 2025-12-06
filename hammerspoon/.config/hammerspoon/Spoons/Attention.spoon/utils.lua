@@ -1,7 +1,7 @@
 --- Attention.spoon/utils.lua
 --- Utility functions for the Attention dashboard
---- @module utils
 
+---@class AttentionUtils
 local M = {}
 
 --- Read an environment variable from ~/.env/services/.env

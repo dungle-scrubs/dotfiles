@@ -1,9 +1,9 @@
 --- Attention.spoon/api/linear.lua
 --- Linear API integration for fetching issues and details
---- @module api.linear
 
-local utils = require("Spoons.Attention.spoon.utils")
+local utils = dofile(_G.AttentionSpoonPath .. "/utils.lua")
 
+---@class AttentionLinearApi
 local M = {}
 
 --- GraphQL query for fetching assigned issues

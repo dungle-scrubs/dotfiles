@@ -1,9 +1,9 @@
 --- Attention.spoon/api/slack.lua
 --- Slack API integration for fetching messages, threads, and user info
---- @module api.slack
 
-local utils = require("Spoons.Attention.spoon.utils")
+local utils = dofile(_G.AttentionSpoonPath .. "/utils.lua")
 
+---@class AttentionSlackApi
 local M = {}
 
 --- Cache for resolved user IDs to display names
