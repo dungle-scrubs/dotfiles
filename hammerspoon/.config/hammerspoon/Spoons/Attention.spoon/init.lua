@@ -407,7 +407,9 @@ end
 --- @return Attention self
 function obj:show()
 	showLoader()
-	if state.cache.linear and state.cache.slack and not self:needsFetch() then
+	local hasCache = state.cache.linear and state.cache.slack
+		and (state.cache.slack.dms or state.cache.slack.channels)
+	if hasCache and not self:needsFetch() then
 		renderMain()
 	else
 		self:fetchAll(function(data)
@@ -480,7 +482,17 @@ function obj:fetchAll(callback)
 	end)
 
 	slackApi.fetchMentions(function(messages, err)
-		results.slack = messages or {}
+		-- Split messages into DMs and channel mentions
+		local dms = {}
+		local channels = {}
+		for _, msg in ipairs(messages or {}) do
+			if msg.isDM or (msg.channel and msg.channel.is_im) then
+				table.insert(dms, msg)
+			else
+				table.insert(channels, msg)
+			end
+		end
+		results.slack = { dms = dms, channels = channels }
 		checkComplete()
 	end)
 
