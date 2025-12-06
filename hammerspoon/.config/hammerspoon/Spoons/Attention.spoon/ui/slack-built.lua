@@ -443,17 +443,24 @@ function M.switchView(state, viewMode, messages, showLoading)
 				}
 			}
 
-			// Update footer hints
+			// Update footer hints - find existing channel hint by content, not position
 			var footer = document.querySelector('.footer');
 			if (footer) {
-				var channelHint = footer.querySelector('.hint:last-child');
-				if (channelHint && channelHint.textContent.includes('channel')) {
-					if (!%s) channelHint.remove();
-				} else if (%s) {
-					var hint = document.createElement('span');
-					hint.className = 'hint';
-					hint.innerHTML = '<span class="key">u</span> <span class="label">channel</span>';
-					footer.appendChild(hint);
+				var existingChannelHint = null;
+				footer.querySelectorAll('.hint').forEach(function(h) {
+					if (h.textContent.includes('channel')) existingChannelHint = h;
+				});
+				if (%s) {
+					// Should show channel hint - add only if not exists
+					if (!existingChannelHint) {
+						var hint = document.createElement('span');
+						hint.className = 'hint';
+						hint.innerHTML = '<span class="key">u</span> <span class="label">channel</span>';
+						footer.appendChild(hint);
+					}
+				} else {
+					// Should hide channel hint - remove if exists
+					if (existingChannelHint) existingChannelHint.remove();
 				}
 			}
 
@@ -469,8 +476,7 @@ function M.switchView(state, viewMode, messages, showLoading)
 		showChannelUp and "true" or "false", -- window.appState.showChannelUp
 		titleText:gsub("'", "\\'"), -- title.textContent (escape single quotes)
 		showChannelUp and "true" or "false", -- show channelUp button
-		showChannelUp and "true" or "false", -- remove channel hint
-		showChannelUp and "true" or "false", -- add channel hint
+		showChannelUp and "true" or "false", -- footer channel hint condition
 		jsonStr -- updateMessages
 	)
 

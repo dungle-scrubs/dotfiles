@@ -1,7 +1,148 @@
 import { render } from 'preact';
 import { useState, useEffect, useRef, useCallback } from 'preact/hooks';
 
+// =============================================================================
+// Vim-style Hint System (reusable for any clickable elements)
+// =============================================================================
+
+// Generate hint labels: a-z, then aa-az, ba-bz, etc.
+const generateHintLabels = (count: number): string[] => {
+  const labels: string[] = [];
+  const chars = 'asdfghjklqwertyuiopzxcvbnm'; // Home row first for ergonomics
+
+  // First pass: single characters
+  for (let i = 0; i < Math.min(count, chars.length); i++) {
+    labels.push(chars[i]);
+  }
+
+  // Second pass: two-character combinations if needed
+  if (count > chars.length) {
+    for (let i = 0; i < chars.length && labels.length < count; i++) {
+      for (let j = 0; j < chars.length && labels.length < count; j++) {
+        labels.push(chars[i] + chars[j]);
+      }
+    }
+  }
+
+  return labels;
+};
+
+// Global hint state
+interface HintTarget {
+  label: string;
+  element: HTMLElement;
+  action: () => void;
+}
+
+let hintTargets: HintTarget[] = [];
+let hintBuffer = '';
+let hintOverlay: HTMLElement | null = null;
+
+// Update hint labels on thread links
+const updateHintLabels = () => {
+  // Find all thread links
+  const threadLinks = document.querySelectorAll('.thread-link');
+  const labels = generateHintLabels(threadLinks.length);
+
+  hintTargets = [];
+
+  threadLinks.forEach((link, index) => {
+    const label = labels[index];
+    const el = link as HTMLElement;
+
+    // Add or update hint badge
+    let badge = el.querySelector('.hint-badge') as HTMLElement;
+    if (!badge) {
+      badge = document.createElement('span');
+      badge.className = 'hint-badge';
+      el.appendChild(badge);
+    }
+    badge.textContent = label;
+    badge.dataset.full = label;
+
+    // Store target info
+    const threadTs = el.dataset.threadTs || el.getAttribute('data-thread-ts');
+    hintTargets.push({
+      label,
+      element: el,
+      action: () => {
+        if (threadTs) {
+          postMessage('thread:' + threadTs);
+        } else {
+          el.click();
+        }
+      }
+    });
+  });
+};
+
+// Handle hint input
+const handleHintInput = (key: string): boolean => {
+  if (!/^[a-z]$/i.test(key)) {
+    hintBuffer = '';
+    updateHintHighlights();
+    return false;
+  }
+
+  hintBuffer += key.toLowerCase();
+
+  // Find exact match
+  const exactMatch = hintTargets.find(t => t.label === hintBuffer);
+  if (exactMatch) {
+    hintBuffer = '';
+    updateHintHighlights();
+    exactMatch.action();
+    return true;
+  }
+
+  // Find partial matches
+  const partialMatches = hintTargets.filter(t => t.label.startsWith(hintBuffer));
+  if (partialMatches.length === 0) {
+    // No matches, reset
+    hintBuffer = '';
+    updateHintHighlights();
+    return false;
+  }
+
+  // Update highlights to show matched portion
+  updateHintHighlights();
+  return true;
+};
+
+// Update hint badge highlights based on current buffer
+const updateHintHighlights = () => {
+  hintTargets.forEach(target => {
+    const badge = target.element.querySelector('.hint-badge') as HTMLElement;
+    if (!badge) return;
+
+    if (hintBuffer && target.label.startsWith(hintBuffer)) {
+      // Show matched/unmatched portions
+      const matched = target.label.substring(0, hintBuffer.length);
+      const remaining = target.label.substring(hintBuffer.length);
+      badge.innerHTML = `<span class="hint-matched">${matched}</span>${remaining}`;
+      badge.classList.add('hint-active');
+    } else {
+      badge.textContent = target.label;
+      badge.classList.remove('hint-active');
+      if (hintBuffer) {
+        badge.classList.add('hint-dimmed');
+      } else {
+        badge.classList.remove('hint-dimmed');
+      }
+    }
+  });
+};
+
+// Reset hint state
+const resetHints = () => {
+  hintBuffer = '';
+  updateHintHighlights();
+};
+
+// =============================================================================
 // Types
+// =============================================================================
+
 interface Message {
   id: string;
   user: string;
@@ -73,7 +214,7 @@ const MessageComponent = ({ msg, onThreadClick }: { msg: Message; onThreadClick:
         dangerouslySetInnerHTML={{ __html: formatText(msg.text) }}
       />
       {showReplies && (
-        <span class="thread-link" onClick={() => onThreadClick(msg.threadTs)}>
+        <span class="thread-link" data-thread-ts={msg.threadTs} onClick={() => onThreadClick(msg.threadTs)}>
           {msg.replyCount} replies
         </span>
       )}
@@ -242,6 +383,16 @@ const App = () => {
     return () => document.removeEventListener('click', handleClick);
   }, []);
 
+  // Update hint labels when messages change
+  useEffect(() => {
+    if (!isInitialLoading && messages.length > 0) {
+      // Small delay to ensure DOM is updated
+      requestAnimationFrame(() => {
+        updateHintLabels();
+      });
+    }
+  }, [messages, isInitialLoading]);
+
   // Render messages based on view mode
   const renderMessages = () => {
     if (window.appState.viewMode === 'thread' && messages.length > 1) {
@@ -279,6 +430,23 @@ const App = () => {
 // Keyboard handling (outside React for performance)
 let lastKeyTime = 0;
 let lastKey = '';
+let hintModeActive = false;
+
+// Enter/exit hint mode
+const enterHintMode = () => {
+  if (hintTargets.length === 0) return;
+  hintModeActive = true;
+  hintBuffer = '';
+  document.body.classList.add('hint-mode');
+  updateHintHighlights();
+};
+
+const exitHintMode = () => {
+  hintModeActive = false;
+  hintBuffer = '';
+  document.body.classList.remove('hint-mode');
+  updateHintHighlights();
+};
 
 document.addEventListener('keydown', (e) => {
   const content = document.getElementById('content');
@@ -287,6 +455,40 @@ document.addEventListener('keydown', (e) => {
   const scrollAmount = 60;
   const pageAmount = content.clientHeight * 0.8;
   const now = Date.now();
+
+  // Handle hint mode
+  if (hintModeActive) {
+    if (e.key === 'Escape') {
+      exitHintMode();
+      e.preventDefault();
+      return;
+    }
+    if (/^[a-z]$/i.test(e.key)) {
+      const handled = handleHintInput(e.key);
+      if (handled) {
+        // Check if we triggered an action (buffer was reset)
+        if (hintBuffer === '') {
+          exitHintMode();
+        }
+      } else {
+        // No matches, exit hint mode
+        exitHintMode();
+      }
+      e.preventDefault();
+      return;
+    }
+    // Any other key exits hint mode
+    exitHintMode();
+  }
+
+  // Enter hint mode with 'f' (only in history view with thread links)
+  if (e.key === 'f' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    if (window.appState.viewMode === 'history' && hintTargets.length > 0) {
+      enterHintMode();
+      e.preventDefault();
+      return;
+    }
+  }
 
   // Handle gg (go to top)
   if (e.key === 'g' && !e.shiftKey) {

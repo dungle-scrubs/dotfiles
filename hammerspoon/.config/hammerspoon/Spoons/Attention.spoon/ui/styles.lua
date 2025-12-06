@@ -153,6 +153,41 @@ body {
 	display: inline-block;
 }
 .thread-link:hover { text-decoration: underline; }
+.hint-badge {
+	display: inline-block;
+	margin-left: 8px;
+	padding: 1px 4px;
+	background: ]] .. c.bgSecondary .. [[;
+	border: 1px solid ]] .. c.borderMedium .. [[;
+	border-radius: 3px;
+	font-size: 11px;
+	font-weight: bold;
+	color: ]] .. c.textMuted .. [[;
+	text-transform: uppercase;
+	vertical-align: middle;
+	opacity: 0.6;
+	transition: all 0.15s ease;
+}
+body.hint-mode .hint-badge {
+	opacity: 1;
+	background: ]] .. c.accentLinear .. [[;
+	border-color: ]] .. c.accentLinear .. [[;
+	color: ]] .. c.textPrimary .. [[;
+}
+body.hint-mode .hint-badge.hint-dimmed {
+	opacity: 0.3;
+	background: ]] .. c.bgSecondary .. [[;
+	border-color: ]] .. c.borderMedium .. [[;
+	color: ]] .. c.textMuted .. [[;
+}
+body.hint-mode .hint-badge.hint-active {
+	background: ]] .. c.accentSlack .. [[;
+	border-color: ]] .. c.accentSlack .. [[;
+}
+.hint-matched {
+	color: ]] .. c.textPrimary .. [[;
+	opacity: 0.6;
+}
 .footer {
 	display: flex;
 	gap: 24px;
