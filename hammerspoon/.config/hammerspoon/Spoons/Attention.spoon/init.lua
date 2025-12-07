@@ -1,35 +1,50 @@
 --- Attention.spoon
 --- Unified dashboard for Linear issues and Slack messages
+--- Organized by Project with search bar
 
 local obj = {}
 obj.__index = obj
 
 obj.name = "Attention"
-obj.version = "1.0.0"
+obj.version = "2.0.0"
 obj.author = "Kevin"
 obj.license = "MIT"
 
 -- Get spoon path for requires
 local spoonPath = hs.spoons.scriptPath()
 _G.AttentionSpoonPath = spoonPath
+
+-- Load modules
 local utils = dofile(spoonPath .. "/utils.lua")
+local config = dofile(spoonPath .. "/config.lua")
 local linearApi = dofile(spoonPath .. "/api/linear.lua")
 linearApi.getEnvVar = utils.getEnvVar
 local slackApi = dofile(spoonPath .. "/api/slack.lua")
 slackApi.getEnvVar = utils.getEnvVar
+local calendarApi = dofile(spoonPath .. "/api/calendar.lua")
+local notionApi = dofile(spoonPath .. "/api/notion.lua")
+notionApi.getEnvVar = utils.getEnvVar
+local fetch = dofile(spoonPath .. "/fetch.lua")
+local search = dofile(spoonPath .. "/search.lua")
 local styles = dofile(spoonPath .. "/ui/styles.lua")
--- Use built Preact UI for smooth updates
 local slackUI = dofile(spoonPath .. "/ui/slack-built.lua")
-slackUI.slackApi = slackApi  -- Share slackApi instance for user cache
+slackUI.slackApi = slackApi
+
+-- Wire up fetch module dependencies
+fetch.config = config
+fetch.linearApi = linearApi
+fetch.slackApi = slackApi
+fetch.calendarApi = calendarApi
+fetch.notionApi = notionApi
 
 -- State
 obj.canvas = nil
 obj.visible = false
-obj.cache = { linear = nil, slack = nil }
+obj.cache = { projects = {}, calendar = {} }
 obj.lastFetchDate = nil
 obj.dailyTimer = nil
 obj.clickableItems = {}
-obj.currentView = "main" -- "main", "linear-detail", or "slack-detail"
+obj.currentView = "main"
 obj.canvasFrame = nil
 obj.hoveredIndex = nil
 obj.hoverWatcher = nil
@@ -44,36 +59,23 @@ obj.currentSlackMsg = nil
 obj.currentSlackThread = nil
 obj.currentSlackChannel = nil
 obj.slackViewMode = "thread"
-obj.slackHistoryCache = nil  -- Cache history when drilling into thread
+obj.slackHistoryCache = nil
+
+-- Search state
+obj.searchQuery = ""
+obj.activeFilter = ""
+obj.searchMode = nil  -- nil = default, "search" = fuzzy search, "llm" = LLM webview search
 
 -- Cursor stubs
 local function setHandCursor() end
 local function resetCursor() end
 
--- Fetch all sources
+-- Fetch all sources using new orchestrator
 function obj:fetchAll(callback)
-	local results = { linear = nil, slack = nil }
-	local pending = 2
-
-	local function checkDone()
-		pending = pending - 1
-		if pending == 0 then
-			self.cache = results
-			self.lastFetchDate = os.date("%Y-%m-%d")
-			callback(results)
-		end
-	end
-
-	linearApi.fetchIssues(function(data, err)
-		results.linear = data or {}
-		if err then print("Linear fetch error:", err) end
-		checkDone()
-	end)
-
-	slackApi.fetchMentions(function(data, err)
-		results.slack = data or {}
-		if err then print("Slack fetch error:", err) end
-		checkDone()
+	fetch.fetchAll(function(data)
+		self.cache = data
+		self.lastFetchDate = os.date("%Y-%m-%d")
+		callback(data)
 	end)
 end
 
@@ -152,47 +154,126 @@ function obj:render(data)
 	local sectionHeaderHeight = fontSize + 16
 	local groupHeaderHeight = fontSize + 12
 	local padding = 24
-	local titleHeight = 36
-	local sectionSpacing = 20
+	local searchBarHeight = 40
+	local sectionSpacing = 16
 	local groupSpacing = 8
 
-	-- Group Linear by project
-	local linearProjects = {}
-	local linearProjectOrder = {}
-	for _, issue in ipairs(data.linear or {}) do
-		local projectName = issue.project and issue.project.name or "No Project"
-		if not linearProjects[projectName] then
-			linearProjects[projectName] = {}
-			table.insert(linearProjectOrder, projectName)
+	-- Apply search filter if active
+	local displayData = data
+	if self.activeFilter and self.activeFilter ~= "" then
+		displayData = search.filterAll(data, self.activeFilter)
+	end
+
+	-- Get projects in order from config
+	local projects = fetch.getProjectsInOrder(displayData)
+	local calendarEvents = displayData.calendar or {}
+
+	-- Group calendar events by date
+	local calendarByDate, calendarDateOrder = calendarApi.groupByDate(calendarEvents)
+
+	-- Two-column layout setup
+	local boxWidth = 1400
+	local columnGap = 32
+	local columnWidth = (boxWidth - padding * 2 - columnGap) / 2
+	local integrationHeaderHeight = fontSize + 12  -- H3 level
+	local subHeaderHeight = fontSize + 8  -- H4 level
+
+	-- Helper to calculate height for a project
+	local function calcProjectHeight(project)
+		local h = sectionHeaderHeight + 6  -- H2: Project name + margin
+		local linearCount = #(project.data.linear or {})
+		local notionCount = #(project.data.notion or {})
+		local slackChannels = project.data.slack and project.data.slack.channels or {}
+		local slackDms = project.data.slack and project.data.slack.dms or {}
+		local slackCount = #slackChannels + #slackDms
+
+		if linearCount > 0 then
+			h = h + integrationHeaderHeight + (linearCount * lineHeight) + groupSpacing
 		end
-		table.insert(linearProjects[projectName], issue)
+		if notionCount > 0 then
+			h = h + integrationHeaderHeight + (notionCount * lineHeight) + groupSpacing
+		end
+		if slackCount > 0 then
+			h = h + integrationHeaderHeight
+			if #slackChannels > 0 then
+				h = h + subHeaderHeight + (math.min(#slackChannels, 5) * lineHeight) + groupSpacing
+			end
+			if #slackDms > 0 then
+				h = h + subHeaderHeight + (math.min(#slackDms, 5) * lineHeight) + groupSpacing
+			end
+		end
+		if linearCount == 0 and notionCount == 0 and slackCount == 0 then
+			h = h + lineHeight
+		end
+		h = h + sectionSpacing
+		return h
 	end
 
-	local linearLines = #(data.linear or {})
-	local linearGroups = #linearProjectOrder
-	local slackDms = data.slack and data.slack.dms or {}
-	local slackChannels = data.slack and data.slack.channels or {}
-	local slackDmLines = math.min(#slackDms, 5)
-	local slackChannelLines = math.min(#slackChannels, 5)
+	-- Split projects into two columns
+	-- When filtering: distribute evenly for natural flow
+	-- When not filtering: Fuse on left, others on right
+	local leftProjects = {}
+	local rightProjects = {}
+	local hasActiveFilter = self.activeFilter and self.activeFilter ~= ""
 
-	local contentHeight = titleHeight + padding * 2 + 16
-	if linearLines > 0 then
-		contentHeight = contentHeight + sectionHeaderHeight + (linearLines * lineHeight) + (linearGroups * (groupHeaderHeight + groupSpacing)) + sectionSpacing
+	if hasActiveFilter then
+		-- Collect only projects with items, then distribute evenly
+		local activeProjects = {}
+		for _, project in ipairs(projects) do
+			if search.projectHasItems(project.data) then
+				table.insert(activeProjects, project)
+			end
+		end
+		-- Distribute evenly between columns
+		for i, project in ipairs(activeProjects) do
+			if i % 2 == 1 then
+				table.insert(leftProjects, project)
+			else
+				table.insert(rightProjects, project)
+			end
+		end
+	else
+		-- Default: Fuse on left, others on right
+		for _, project in ipairs(projects) do
+			if project.id == "fuse" then
+				table.insert(leftProjects, project)
+			else
+				table.insert(rightProjects, project)
+			end
+		end
 	end
-	if slackChannelLines > 0 or slackDmLines > 0 then
+
+	-- Calculate column heights
+	local leftHeight = 0
+	for _, project in ipairs(leftProjects) do
+		leftHeight = leftHeight + calcProjectHeight(project)
+	end
+	local rightHeight = 0
+	for _, project in ipairs(rightProjects) do
+		rightHeight = rightHeight + calcProjectHeight(project)
+	end
+
+	-- Calculate content height
+	local contentHeight = padding + searchBarHeight + sectionSpacing
+
+	-- Calendar section height (full width)
+	if #calendarEvents > 0 then
 		contentHeight = contentHeight + sectionHeaderHeight
-		if slackChannelLines > 0 then
-			contentHeight = contentHeight + groupHeaderHeight + (slackChannelLines * lineHeight) + groupSpacing
+		for _, dateStr in ipairs(calendarDateOrder) do
+			contentHeight = contentHeight + groupHeaderHeight
+			contentHeight = contentHeight + (#calendarByDate[dateStr] * lineHeight)
 		end
-		if slackDmLines > 0 then
-			contentHeight = contentHeight + groupHeaderHeight + (slackDmLines * lineHeight)
-		end
+		contentHeight = contentHeight + sectionSpacing
 	end
 
-	local boxWidth = 900
-
+	-- Projects in two columns - use max height
+	contentHeight = contentHeight + math.max(leftHeight, rightHeight)
+	contentHeight = contentHeight + padding
 	local screen = hs.screen.mainScreen()
 	local frame = screen:frame()
+	local maxHeight = frame.h - 100
+	contentHeight = math.min(contentHeight, maxHeight)
+
 	local boxX = frame.x + (frame.w - boxWidth) / 2
 	local boxY = frame.y + (frame.h - contentHeight) / 2
 
@@ -205,137 +286,288 @@ function obj:render(data)
 	self.lastCanvasSize = { w = boxWidth, h = contentHeight }
 	local c = self.canvas
 
+	-- Background
 	c[1] = { type = "rectangle", action = "fill", fillColor = { hex = "#1a1a1a", alpha = 0.95 }, roundedRectRadii = { xRadius = 10, yRadius = 10 } }
 	c[2] = { type = "rectangle", action = "stroke", strokeColor = { hex = "#5e6ad2", alpha = 0.9 }, strokeWidth = 2, roundedRectRadii = { xRadius = 10, yRadius = 10 } }
 
-	local totalItems = linearLines + slackChannelLines + slackDmLines
-	c[3] = { type = "text", text = "Attention (" .. totalItems .. ")", textFont = font, textSize = fontSize + 4, textColor = { hex = "#5e6ad2", alpha = 1 }, textAlignment = "center", frame = { x = padding, y = padding, w = boxWidth - (padding * 2), h = titleHeight } }
-	c[4] = { type = "rectangle", action = "fill", fillColor = { hex = "#444444", alpha = 1 }, frame = { x = padding, y = padding + titleHeight, w = boxWidth - (padding * 2), h = 1 } }
-	c[5] = { type = "rectangle", action = "fill", fillColor = { hex = "#ffffff", alpha = 0 }, frame = { x = 0, y = 0, w = 0, h = 0 } }
+	-- Search bar
+	local searchY = padding
+	local searchText = self.searchQuery ~= "" and self.searchQuery or (self.activeFilter ~= "" and self.activeFilter or "")
+	local searchPlaceholder, searchColor, borderColor
+	if self.searchMode == "search" then
+		searchPlaceholder = searchText ~= "" and searchText or ""
+		searchColor = "#e0e0e0"
+		borderColor = "#f97316"  -- Orange when search mode active
+	elseif self.searchMode == "llm" then
+		searchPlaceholder = searchText ~= "" and searchText or ""
+		searchColor = "#e0e0e0"
+		borderColor = "#8b5cf6"  -- Purple for LLM mode
+	elseif self.activeFilter ~= "" then
+		searchPlaceholder = self.activeFilter
+		searchColor = "#f97316"  -- Orange for active filter text
+		borderColor = "#f97316"
+	else
+		searchPlaceholder = "[s] search  /  [S] AI"
+		searchColor = "#555555"
+		borderColor = "#333333"
+	end
 
-	local yPos = padding + titleHeight + 16
+	-- Search bar background
+	c[#c + 1] = { type = "rectangle", action = "fill", fillColor = { hex = "#252525", alpha = 1 }, roundedRectRadii = { xRadius = 6, yRadius = 6 }, frame = { x = padding, y = searchY, w = boxWidth - padding * 2, h = searchBarHeight - 8 } }
+	c[#c + 1] = { type = "rectangle", action = "stroke", strokeColor = { hex = borderColor, alpha = 0.6 }, strokeWidth = 1, roundedRectRadii = { xRadius = 6, yRadius = 6 }, frame = { x = padding, y = searchY, w = boxWidth - padding * 2, h = searchBarHeight - 8 } }
+	c[#c + 1] = { type = "text", text = searchPlaceholder, textFont = font, textSize = fontSize, textColor = { hex = searchColor, alpha = 1 }, textAlignment = "left", frame = { x = padding + 12, y = searchY + 6, w = boxWidth - padding * 2 - 24, h = fontSize + 4 } }
 
-	-- Linear section
-	if #(data.linear or {}) > 0 then
-		c[#c + 1] = { type = "text", text = "Linear", textFont = font, textSize = fontSize + 2, textColor = { hex = "#5e6ad2", alpha = 1 }, textAlignment = "left", frame = { x = padding, y = yPos, w = boxWidth - (padding * 2), h = sectionHeaderHeight } }
+	-- Hover placeholder
+	c[#c + 1] = { type = "rectangle", action = "fill", fillColor = { hex = "#ffffff", alpha = 0 }, frame = { x = 0, y = 0, w = 0, h = 0 } }
+
+	local yPos = padding + searchBarHeight + sectionSpacing
+
+	-- Calendar section
+	if #calendarEvents > 0 then
+		c[#c + 1] = { type = "text", text = "Calendar", textFont = font, textSize = fontSize + 2, textColor = { hex = "#10b981", alpha = 1 }, textAlignment = "left", frame = { x = padding, y = yPos, w = boxWidth - padding * 2, h = sectionHeaderHeight } }
 		yPos = yPos + sectionHeaderHeight
 
-		for _, projectName in ipairs(linearProjectOrder) do
-			c[#c + 1] = { type = "text", text = projectName, textFont = font, textSize = fontSize, textColor = { hex = "#f97316", alpha = 1 }, textAlignment = "left", frame = { x = padding + 12, y = yPos, w = boxWidth - (padding * 2), h = groupHeaderHeight } }
+		for _, dateStr in ipairs(calendarDateOrder) do
+			local dateLabel = calendarApi.formatDate(dateStr)
+			c[#c + 1] = { type = "text", text = dateLabel, textFont = font, textSize = fontSize, textColor = { hex = "#f97316", alpha = 1 }, textAlignment = "left", frame = { x = padding + 12, y = yPos, w = boxWidth - padding * 2, h = groupHeaderHeight } }
 			yPos = yPos + groupHeaderHeight
 
-			for _, issue in ipairs(linearProjects[projectName]) do
+			for _, event in ipairs(calendarByDate[dateStr]) do
+				itemIndex = itemIndex + 1
+				local shortcut = utils.getShortcutKey(itemIndex)
+
+				if event.meetingUrl then
+					table.insert(self.clickableItems, {
+						type = "calendar",
+						y = yPos,
+						h = lineHeight,
+						x = padding,
+						w = boxWidth - padding * 2,
+						data = event,
+						key = shortcut
+					})
+					if shortcut then self.keyMap[shortcut] = #self.clickableItems end
+				end
+
+				local timeDisplay = event.displayTime or ""
+				local title = event.title or ""
+				local maxTitleChars = 50
+				if #title > maxTitleChars then title = title:sub(1, maxTitleChars - 1) .. "..." end
+
+				local shortcutDisplay = event.meetingUrl and (shortcut or "") or ""
+				local shortcutColor = event.meetingUrl and "#10b981" or "#666666"
+				local titleColor = event.isToday and "#ffffff" or "#aaaaaa"
+
+				c[#c + 1] = { type = "text", text = shortcutDisplay, textFont = font, textSize = fontSize, textColor = { hex = shortcutColor, alpha = 1 }, textAlignment = "center", frame = { x = padding, y = yPos, w = 20, h = lineHeight } }
+				c[#c + 1] = { type = "text", text = timeDisplay, textFont = font, textSize = fontSize, textColor = { hex = "#8b8b8b", alpha = 1 }, textAlignment = "left", frame = { x = padding + 28, y = yPos, w = 110, h = lineHeight } }
+				c[#c + 1] = { type = "text", text = title, textFont = font, textSize = fontSize, textColor = { hex = titleColor, alpha = 1 }, textAlignment = "left", frame = { x = padding + 145, y = yPos, w = boxWidth - padding * 2 - 165, h = lineHeight } }
+
+				if event.meetingUrl then
+					c[#c + 1] = { type = "text", text = "video", textFont = font, textSize = fontSize - 2, textColor = { hex = "#10b981", alpha = 1 }, textAlignment = "right", frame = { x = boxWidth - padding - 50, y = yPos, w = 45, h = lineHeight } }
+				end
+
+				yPos = yPos + lineHeight
+			end
+		end
+		yPos = yPos + sectionSpacing
+	end
+
+	-- Two-column project rendering
+	local leftColX = padding
+	local rightColX = padding + columnWidth + columnGap
+	local projectsStartY = yPos
+
+	-- Helper function to render a project at a given x position
+	local function renderProject(project, colX, colY)
+		local localY = colY
+		local linearIssues = project.data.linear or {}
+		local notionTasks = project.data.notion or {}
+		local slackChannels = project.data.slack and project.data.slack.channels or {}
+		local slackDms = project.data.slack and project.data.slack.dms or {}
+		local slackCount = #slackChannels + #slackDms
+
+		-- H2: Project header with color indicator
+		c[#c + 1] = { type = "rectangle", action = "fill", fillColor = { hex = project.color, alpha = 1 }, frame = { x = colX, y = localY + 4, w = 4, h = fontSize } }
+		c[#c + 1] = { type = "text", text = project.name, textFont = font, textSize = fontSize + 4, textColor = { hex = "#ffffff", alpha = 1 }, textAlignment = "left", frame = { x = colX + 12, y = localY, w = columnWidth - 12, h = sectionHeaderHeight } }
+		localY = localY + sectionHeaderHeight + 6  -- Added margin under project name
+
+		-- Show "No items" if no data
+		if #linearIssues == 0 and #notionTasks == 0 and slackCount == 0 then
+			c[#c + 1] = { type = "text", text = "No items", textFont = font, textSize = fontSize, textColor = { hex = "#666666", alpha = 1 }, textAlignment = "left", frame = { x = colX, y = localY, w = columnWidth, h = lineHeight } }
+			localY = localY + lineHeight
+		end
+
+		-- H3: Linear integration
+		if #linearIssues > 0 then
+			c[#c + 1] = { type = "text", text = "Linear", textFont = font, textSize = fontSize + 1, textColor = { hex = "#5e6ad2", alpha = 1 }, textAlignment = "left", frame = { x = colX, y = localY, w = columnWidth, h = integrationHeaderHeight } }
+			localY = localY + integrationHeaderHeight
+
+			for _, issue in ipairs(linearIssues) do
 				itemIndex = itemIndex + 1
 				local shortcut = utils.getShortcutKey(itemIndex)
 
 				table.insert(self.clickableItems, {
 					type = "linear",
-					y = yPos,
+					y = localY,
 					h = lineHeight,
-					x = padding,
-					w = boxWidth - padding * 2,
+					x = colX,
+					w = columnWidth,
 					data = issue,
 					key = shortcut
 				})
 				if shortcut then self.keyMap[shortcut] = #self.clickableItems end
 
-				c[#c + 1] = { type = "text", text = shortcut or "", textFont = font, textSize = fontSize, textColor = { hex = "#5e6ad2", alpha = 1 }, textAlignment = "center", frame = { x = padding, y = yPos, w = 20, h = lineHeight } }
-				c[#c + 1] = { type = "text", text = issue.identifier, textFont = font, textSize = fontSize, textColor = { hex = "#8b8b8b", alpha = 1 }, textAlignment = "left", frame = { x = padding + 28, y = yPos, w = 100, h = lineHeight } }
-
-				local title = issue.title
-				local maxChars = 85
+				local title = issue.title or ""
+				local maxChars = 45
 				if #title > maxChars then title = title:sub(1, maxChars - 1) .. "..." end
-				c[#c + 1] = { type = "text", text = title, textFont = font, textSize = fontSize, textColor = { hex = "#ffffff", alpha = 1 }, textAlignment = "left", frame = { x = padding + 130, y = yPos, w = boxWidth - padding - 150, h = lineHeight } }
 
-				yPos = yPos + lineHeight
+				c[#c + 1] = { type = "text", text = shortcut or "", textFont = font, textSize = fontSize, textColor = { hex = "#5e6ad2", alpha = 1 }, textAlignment = "center", frame = { x = colX, y = localY, w = 20, h = lineHeight } }
+				c[#c + 1] = { type = "text", text = issue.identifier, textFont = font, textSize = fontSize, textColor = { hex = "#8b8b8b", alpha = 1 }, textAlignment = "left", frame = { x = colX + 24, y = localY, w = 80, h = lineHeight } }
+				c[#c + 1] = { type = "text", text = title, textFont = font, textSize = fontSize, textColor = { hex = "#ffffff", alpha = 1 }, textAlignment = "left", frame = { x = colX + 108, y = localY, w = columnWidth - 120, h = lineHeight } }
+
+				localY = localY + lineHeight
 			end
-			yPos = yPos + groupSpacing
+			localY = localY + groupSpacing
 		end
-		yPos = yPos + sectionSpacing - groupSpacing
-	end
 
-	-- Slack section
-	if #slackChannels > 0 or #slackDms > 0 then
-		c[#c + 1] = { type = "text", text = "Slack", textFont = font, textSize = fontSize + 2, textColor = { hex = "#e01e5a", alpha = 1 }, textAlignment = "left", frame = { x = padding, y = yPos, w = boxWidth - (padding * 2), h = sectionHeaderHeight } }
-		yPos = yPos + sectionHeaderHeight
+		-- H3: Notion integration
+		if #notionTasks > 0 then
+			c[#c + 1] = { type = "text", text = "Notion", textFont = font, textSize = fontSize + 1, textColor = { hex = "#c9a67a", alpha = 1 }, textAlignment = "left", frame = { x = colX, y = localY, w = columnWidth, h = integrationHeaderHeight } }
+			localY = localY + integrationHeaderHeight
 
-		if #slackChannels > 0 then
-			c[#c + 1] = { type = "text", text = "Mentions", textFont = font, textSize = fontSize, textColor = { hex = "#f97316", alpha = 1 }, textAlignment = "left", frame = { x = padding + 12, y = yPos, w = boxWidth - (padding * 2), h = groupHeaderHeight } }
-			yPos = yPos + groupHeaderHeight
-
-			for i, msg in ipairs(slackChannels) do
-				if i > 5 then break end
+			for _, task in ipairs(notionTasks) do
 				itemIndex = itemIndex + 1
 				local shortcut = utils.getShortcutKey(itemIndex)
 
 				table.insert(self.clickableItems, {
-					type = "slack",
-					y = yPos,
+					type = "notion",
+					y = localY,
 					h = lineHeight,
-					x = padding,
-					w = boxWidth - padding * 2,
-					data = msg,
+					x = colX,
+					w = columnWidth,
+					data = task,
 					key = shortcut
 				})
 				if shortcut then self.keyMap[shortcut] = #self.clickableItems end
 
-				local from = msg.username or "unknown"
-				local channel = msg.channel and msg.channel.name or ""
-				local text = msg.text or ""
-				text = text:gsub("<@[^>]+[^>]*>", ""):gsub("<[^>]+>", ""):gsub("%s+", " "):gsub("^%s+", "")
-				local maxChars = 65
-				if #text > maxChars then text = text:sub(1, maxChars - 1) .. "..." end
+				local title = task.title or ""
+				local maxChars = 45
+				if #title > maxChars then title = title:sub(1, maxChars - 1) .. "..." end
 
-				c[#c + 1] = { type = "text", text = shortcut or "", textFont = font, textSize = fontSize, textColor = { hex = "#e01e5a", alpha = 1 }, textAlignment = "center", frame = { x = padding, y = yPos, w = 20, h = lineHeight } }
-				c[#c + 1] = { type = "text", text = "#" .. channel, textFont = font, textSize = fontSize, textColor = { hex = "#8b8b8b", alpha = 1 }, textAlignment = "left", frame = { x = padding + 28, y = yPos, w = 120, h = lineHeight } }
-				c[#c + 1] = { type = "text", text = from .. ": " .. text, textFont = font, textSize = fontSize, textColor = { hex = "#ffffff", alpha = 1 }, textAlignment = "left", frame = { x = padding + 155, y = yPos, w = boxWidth - padding - 175, h = lineHeight } }
+				c[#c + 1] = { type = "text", text = shortcut or "", textFont = font, textSize = fontSize, textColor = { hex = "#c9a67a", alpha = 1 }, textAlignment = "center", frame = { x = colX, y = localY, w = 20, h = lineHeight } }
+				c[#c + 1] = { type = "text", text = task.identifier, textFont = font, textSize = fontSize, textColor = { hex = "#8b8b8b", alpha = 1 }, textAlignment = "left", frame = { x = colX + 24, y = localY, w = 80, h = lineHeight } }
+				c[#c + 1] = { type = "text", text = title, textFont = font, textSize = fontSize, textColor = { hex = "#ffffff", alpha = 1 }, textAlignment = "left", frame = { x = colX + 108, y = localY, w = columnWidth - 120, h = lineHeight } }
 
-				yPos = yPos + lineHeight
+				localY = localY + lineHeight
 			end
-			yPos = yPos + groupSpacing
+			localY = localY + groupSpacing
 		end
 
-		if #slackDms > 0 then
-			c[#c + 1] = { type = "text", text = "DMs", textFont = font, textSize = fontSize, textColor = { hex = "#f97316", alpha = 1 }, textAlignment = "left", frame = { x = padding + 12, y = yPos, w = boxWidth - (padding * 2), h = groupHeaderHeight } }
-			yPos = yPos + groupHeaderHeight
+		-- H3: Slack integration
+		if slackCount > 0 then
+			c[#c + 1] = { type = "text", text = "Slack", textFont = font, textSize = fontSize + 1, textColor = { hex = "#e01e5a", alpha = 1 }, textAlignment = "left", frame = { x = colX, y = localY, w = columnWidth, h = integrationHeaderHeight } }
+			localY = localY + integrationHeaderHeight
 
-			for i, msg in ipairs(slackDms) do
-				if i > 5 then break end
-				itemIndex = itemIndex + 1
-				local shortcut = utils.getShortcutKey(itemIndex)
+			-- H4: Mentions
+			if #slackChannels > 0 then
+				c[#c + 1] = { type = "text", text = "Mentions (" .. #slackChannels .. ")", textFont = font, textSize = fontSize - 1, textColor = { hex = "#888888", alpha = 1 }, textAlignment = "left", frame = { x = colX, y = localY, w = columnWidth, h = subHeaderHeight } }
+				localY = localY + subHeaderHeight
 
-				table.insert(self.clickableItems, {
-					type = "slack",
-					y = yPos,
-					h = lineHeight,
-					x = padding,
-					w = boxWidth - padding * 2,
-					data = msg,
-					key = shortcut
-				})
-				if shortcut then self.keyMap[shortcut] = #self.clickableItems end
+				for i, msg in ipairs(slackChannels) do
+					if i > 5 then break end
+					itemIndex = itemIndex + 1
+					local shortcut = utils.getShortcutKey(itemIndex)
 
-				local from = msg.username or "unknown"
-				local text = msg.text or ""
-				text = text:gsub("<@[^>]+[^>]*>", ""):gsub("<[^>]+>", ""):gsub("%s+", " "):gsub("^%s+", "")
-				local maxChars = 70
-				if #text > maxChars then text = text:sub(1, maxChars - 1) .. "..." end
+					table.insert(self.clickableItems, {
+						type = "slack",
+						y = localY,
+						h = lineHeight,
+						x = colX,
+						w = columnWidth,
+						data = msg,
+						key = shortcut
+					})
+					if shortcut then self.keyMap[shortcut] = #self.clickableItems end
 
-				c[#c + 1] = { type = "text", text = shortcut or "", textFont = font, textSize = fontSize, textColor = { hex = "#e01e5a", alpha = 1 }, textAlignment = "center", frame = { x = padding, y = yPos, w = 20, h = lineHeight } }
-				c[#c + 1] = { type = "text", text = from, textFont = font, textSize = fontSize, textColor = { hex = "#8b8b8b", alpha = 1 }, textAlignment = "left", frame = { x = padding + 28, y = yPos, w = 120, h = lineHeight } }
-				c[#c + 1] = { type = "text", text = text, textFont = font, textSize = fontSize, textColor = { hex = "#ffffff", alpha = 1 }, textAlignment = "left", frame = { x = padding + 155, y = yPos, w = boxWidth - padding - 175, h = lineHeight } }
+					local from = msg.username or "unknown"
+					local channel = msg.channel and msg.channel.name or ""
+					local text = msg.text or ""
+					text = text:gsub("<@[^>]+[^>]*>", ""):gsub("<[^>]+>", ""):gsub("%s+", " "):gsub("^%s+", "")
+					local maxChars = 35
+					if #text > maxChars then text = text:sub(1, maxChars - 1) .. "..." end
 
-				yPos = yPos + lineHeight
+					c[#c + 1] = { type = "text", text = shortcut or "", textFont = font, textSize = fontSize, textColor = { hex = "#e01e5a", alpha = 1 }, textAlignment = "center", frame = { x = colX, y = localY, w = 20, h = lineHeight } }
+					c[#c + 1] = { type = "text", text = "#" .. channel, textFont = font, textSize = fontSize, textColor = { hex = "#8b8b8b", alpha = 1 }, textAlignment = "left", frame = { x = colX + 24, y = localY, w = 80, h = lineHeight } }
+					c[#c + 1] = { type = "text", text = from .. ": " .. text, textFont = font, textSize = fontSize, textColor = { hex = "#ffffff", alpha = 1 }, textAlignment = "left", frame = { x = colX + 108, y = localY, w = columnWidth - 120, h = lineHeight } }
+
+					localY = localY + lineHeight
+				end
+				localY = localY + groupSpacing
+			end
+
+			-- H4: DMs
+			if #slackDms > 0 then
+				c[#c + 1] = { type = "text", text = "DMs (" .. #slackDms .. ")", textFont = font, textSize = fontSize - 1, textColor = { hex = "#888888", alpha = 1 }, textAlignment = "left", frame = { x = colX, y = localY, w = columnWidth, h = subHeaderHeight } }
+				localY = localY + subHeaderHeight
+
+				for i, msg in ipairs(slackDms) do
+					if i > 5 then break end
+					itemIndex = itemIndex + 1
+					local shortcut = utils.getShortcutKey(itemIndex)
+
+					table.insert(self.clickableItems, {
+						type = "slack",
+						y = localY,
+						h = lineHeight,
+						x = colX,
+						w = columnWidth,
+						data = msg,
+						key = shortcut
+					})
+					if shortcut then self.keyMap[shortcut] = #self.clickableItems end
+
+					local from = msg.username or "unknown"
+					local text = msg.text or ""
+					text = text:gsub("<@[^>]+[^>]*>", ""):gsub("<[^>]+>", ""):gsub("%s+", " "):gsub("^%s+", "")
+					local maxChars = 40
+					if #text > maxChars then text = text:sub(1, maxChars - 1) .. "..." end
+
+					c[#c + 1] = { type = "text", text = shortcut or "", textFont = font, textSize = fontSize, textColor = { hex = "#e01e5a", alpha = 1 }, textAlignment = "center", frame = { x = colX, y = localY, w = 20, h = lineHeight } }
+					c[#c + 1] = { type = "text", text = from, textFont = font, textSize = fontSize, textColor = { hex = "#8b8b8b", alpha = 1 }, textAlignment = "left", frame = { x = colX + 24, y = localY, w = 80, h = lineHeight } }
+					c[#c + 1] = { type = "text", text = text, textFont = font, textSize = fontSize, textColor = { hex = "#ffffff", alpha = 1 }, textAlignment = "left", frame = { x = colX + 108, y = localY, w = columnWidth - 120, h = lineHeight } }
+
+					localY = localY + lineHeight
+				end
+				localY = localY + groupSpacing
 			end
 		end
+
+		return localY + sectionSpacing
 	end
+
+	-- Render left column projects
+	local leftY = projectsStartY
+	for _, project in ipairs(leftProjects) do
+		leftY = renderProject(project, leftColX, leftY)
+	end
+
+	-- Render right column projects
+	local rightY = projectsStartY
+	for _, project in ipairs(rightProjects) do
+		rightY = renderProject(project, rightColX, rightY)
+	end
+
+	yPos = math.max(leftY, rightY)
 
 	c:level(hs.canvas.windowLevels.overlay)
 	c:clickActivating(false)
 	c:behaviorAsLabels({ "canJoinAllSpaces", "stationary" })
 	c:show()
 	self.visible = true
-	self:setupEventHandlers()
+	-- Only setup handlers if not already active (avoid recreating during typing)
+	if not self.escapeWatcher then
+		self:setupEventHandlers()
+	end
 end
 
 function obj:renderLinearDetail(issue, resetScroll)
@@ -493,11 +725,7 @@ function obj:renderLinearDetail(issue, resetScroll)
 end
 
 function obj:renderSlackDetail(msg, thread, resetScroll, isInitialLoading)
-	print("[Attention] renderSlackDetail called - THIS CREATES NEW WEBVIEW")
-	print("[Attention] Stack trace: " .. debug.traceback())
-	-- Prevent re-render during pagination
 	if self.paginationInProgress then
-		print("[Attention] BLOCKED - pagination in progress, skipping re-render")
 		return
 	end
 	if self.loadingTimer then
@@ -510,7 +738,6 @@ function obj:renderSlackDetail(msg, thread, resetScroll, isInitialLoading)
 
 	slackUI.renderWebview(self, msg, thread, keepScroll, isInitialLoading, {
 		onBack = function()
-			-- If we have cached history (came from history view into thread), go back to history
 			if selfRef.slackHistoryCache and selfRef.slackViewMode == "thread" then
 				selfRef.slackViewMode = "history"
 				local cachedHistory = selfRef.slackHistoryCache
@@ -528,11 +755,10 @@ function obj:renderSlackDetail(msg, thread, resetScroll, isInitialLoading)
 			if permalink then
 				hs.urlevent.openURL(permalink)
 			end
+			selfRef:hide()
 		end,
 		onChannelUp = function()
-			-- Switch to history mode in-place
 			if selfRef.currentSlackChannel then
-				-- Use cached history if available for instant switch
 				if selfRef.slackHistoryCache and #selfRef.slackHistoryCache > 0 then
 					slackUI.switchView(selfRef, "history", selfRef.slackHistoryCache)
 				else
@@ -543,11 +769,9 @@ function obj:renderSlackDetail(msg, thread, resetScroll, isInitialLoading)
 			end
 		end,
 		onThreadClick = function(threadTs)
-			-- Cache current history before switching to thread view
 			if selfRef.slackViewMode == "history" and selfRef.currentSlackThread then
 				selfRef.slackHistoryCache = selfRef.currentSlackThread
 			end
-			-- Switch to thread mode in-place
 			local channelId = selfRef.currentSlackMsg.channel and selfRef.currentSlackMsg.channel.id
 			if channelId and threadTs then
 				slackApi.fetchThread(channelId, threadTs, function(threadMsgs, err)
@@ -556,14 +780,9 @@ function obj:renderSlackDetail(msg, thread, resetScroll, isInitialLoading)
 			end
 		end,
 		onLoadMore = function()
-			print("[Attention] onLoadMore callback triggered")
-			-- Set pagination flag to prevent re-renders
 			selfRef.paginationInProgress = true
-
-			-- Pagination - load older messages (inject without re-rendering)
 			local channelId = selfRef.currentSlackChannel
 			if not channelId then
-				print("[Attention] No channel ID, aborting loadMore")
 				selfRef.paginationInProgress = false
 				slackUI.resetLoadingFlag(selfRef)
 				return
@@ -573,12 +792,9 @@ function obj:renderSlackDetail(msg, thread, resetScroll, isInitialLoading)
 			if selfRef.currentSlackThread and #selfRef.currentSlackThread > 0 then
 				oldestTs = selfRef.currentSlackThread[1].ts
 			end
-			print("[Attention] Fetching history for channel: " .. channelId .. ", oldest: " .. tostring(oldestTs))
 
 			slackApi.fetchHistory(channelId, function(olderMessages, err)
-				print("[Attention] fetchHistory returned, count: " .. tostring(olderMessages and #olderMessages or 0))
 				if olderMessages and #olderMessages > 0 then
-					-- Update state with combined messages
 					local combined = {}
 					for _, m in ipairs(olderMessages) do
 						table.insert(combined, m)
@@ -588,15 +804,10 @@ function obj:renderSlackDetail(msg, thread, resetScroll, isInitialLoading)
 					end
 					selfRef.currentSlackThread = combined
 					selfRef.slackViewMode = "history"
-
-					-- Inject messages into existing webview (no flash)
-					print("[Attention] Calling prependMessages with " .. #olderMessages .. " messages")
 					slackUI.prependMessages(selfRef, olderMessages)
 				else
-					print("[Attention] No older messages, resetting loading flag")
 					slackUI.resetLoadingFlag(selfRef)
 				end
-				-- Clear pagination flag after operation completes
 				selfRef.paginationInProgress = false
 			end, oldestTs)
 		end,
@@ -609,9 +820,11 @@ function obj:updateHover(index)
 
 	if not self.canvas then return end
 
+	-- Find the hover placeholder element (index 6 after search bar elements)
+	local hoverIndex = 6
 	if index and self.clickableItems[index] then
 		local item = self.clickableItems[index]
-		self.canvas[5] = {
+		self.canvas[hoverIndex] = {
 			type = "rectangle",
 			action = "fill",
 			fillColor = { hex = "#ffffff", alpha = 0.08 },
@@ -620,7 +833,7 @@ function obj:updateHover(index)
 		}
 		setHandCursor()
 	else
-		self.canvas[5] = {
+		self.canvas[hoverIndex] = {
 			type = "rectangle",
 			action = "fill",
 			fillColor = { hex = "#ffffff", alpha = 0 },
@@ -640,6 +853,9 @@ function obj:setupEventHandlers()
 	if self.hoverWatcher then
 		self.hoverWatcher:stop()
 	end
+	if self.scrollWatcher then
+		self.scrollWatcher:stop()
+	end
 
 	local selfRef = self
 
@@ -648,7 +864,21 @@ function obj:setupEventHandlers()
 		local char = event:getCharacters()
 		local mods = event:getFlags()
 
+		-- Escape key
 		if keyCode == 53 then
+			-- If in search mode, exit search mode (back to default)
+			if selfRef.searchMode then
+				selfRef.searchMode = nil
+				selfRef.searchQuery = ""
+				selfRef:render(selfRef.cache)
+				return true
+			end
+			-- If filter active, clear it
+			if selfRef.activeFilter ~= "" then
+				selfRef.activeFilter = ""
+				selfRef:render(selfRef.cache)
+				return true
+			end
 			if selfRef.currentView == "linear-detail" or selfRef.currentView == "slack-detail" then
 				selfRef.scrollOffset = 0
 				selfRef:render(selfRef.cache)
@@ -658,8 +888,98 @@ function obj:setupEventHandlers()
 			return true
 		end
 
-		-- Only handle scroll keys for canvas-based linear-detail view
-		-- slack-detail uses webview which handles its own scrolling via JavaScript
+		-- When in search mode, only handle search-related keys
+		if selfRef.searchMode == "search" then
+			-- Return/Enter key - apply search filter and exit search mode
+			if keyCode == 36 then
+				if selfRef.searchQuery ~= "" then
+					selfRef.activeFilter = selfRef.searchQuery
+				end
+				selfRef.searchMode = nil
+				selfRef:render(selfRef.cache)
+				return true
+			end
+
+			-- Backspace key - remove last character from search
+			if keyCode == 51 then
+				if selfRef.searchQuery ~= "" then
+					selfRef.searchQuery = selfRef.searchQuery:sub(1, -2)
+					selfRef:render(selfRef.cache)
+				end
+				return true
+			end
+
+			-- Handle typing for search (regular characters, no modifiers)
+			if char and #char == 1 and not mods.cmd and not mods.ctrl and not mods.alt then
+				local charCode = char:byte()
+				-- Allow alphanumeric, space, and common punctuation
+				if (charCode >= 32 and charCode <= 126) then
+					selfRef.searchQuery = selfRef.searchQuery .. char
+					selfRef:render(selfRef.cache)
+					return true
+				end
+			end
+
+			-- Block all other keys in search mode
+			return true
+		end
+
+		-- When in LLM search mode (placeholder for future)
+		if selfRef.searchMode == "llm" then
+			-- Return/Enter key - submit LLM query (placeholder)
+			if keyCode == 36 then
+				if selfRef.searchQuery ~= "" then
+					hs.alert.show("LLM Search: " .. selfRef.searchQuery .. " (coming soon)")
+				end
+				selfRef.searchMode = nil
+				selfRef.searchQuery = ""
+				selfRef:render(selfRef.cache)
+				return true
+			end
+
+			-- Backspace key - remove last character
+			if keyCode == 51 then
+				if selfRef.searchQuery ~= "" then
+					selfRef.searchQuery = selfRef.searchQuery:sub(1, -2)
+					selfRef:render(selfRef.cache)
+				end
+				return true
+			end
+
+			-- Handle typing
+			if char and #char == 1 and not mods.cmd and not mods.ctrl and not mods.alt then
+				local charCode = char:byte()
+				if (charCode >= 32 and charCode <= 126) then
+					selfRef.searchQuery = selfRef.searchQuery .. char
+					selfRef:render(selfRef.cache)
+					return true
+				end
+			end
+
+			-- Block all other keys in LLM mode
+			return true
+		end
+
+		-- Default mode (not in search mode)
+		if selfRef.currentView == "main" then
+			-- "s" activates search mode
+			if char == "s" and not mods.shift and not mods.cmd and not mods.ctrl and not mods.alt then
+				selfRef.searchMode = "search"
+				selfRef.searchQuery = ""
+				selfRef:render(selfRef.cache)
+				return true
+			end
+
+			-- "S" activates LLM search mode
+			if char == "S" and mods.shift and not mods.cmd and not mods.ctrl and not mods.alt then
+				selfRef.searchMode = "llm"
+				selfRef.searchQuery = ""
+				selfRef:render(selfRef.cache)
+				return true
+			end
+		end
+
+		-- Scroll keys for linear-detail view
 		if selfRef.currentView == "linear-detail" then
 			local scrollDown = (mods.ctrl and keyCode == 2) or (keyCode == 38)
 			local scrollUp = (mods.ctrl and keyCode == 32) or (keyCode == 40)
@@ -678,11 +998,17 @@ function obj:setupEventHandlers()
 			end
 		end
 
+		-- Handle keyboard shortcuts for items (only when not in search mode)
 		if char and selfRef.keyMap[char] then
 			local itemIdx = selfRef.keyMap[char]
 			local item = selfRef.clickableItems[itemIdx]
 			if item then
-				if item.type == "linear" then
+				if item.type == "calendar" then
+					if item.data and item.data.meetingUrl then
+						hs.urlevent.openURL(item.data.meetingUrl)
+						selfRef:hide()
+					end
+				elseif item.type == "linear" then
 					selfRef:showLoader()
 					linearApi.fetchDetail(item.data.identifier, function(issue, err)
 						if issue then
@@ -692,56 +1018,55 @@ function obj:setupEventHandlers()
 							hs.alert.show("Failed to load issue")
 						end
 					end)
+				elseif item.type == "notion" then
+					if item.data and item.data.url then
+						hs.urlevent.openURL(item.data.url)
+						selfRef:hide()
+					end
 				elseif item.type == "slack" then
-					-- Immediately show webview with loading state (no showLoader gap)
 					local channelId = item.data.channel and item.data.channel.id
 					local isDM = item.data.channel and item.data.channel.is_im
 					selfRef.currentSlackChannel = channelId
 
 					if isDM and channelId then
 						selfRef.slackViewMode = "history"
-						-- Show webview immediately with empty messages (loading state)
 						selfRef:renderSlackDetail(item.data, {}, false, true)
 						slackApi.fetchHistory(channelId, function(messages, err)
-							-- Update the existing webview with messages
+							if err or not messages then
+								selfRef:hide()
+								hs.alert.show("Failed to load Slack history")
+								return
+							end
 							slackUI.updateInitialMessages(selfRef, messages)
 						end)
 					else
 						selfRef.slackViewMode = "thread"
 						local threadTs = item.data.thread_ts or item.data.ts
 						if channelId and threadTs then
-							-- Show webview immediately with empty messages (loading state)
 							selfRef:renderSlackDetail(item.data, {}, false, true)
 							slackApi.fetchThread(channelId, threadTs, function(thread, err)
-								-- Update the existing webview with messages
+								if err or not thread then
+									selfRef:hide()
+									hs.alert.show("Failed to load Slack thread")
+									return
+								end
 								slackUI.updateInitialMessages(selfRef, thread)
 							end)
 						else
-							selfRef:renderSlackDetail(item.data, {})
+							selfRef:hide()
+							hs.alert.show("Missing channel or thread info")
 						end
 					end
 				elseif item.type == "back" then
 					selfRef.scrollOffset = 0
 					selfRef:render(selfRef.cache)
-				elseif item.type == "open-slack" then
-					if item.data and item.data.permalink then
-						hs.urlevent.openURL(item.data.permalink)
-					end
-					selfRef:hide()
-				elseif item.type == "channel-up" then
-					if selfRef.currentSlackChannel then
-						selfRef:showLoader()
-						selfRef.slackViewMode = "history"
-						slackApi.fetchHistory(selfRef.currentSlackChannel, function(messages, err)
-							selfRef:renderSlackDetail(selfRef.currentSlackMsg, messages)
-						end)
-					end
 				end
 			end
 			return true
 		end
 
-		return true
+		-- Let unhandled keys pass through (system shortcuts, etc.)
+		return false
 	end)
 	self.escapeWatcher:start()
 
@@ -796,10 +1121,10 @@ function obj:setupEventHandlers()
 							selfRef:render(selfRef.cache)
 							return true
 						end
-					elseif item.type == "open-slack" then
+					elseif item.type == "calendar" then
 						if relX >= item.x and relX <= item.x + item.w then
-							if item.data and item.data.permalink then
-								hs.urlevent.openURL(item.data.permalink)
+							if item.data and item.data.meetingUrl then
+								hs.urlevent.openURL(item.data.meetingUrl)
 							end
 							selfRef:hide()
 							return true
@@ -815,6 +1140,12 @@ function obj:setupEventHandlers()
 							end
 						end)
 						return true
+					elseif item.type == "notion" then
+						if item.data and item.data.url then
+							hs.urlevent.openURL(item.data.url)
+						end
+						selfRef:hide()
+						return true
 					elseif item.type == "slack" then
 						selfRef:showLoader()
 						local channelId = item.data.channel and item.data.channel.id
@@ -824,6 +1155,11 @@ function obj:setupEventHandlers()
 						if isDM and channelId then
 							selfRef.slackViewMode = "history"
 							slackApi.fetchHistory(channelId, function(messages, err)
+								if err or not messages then
+									selfRef:hide()
+									hs.alert.show("Failed to load Slack history")
+									return
+								end
 								selfRef:renderSlackDetail(item.data, messages)
 							end)
 						else
@@ -831,24 +1167,19 @@ function obj:setupEventHandlers()
 							local threadTs = item.data.thread_ts or item.data.ts
 							if channelId and threadTs then
 								slackApi.fetchThread(channelId, threadTs, function(thread, err)
+									if err or not thread then
+										selfRef:hide()
+										hs.alert.show("Failed to load Slack thread")
+										return
+									end
 									selfRef:renderSlackDetail(item.data, thread)
 								end)
 							else
-								selfRef:renderSlackDetail(item.data, {})
+								selfRef:hide()
+								hs.alert.show("Missing channel or thread info")
 							end
 						end
 						return true
-					elseif item.type == "channel-up" then
-						if relX >= item.x and relX <= item.x + item.w then
-							if selfRef.currentSlackChannel then
-								selfRef:showLoader()
-								selfRef.slackViewMode = "history"
-								slackApi.fetchHistory(selfRef.currentSlackChannel, function(messages, err)
-									selfRef:renderSlackDetail(selfRef.currentSlackMsg, messages)
-								end)
-							end
-							return true
-						end
 					end
 				end
 			end
@@ -864,28 +1195,27 @@ function obj:setupEventHandlers()
 	end)
 	self.clickWatcher:start()
 
-	-- Block scroll events from passing through to background apps (but not inside our window)
 	self.scrollWatcher = hs.eventtap.new({ hs.eventtap.event.types.scrollWheel }, function(event)
 		local mousePos = hs.mouse.absolutePosition()
 		local frame = selfRef.canvasFrame
 		if frame then
-			-- Check if mouse is inside our window
 			local inside = mousePos.x >= frame.x and mousePos.x <= frame.x + frame.w
 				and mousePos.y >= frame.y and mousePos.y <= frame.y + frame.h
 			if inside then
-				-- Let the webview handle scrolling
 				return false
 			end
 		end
-		-- Block scroll events outside the window
 		return true
 	end)
 	self.scrollWatcher:start()
 end
 
 function obj:show()
+	self.searchQuery = ""
+	self.activeFilter = ""
+	self.searchMode = nil
 	self:showLoader()
-	if self.cache.linear and self.cache.slack and not self:needsFetch() then
+	if self.cache.projects and next(self.cache.projects) and not self:needsFetch() then
 		self:render(self.cache)
 	else
 		self:fetchAll(function(data)
@@ -895,14 +1225,11 @@ function obj:show()
 end
 
 function obj:hide()
-	print("[Attention] hide() called")
-	print("[Attention] Stack trace: " .. debug.traceback())
 	resetCursor()
 	if self.loadingTimer then
 		self.loadingTimer:stop()
 		self.loadingTimer = nil
 	end
-	-- Clean up webview if present
 	slackUI.closeWebview(self)
 	if self.canvas then
 		self.canvas:hide()
@@ -935,6 +1262,9 @@ function obj:hide()
 	self.currentSlackMsg = nil
 	self.currentSlackThread = nil
 	self.slackHistoryCache = nil
+	self.searchQuery = ""
+	self.activeFilter = ""
+	self.searchMode = nil
 end
 
 function obj:toggle()

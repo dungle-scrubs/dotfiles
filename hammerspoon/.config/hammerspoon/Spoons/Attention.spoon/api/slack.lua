@@ -6,7 +6,7 @@ local M = {}
 -- Will be set by init.lua
 M.getEnvVar = nil
 
--- User cache for resolving IDs to names
+-- User cache for resolving IDs to names (shared across all workspaces)
 local userCache = {}
 
 --- Get a user's name from cache
@@ -75,12 +75,49 @@ local function resolveUsers(messages, token, callback)
 	end
 end
 
---- Fetch Slack mentions and DMs
+--- Filter messages by channel IDs
+--- @param messages table Array of messages
+--- @param channelIds table Array of channel IDs to filter to
+--- @return table filtered Messages matching the channel filter
+local function filterByChannels(messages, channelIds)
+	if not channelIds or #channelIds == 0 then
+		return messages
+	end
+
+	local channelSet = {}
+	for _, id in ipairs(channelIds) do
+		channelSet[id] = true
+	end
+
+	local filtered = {}
+	for _, msg in ipairs(messages) do
+		local channelId = msg.channel and msg.channel.id
+		if channelId and channelSet[channelId] then
+			table.insert(filtered, msg)
+		end
+	end
+	return filtered
+end
+
+--- Fetch Slack mentions and DMs (legacy - uses env var directly)
 --- @param callback function Callback with ({dms, channels}, error)
 function M.fetchMentions(callback)
 	local token = M.getEnvVar("SLACK_USER_TOKEN")
 	if not token then
 		callback(nil, "SLACK_USER_TOKEN not found")
+		return
+	end
+
+	M.fetchMentionsWithConfig({ token = token, channels = {} }, callback)
+end
+
+--- Fetch Slack mentions and DMs with config
+--- @param config table Integration config { token, channels }
+--- @param callback function Callback with ({dms, channels}, error)
+function M.fetchMentionsWithConfig(config, callback)
+	local token = config.token
+	if not token then
+		callback(nil, "Slack token not provided")
 		return
 	end
 
@@ -105,6 +142,10 @@ function M.fetchMentions(callback)
 			local function checkDone()
 				pending = pending - 1
 				if pending == 0 then
+					-- Apply channel filter if specified
+					if config.channels and #config.channels > 0 then
+						results.channels = filterByChannels(results.channels, config.channels)
+					end
 					callback(results)
 				end
 			end
@@ -167,7 +208,7 @@ function M.fetchMentions(callback)
 	)
 end
 
---- Fetch thread replies
+--- Fetch thread replies (legacy)
 --- @param channelId string The channel ID
 --- @param threadTs string The thread timestamp
 --- @param callback function Callback with (messages, error)
@@ -175,6 +216,21 @@ function M.fetchThread(channelId, threadTs, callback)
 	local token = M.getEnvVar("SLACK_USER_TOKEN")
 	if not token then
 		callback(nil, "SLACK_USER_TOKEN not found")
+		return
+	end
+
+	M.fetchThreadWithConfig(channelId, threadTs, { token = token }, callback)
+end
+
+--- Fetch thread replies with config
+--- @param channelId string The channel ID
+--- @param threadTs string The thread timestamp
+--- @param config table Integration config { token }
+--- @param callback function Callback with (messages, error)
+function M.fetchThreadWithConfig(channelId, threadTs, config, callback)
+	local token = config.token
+	if not token then
+		callback(nil, "Slack token not provided")
 		return
 	end
 
@@ -199,7 +255,7 @@ function M.fetchThread(channelId, threadTs, callback)
 	)
 end
 
---- Fetch channel history
+--- Fetch channel history (legacy)
 --- @param channelId string The channel ID
 --- @param callback function Callback with (messages, error)
 --- @param oldest string|nil Optional oldest timestamp to fetch messages before
@@ -207,6 +263,21 @@ function M.fetchHistory(channelId, callback, oldest)
 	local token = M.getEnvVar("SLACK_USER_TOKEN")
 	if not token then
 		callback(nil, "SLACK_USER_TOKEN not found")
+		return
+	end
+
+	M.fetchHistoryWithConfig(channelId, { token = token }, callback, oldest)
+end
+
+--- Fetch channel history with config
+--- @param channelId string The channel ID
+--- @param config table Integration config { token }
+--- @param callback function Callback with (messages, error)
+--- @param oldest string|nil Optional oldest timestamp to fetch messages before
+function M.fetchHistoryWithConfig(channelId, config, callback, oldest)
+	local token = config.token
+	if not token then
+		callback(nil, "Slack token not provided")
 		return
 	end
 
@@ -236,6 +307,70 @@ function M.fetchHistory(channelId, callback, oldest)
 			end
 		end
 	)
+end
+
+--- Fetch latest message from specific DM channels
+--- @param config table Integration config { token, dm_channels: { { channel_id, name } } }
+--- @param callback function Callback with ({dms, channels}, error)
+function M.fetchDMLatestWithConfig(config, callback)
+	local token = config.token
+	if not token then
+		callback(nil, "Slack token not provided")
+		return
+	end
+
+	local dmChannels = config.dm_channels or {}
+	if #dmChannels == 0 then
+		callback({ dms = {}, channels = {} })
+		return
+	end
+
+	local results = { dms = {}, channels = {} }
+	local pending = #dmChannels
+
+	local function checkDone()
+		pending = pending - 1
+		if pending == 0 then
+			callback(results)
+		end
+	end
+
+	for _, dm in ipairs(dmChannels) do
+		local channelId = dm.channel_id
+		local displayName = dm.name or "DM"
+
+		hs.http.asyncGet(
+			"https://slack.com/api/conversations.history?channel=" .. channelId .. "&limit=1",
+			{ ["Authorization"] = "Bearer " .. token },
+			function(status, response)
+				if status == 200 then
+					local data = hs.json.decode(response)
+					if data and data.ok and data.messages and #data.messages > 0 then
+						local msg = data.messages[1]
+						-- Resolve the user name
+						local userId = msg.user
+						if userId and not userCache[userId] then
+							fetchUser(userId, token, function(name)
+								msg.username = name
+								msg.channel = { id = channelId, is_im = true, name = displayName }
+								table.insert(results.dms, msg)
+								checkDone()
+							end)
+						else
+							msg.username = userCache[userId] or userId
+							msg.channel = { id = channelId, is_im = true, name = displayName }
+							table.insert(results.dms, msg)
+							checkDone()
+						end
+					else
+						checkDone()
+					end
+				else
+					checkDone()
+				end
+			end
+		)
+	end
 end
 
 return M

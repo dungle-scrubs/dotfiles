@@ -734,7 +734,7 @@ shiftCtrl("a", function()
 		:start()
 end)
 
-shiftCtrl("l", function()
+hs.hotkey.bind({ "cmd", "alt" }, "space", function()
 	attention:toggle()
 end)
 
