@@ -135,7 +135,7 @@ function M.fetchMentionsWithConfig(config, callback)
 				return
 			end
 
-			local userId = authData.user_id
+			local currentUserId = authData.user_id
 			local results = { dms = {}, channels = {} }
 			local pending = 2
 
@@ -163,7 +163,7 @@ function M.fetchMentionsWithConfig(config, callback)
 				return deduped
 			end
 
-			-- Fetch DMs
+			-- Fetch DMs (exclude DMs where current user is the sender)
 			hs.http.asyncGet(
 				"https://slack.com/api/search.messages?query=to:me&count=20&sort=timestamp",
 				{ ["Authorization"] = "Bearer " .. token },
@@ -173,7 +173,8 @@ function M.fetchMentionsWithConfig(config, callback)
 						if data and data.ok and data.messages then
 							local dms = {}
 							for _, msg in ipairs(data.messages.matches or {}) do
-								if msg.channel and msg.channel.is_im then
+								-- Only include DMs where someone ELSE sent the message
+								if msg.channel and msg.channel.is_im and msg.user ~= currentUserId then
 									table.insert(dms, msg)
 								end
 							end
@@ -186,7 +187,7 @@ function M.fetchMentionsWithConfig(config, callback)
 
 			-- Fetch channel @mentions
 			hs.http.asyncGet(
-				"https://slack.com/api/search.messages?query=<@" .. userId .. ">&count=20&sort=timestamp",
+				"https://slack.com/api/search.messages?query=<@" .. currentUserId .. ">&count=20&sort=timestamp",
 				{ ["Authorization"] = "Bearer " .. token },
 				function(s, r)
 					if s == 200 then
@@ -325,52 +326,75 @@ function M.fetchDMLatestWithConfig(config, callback)
 		return
 	end
 
-	local results = { dms = {}, channels = {} }
-	local pending = #dmChannels
+	-- First get current user ID to filter out our own messages
+	hs.http.asyncGet(
+		"https://slack.com/api/auth.test",
+		{ ["Authorization"] = "Bearer " .. token },
+		function(authStatus, authResponse)
+			if authStatus ~= 200 then
+				callback(nil, "Slack auth error")
+				return
+			end
+			local authData = hs.json.decode(authResponse)
+			if not authData or not authData.user_id then
+				callback(nil, "Failed to get Slack user ID")
+				return
+			end
 
-	local function checkDone()
-		pending = pending - 1
-		if pending == 0 then
-			callback(results)
-		end
-	end
+			local currentUserId = authData.user_id
+			local results = { dms = {}, channels = {} }
+			local pending = #dmChannels
 
-	for _, dm in ipairs(dmChannels) do
-		local channelId = dm.channel_id
-		local displayName = dm.name or "DM"
-
-		hs.http.asyncGet(
-			"https://slack.com/api/conversations.history?channel=" .. channelId .. "&limit=1",
-			{ ["Authorization"] = "Bearer " .. token },
-			function(status, response)
-				if status == 200 then
-					local data = hs.json.decode(response)
-					if data and data.ok and data.messages and #data.messages > 0 then
-						local msg = data.messages[1]
-						-- Resolve the user name
-						local userId = msg.user
-						if userId and not userCache[userId] then
-							fetchUser(userId, token, function(name)
-								msg.username = name
-								msg.channel = { id = channelId, is_im = true, name = displayName }
-								table.insert(results.dms, msg)
-								checkDone()
-							end)
-						else
-							msg.username = userCache[userId] or userId
-							msg.channel = { id = channelId, is_im = true, name = displayName }
-							table.insert(results.dms, msg)
-							checkDone()
-						end
-					else
-						checkDone()
-					end
-				else
-					checkDone()
+			local function checkDone()
+				pending = pending - 1
+				if pending == 0 then
+					callback(results)
 				end
 			end
-		)
-	end
+
+			for _, dm in ipairs(dmChannels) do
+				local channelId = dm.channel_id
+				local displayName = dm.name or "DM"
+
+				hs.http.asyncGet(
+					"https://slack.com/api/conversations.history?channel=" .. channelId .. "&limit=1",
+					{ ["Authorization"] = "Bearer " .. token },
+					function(status, response)
+						if status == 200 then
+							local data = hs.json.decode(response)
+							if data and data.ok and data.messages and #data.messages > 0 then
+								local msg = data.messages[1]
+								local msgUserId = msg.user
+								-- Only include if someone ELSE sent the latest message
+								if msgUserId and msgUserId ~= currentUserId then
+									if not userCache[msgUserId] then
+										fetchUser(msgUserId, token, function(name)
+											msg.username = name
+											msg.channel = { id = channelId, is_im = true, name = displayName }
+											table.insert(results.dms, msg)
+											checkDone()
+										end)
+									else
+										msg.username = userCache[msgUserId] or msgUserId
+										msg.channel = { id = channelId, is_im = true, name = displayName }
+										table.insert(results.dms, msg)
+										checkDone()
+									end
+								else
+									-- Current user was last to message, skip this DM
+									checkDone()
+								end
+							else
+								checkDone()
+							end
+						else
+							checkDone()
+						end
+					end
+				)
+			end
+		end
+	)
 end
 
 return M
