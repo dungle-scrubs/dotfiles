@@ -13,5 +13,5 @@
     "declaration": false,
     "isolatedModules": true
   },
-  "include": ["src/**/*"]
+  "include": []
 }
