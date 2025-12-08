@@ -10,7 +10,8 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
-    "declaration": false
+    "declaration": false,
+    "isolatedModules": true
   },
   "include": ["src/**/*"]
 }

@@ -1,31 +1,10 @@
 import { render } from 'preact';
 import { useState, useEffect, useRef, useCallback } from 'preact/hooks';
+import { generateHintLabels } from './lib/hints';
 
 // =============================================================================
-// Vim-style Hint System (reusable for any clickable elements)
+// Vim-style Hint System
 // =============================================================================
-
-// Generate hint labels: a-z, then aa-az, ba-bz, etc.
-const generateHintLabels = (count: number): string[] => {
-  const labels: string[] = [];
-  const chars = 'asdfghjklqwertyuiopzxcvbnm'; // Home row first for ergonomics
-
-  // First pass: single characters
-  for (let i = 0; i < Math.min(count, chars.length); i++) {
-    labels.push(chars[i]);
-  }
-
-  // Second pass: two-character combinations if needed
-  if (count > chars.length) {
-    for (let i = 0; i < chars.length && labels.length < count; i++) {
-      for (let j = 0; j < chars.length && labels.length < count; j++) {
-        labels.push(chars[i] + chars[j]);
-      }
-    }
-  }
-
-  return labels;
-};
 
 // Global hint state
 interface HintTarget {
@@ -36,7 +15,6 @@ interface HintTarget {
 
 let hintTargets: HintTarget[] = [];
 let hintBuffer = '';
-let hintOverlay: HTMLElement | null = null;
 
 // Update hint labels on thread links
 const updateHintLabels = () => {
@@ -133,11 +111,6 @@ const updateHintHighlights = () => {
   });
 };
 
-// Reset hint state
-const resetHints = () => {
-  hintBuffer = '';
-  updateHintHighlights();
-};
 
 // =============================================================================
 // Types
@@ -153,7 +126,7 @@ interface Message {
   isReply: boolean;
 }
 
-interface AppState {
+interface SlackAppState {
   messages: Message[];
   viewMode: 'history' | 'thread';
   isLoadingMore: boolean;
@@ -161,15 +134,21 @@ interface AppState {
   showChannelUp: boolean;
 }
 
+// Extended element with animation ID storage
+interface LoaderElement extends Element {
+  _animateId?: ReturnType<typeof setInterval>;
+}
+
 // Declare global window extensions
 declare global {
   interface Window {
-    appState: AppState;
+    appState: SlackAppState;
     updateMessages: (messages: Message[], prepend?: boolean) => void;
     setLoading: (loading: boolean) => void;
-    webkit: {
-      messageHandlers: {
-        hammerspoon: {
+    keepScrollPosition?: boolean;
+    webkit?: {
+      messageHandlers?: {
+        hammerspoon?: {
           postMessage: (action: string) => void;
         };
       };
@@ -191,7 +170,9 @@ const formatText = (text: string): string => {
   text = text.replace(/(^|[^"'])(https?:\/\/[^\s<]+)/g, (_, prefix, url) => {
     return prefix + '<a href="#" class="link" data-url="' + url + '">' + url + '</a>';
   });
-  // Style @mentions
+  // Style Slack user mentions (<@U123ABC> format) - show as @user
+  text = text.replace(/<@([A-Z0-9]+)>/g, '<span class="mention">@user</span>');
+  // Style regular @mentions
   text = text.replace(/@([a-zA-Z0-9._-]+)/g, '<span class="mention">@$1</span>');
   // Convert newlines to <br>
   text = text.replace(/\n/g, '<br>');
@@ -230,11 +211,12 @@ const ThreadSeparator = ({ count }: { count: number }) => (
 // Main App component
 const App = () => {
   const [messages, setMessages] = useState<Message[]>(window.appState.messages);
-  const [isLoading, setIsLoading] = useState(false);
+  const [_isLoading, setIsLoading] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(window.appState.isInitialLoading);
   const [loadingDots, setLoadingDots] = useState('.');
   const contentRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const loadingStartTimeRef = useRef<number>(0);
 
   // Animate loading dots
   useEffect(() => {
@@ -254,7 +236,7 @@ const App = () => {
     window.updateMessages = (newMessages: Message[], prepend = false) => {
       if (prepend && contentRef.current && messagesContainerRef.current) {
         // Calculate remaining time to reach 750ms minimum
-        const elapsed = Date.now() - loadingStartTime.current;
+        const elapsed = Date.now() - loadingStartTimeRef.current;
         const minDelay = 750;
         const remainingDelay = Math.max(0, minDelay - elapsed);
 
@@ -293,9 +275,10 @@ const App = () => {
           const loader = content.querySelector('.loading-indicator');
           if (loader) {
             loader.classList.remove('visible');
-            if ((loader as any)._animateId) {
-              clearInterval((loader as any)._animateId);
-              (loader as any)._animateId = null;
+            const loaderEl = loader as LoaderElement;
+            if (loaderEl._animateId) {
+              clearInterval(loaderEl._animateId);
+              loaderEl._animateId = undefined;
             }
           }
           window.appState.isLoadingMore = false;
@@ -323,23 +306,19 @@ const App = () => {
   // Initial scroll to bottom (only if not keeping position)
   useEffect(() => {
     const content = contentRef.current;
-    // @ts-ignore - keepScrollPosition is injected by Lua
     if (content && !window.keepScrollPosition) {
       content.scrollTop = content.scrollHeight;
     }
   }, []);
 
-  // Track when loading started for minimum delay
-  const loadingStartTime = useRef<number>(0);
-
   // Animated loading dots
   const startLoadingAnimation = useCallback(() => {
     const content = contentRef.current;
     if (!content) return;
-    const loader = content.querySelector('.loading-indicator');
+    const loader = content.querySelector('.loading-indicator') as LoaderElement | null;
     if (!loader) return;
 
-    loadingStartTime.current = Date.now();
+    loadingStartTimeRef.current = Date.now();
     loader.classList.add('visible');
     let dotCount = 0;
     const animateId = setInterval(() => {
@@ -348,7 +327,7 @@ const App = () => {
       loader.textContent = 'Loading' + dots;
     }, 300);
     // Store interval ID on the element for cleanup
-    (loader as any)._animateId = animateId;
+    loader._animateId = animateId;
   }, []);
 
   // Scroll event for loading more (ignores bounce)

@@ -1,4 +1,4 @@
---- Attention.spoon/ui/slack-built.lua
+--- Attention.spoon/ui/slack.lua
 --- Slack message detail webview using built Preact bundle
 
 -- Use global path set by init.lua

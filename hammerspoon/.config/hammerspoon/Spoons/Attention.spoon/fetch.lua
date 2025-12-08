@@ -78,7 +78,10 @@ local function fetchProject(project, callback)
 					if err then
 						print("[Attention] Slack error for " .. project.id .. ": " .. err)
 					end
-					results.slack = slackData or { dms = {}, channels = {} }
+					-- Store token with slack data for detail fetching
+					local data = slackData or { dms = {}, channels = {} }
+					data._token = token
+					results.slack = data
 					checkDone()
 				end)
 			else
@@ -90,7 +93,10 @@ local function fetchProject(project, callback)
 					if err then
 						print("[Attention] Slack error for " .. project.id .. ": " .. err)
 					end
-					results.slack = slackData or { dms = {}, channels = {} }
+					-- Store token with slack data for detail fetching
+					local data = slackData or { dms = {}, channels = {} }
+					data._token = token
+					results.slack = data
 					checkDone()
 				end)
 			end
@@ -114,7 +120,13 @@ local function fetchProject(project, callback)
 				if err then
 					print("[Attention] Notion error for " .. project.id .. ": " .. err)
 				end
-				results.notion = tasks or {}
+				-- Store API key with each task for detail fetching
+				local tasksWithKey = {}
+				for _, task in ipairs(tasks or {}) do
+					task._apiKey = apiKey
+					table.insert(tasksWithKey, task)
+				end
+				results.notion = tasksWithKey
 				checkDone()
 			end)
 		else

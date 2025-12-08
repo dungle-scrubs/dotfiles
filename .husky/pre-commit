@@ -1,0 +1,13 @@
+#!/bin/sh
+
+echo "Running pre-commit checks..."
+
+# Run all checks (Lua lint, ESLint, TypeScript)
+pnpm run check
+if [ $? -ne 0 ]; then
+    echo ""
+    echo "Pre-commit checks failed. Please fix the errors above."
+    exit 1
+fi
+
+echo "All checks passed."

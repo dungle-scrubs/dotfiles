@@ -280,6 +280,8 @@ function M:canvasMouseEvents(down, up, enterExit, move, ...) end
 --
 -- Notes:
 --  * Setting this to false changes a canvas object's AXsubrole value and may affect the results of filters used with `hs.window.filter`, depending upon how they are defined.
+---@param flag boolean|nil
+---@return hs.canvas
 function M:clickActivating(flag, ...) end
 
 -- A table containing the possible compositing rules for elements within the canvas.
@@ -545,6 +547,8 @@ function M:isVisible() end
 --
 -- Returns:
 --  * If an argument is provided, the canvas object; otherwise the current value.
+---@param level number|string|nil
+---@return hs.canvas
 function M:level(level, ...) end
 
 -- Returns a table specifying the size of the rectangle which can fully render the text with the specified style so that is will be completely visible.
@@ -598,6 +602,8 @@ function M:mouseCallback(mouseCallbackFn, ...) end
 -- Notes:
 --  * The size of the canvas defines the visible area of the canvas -- any portion of a canvas element which extends past the canvas's edges will be clipped.
 --  * a rect-table is a table with key-value pairs specifying the top-left coordinate on the screen for the canvas (keys `x`  and `y`) and the size (keys `h` and `w`) of the canvas. The table may be crafted by any method which includes these keys, including the use of an `hs.geometry` object.
+---@param rect table A rect-table with x, y, w, h keys
+---@return hs.canvas canvas A new canvas object
 function M.new(rect, ...) end
 
 -- An array-like method for accessing the attributes for the canvas element at the specified index

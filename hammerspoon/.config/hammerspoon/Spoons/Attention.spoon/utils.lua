@@ -15,17 +15,25 @@ function M.getShortcutKey(index)
 	return nil
 end
 
---- Get environment variable from ~/.env/services/.env
+--- Get environment variable from ~/.env/ files
+--- Checks services/.env first, then models/.env
 --- @param varName string The variable name to look up
 --- @return string|nil value The value, or nil if not found
 function M.getEnvVar(varName)
-	local envFile = os.getenv("HOME") .. "/.env/services/.env"
-	local output, status = hs.execute("grep '^" .. varName .. "=' " .. envFile .. " | cut -d= -f2-")
-	if status and output and #output > 0 then
-		local value = output:gsub("^%s+", ""):gsub("%s+$", "")
-		value = value:gsub('^"', ""):gsub('"$', ""):gsub("^'", ""):gsub("'$", "")
-		if #value > 0 then
-			return value
+	local home = os.getenv("HOME")
+	local envFiles = {
+		home .. "/.env/services/.env",
+		home .. "/.env/models/.env",
+	}
+
+	for _, envFile in ipairs(envFiles) do
+		local output, status = hs.execute("grep '^" .. varName .. "=' " .. envFile .. " 2>/dev/null | cut -d= -f2-")
+		if status and output and #output > 0 then
+			local value = output:gsub("^%s+", ""):gsub("%s+$", "")
+			value = value:gsub('^"', ""):gsub('"$', ""):gsub("^'", ""):gsub("'$", "")
+			if #value > 0 then
+				return value
+			end
 		end
 	end
 	return nil

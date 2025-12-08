@@ -9,7 +9,11 @@ Create a new plan in `.claude/plans/*.plan.md` to implement the `Task`.
 
 ## Instructions
 
-- Create the plan in the `.claude/plans/<task>.plan.md` file. Name it appropriately based on the `Task`.
+- Create the plan in the `.claude/plans/<NN>_<task-name>.plan.md` file where:
+  - `<NN>` is a 2-digit sequential number (01, 02, 03, etc.) based on existing plans in the directory
+  - `<task-name>` is a kebab-case name based on the task (e.g., `aerospace-hotkeys`, `hammerspoon-refactor`)
+  - Example: `01_aerospace-hotkeys.plan.md`, `02_hammerspoon-refactor.plan.md`
+- Check existing plans in `.claude/plans/` to determine the next available number
 - Use your reasoning model: ultrathink about the requirements, design, and implementation approach.
 - **Interactive Mode Handling:**
   - If in interactive mode: **BEFORE entering plan mode**, analyze the task and use the `AskUserQuestion` tool to gather clarifying information. You MUST ask questions when:
@@ -55,5 +59,5 @@ $ARGUMENTS
 ## Report
 
 - Summarize the work you've just done in a concise bullet point list.
-- Include a path to the plan you created in the `.claude/plans/*.plan.md` file.
+- Include a path to the plan you created in the `.claude/plans/<NN>_<task-name>.plan.md` file.
 - Ask the user if they want to proceed with implementation.

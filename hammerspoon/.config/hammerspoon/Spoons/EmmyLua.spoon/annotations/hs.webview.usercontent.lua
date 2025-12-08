@@ -29,6 +29,8 @@ function M:injectScript(scriptTable, ...) end
 -- Notes:
 --  * This object should be provided as the final argument to the `hs.webview.new` constructor in order to tie the webview to this content controller.  All new windows which are created from this parent webview will also use this controller.
 --  * See `hs.webview.usercontent:setCallback` for more information about the message port.
+---@param name string
+---@return hs.webview.usercontent
 function M.new(name, ...) end
 
 -- Removes all user scripts currently defined for this user content controller.
@@ -60,6 +62,8 @@ function M:removeAllScripts() end
 --      }
 --
 --  * Where *name* matches the name specified in the constructor and *message-object* is the object to post to the function.  This object can be a number, string, date, array, dictionary(table), or nil.
+---@param fn function|nil
+---@return hs.webview.usercontent
 function M:setCallback(fn) end
 
 -- Get a table containing all of the currently defined injection scripts for this user content controller
