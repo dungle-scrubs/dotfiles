@@ -395,10 +395,13 @@ local function launchAndMove(launchFn, appName, workspace, callback)
 		local app = hs.application.get(appName)
 		if app and #app:allWindows() > 0 then
 			checkTimer:stop()
-			-- Move the focused window to the target workspace
-			hs.task.new("/opt/homebrew/bin/aerospace", function()
-				if callback then callback() end
-			end, { "move-node-to-workspace", workspace }):start()
+			-- Focus the app first, then move its window
+			app:activate()
+			hs.timer.doAfter(0.1, function()
+				hs.task.new("/opt/homebrew/bin/aerospace", function()
+					if callback then callback() end
+				end, { "move-node-to-workspace", workspace }):start()
+			end)
 		elseif attempts >= maxAttempts then
 			checkTimer:stop()
 			hs.alert.show("Timeout waiting for " .. appName)

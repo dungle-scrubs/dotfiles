@@ -134,6 +134,8 @@ alias jq='jq -C'
 alias cc='claude'
 alias ccp='claude -p'
 alias ccc='claude --continue'
+alias ccy='claude --dangerously-skip-permissions'
+alias ccyc='claude --dangerously-skip-permissions --continue'
 alias claude-mod='~/.claude-mod/bin/claude-mod'
 alias cm='~/.claude-mod/bin/claude-mod'
 
