@@ -163,7 +163,7 @@ function M.fetchMentionsWithConfig(config, callback)
 				return deduped
 			end
 
-			-- Fetch DMs (exclude DMs where current user is the sender)
+			-- Fetch DMs (only show if someone else sent the LATEST message in the conversation)
 			hs.http.asyncGet(
 				"https://slack.com/api/search.messages?query=to:me&count=20&sort=timestamp",
 				{ ["Authorization"] = "Bearer " .. token },
@@ -171,17 +171,63 @@ function M.fetchMentionsWithConfig(config, callback)
 					if s == 200 then
 						local data = hs.json.decode(r)
 						if data and data.ok and data.messages then
-							local dms = {}
+							-- Collect unique DM channel IDs
+							local dmChannels = {}
+							local channelMessages = {}
 							for _, msg in ipairs(data.messages.matches or {}) do
-								-- Only include DMs where someone ELSE sent the message
-								if msg.channel and msg.channel.is_im and msg.user ~= currentUserId then
-									table.insert(dms, msg)
+								if msg.channel and msg.channel.is_im then
+									local channelId = msg.channel.id
+									if not channelMessages[channelId] then
+										channelMessages[channelId] = msg
+										table.insert(dmChannels, channelId)
+									end
 								end
 							end
-							results.dms = dedupeByUser(dms)
+
+							if #dmChannels == 0 then
+								checkDone()
+								return
+							end
+
+							-- Check each DM channel's latest message
+							local dmPending = #dmChannels
+							local function dmCheckDone()
+								dmPending = dmPending - 1
+								if dmPending == 0 then
+									results.dms = dedupeByUser(results.dms)
+									checkDone()
+								end
+							end
+
+							for _, channelId in ipairs(dmChannels) do
+								hs.http.asyncGet(
+									"https://slack.com/api/conversations.history?channel=" .. channelId .. "&limit=1",
+									{ ["Authorization"] = "Bearer " .. token },
+									function(histStatus, histResponse)
+										if histStatus == 200 then
+											local histData = hs.json.decode(histResponse)
+											if histData and histData.ok and histData.messages and #histData.messages > 0 then
+												local latestMsg = histData.messages[1]
+												-- Only include if someone ELSE sent the latest message
+												if latestMsg.user and latestMsg.user ~= currentUserId then
+													-- Use the original search result message for display
+													local originalMsg = channelMessages[channelId]
+													if originalMsg then
+														table.insert(results.dms, originalMsg)
+													end
+												end
+											end
+										end
+										dmCheckDone()
+									end
+								)
+							end
+						else
+							checkDone()
 						end
+					else
+						checkDone()
 					end
-					checkDone()
 				end
 			)
 

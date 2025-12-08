@@ -34,6 +34,13 @@ return {
 						{ channel_id = "D027S0146P7", name = "Jeff" },
 					},
 				},
+				notion = {
+					api_key_env = "RW_NOTION",
+					databases = {
+						{ database_id_env = "RW_NOTION_BUGS", statuses = { "In Progress", "High Priority", "Low Priority" }, status_type = "select" },
+						{ database_id_env = "RW_NOTION_FEATURES", statuses = { "In Progress", "High Priority", "Low Priority" }, status_type = "select" },
+					},
+				},
 			},
 		},
 		{

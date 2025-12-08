@@ -6,30 +6,28 @@ local M = {}
 -- Will be set by init.lua
 M.getEnvVar = nil
 
---- Fetch Notion tasks assigned to user with specific statuses
---- @param config table Integration config { api_key, database_id, user_id, statuses }
+--- Fetch tasks from a single Notion database
+--- @param apiKey string The Notion API key
+--- @param databaseId string The database ID
+--- @param userId string|nil Optional user ID to filter by
+--- @param statuses table Array of status names to filter
 --- @param callback function Callback with (tasks, error)
-function M.fetchTasksWithConfig(config, callback)
-	local apiKey = config.api_key
-	if not apiKey then
-		callback(nil, "Notion API key not provided")
-		return
-	end
-
-	local databaseId = config.database_id
-	if not databaseId then
-		callback(nil, "Notion database ID not provided")
-		return
-	end
-
-	-- Build status filters
+local function fetchFromDatabase(apiKey, databaseId, userId, statuses, statusType, callback)
+	-- Build status filters (support both 'status' and 'select' property types)
 	local statusFilters = {}
-	local statuses = config.statuses or { "In Progress", "Ready" }
+	local propType = statusType or "status"
 	for _, status in ipairs(statuses) do
-		table.insert(statusFilters, {
-			property = "Status",
-			status = { equals = status },
-		})
+		if propType == "select" then
+			table.insert(statusFilters, {
+				property = "Status",
+				select = { equals = status },
+			})
+		else
+			table.insert(statusFilters, {
+				property = "Status",
+				status = { equals = status },
+			})
+		end
 	end
 
 	-- Build the filter
@@ -39,11 +37,11 @@ function M.fetchTasksWithConfig(config, callback)
 		},
 	}
 
-	-- Add user filter if provided
-	if config.user_id then
+	-- Add user filter if provided (try common property names)
+	if userId then
 		table.insert(filter["and"], {
 			property = "Person",
-			people = { contains = config.user_id },
+			people = { contains = userId },
 		})
 	end
 
@@ -68,8 +66,10 @@ function M.fetchTasksWithConfig(config, callback)
 				for _, page in ipairs(data.results) do
 					local props = page.properties or {}
 					local idProp = props.ID and props.ID.unique_id or {}
-					local titleProp = props.Activity and props.Activity.title or {}
-					local statusProp = props.Status and props.Status.status or {}
+					local titleProp = props.Activity and props.Activity.title
+						or props.Name and props.Name.title
+						or {}
+					local statusProp = props.Status and (props.Status.status or props.Status.select) or {}
 					local domainProp = props.Domain and props.Domain.select or {}
 					local tagsProp = props.Tags and props.Tags.multi_select or {}
 
@@ -110,6 +110,72 @@ function M.fetchTasksWithConfig(config, callback)
 			end
 		end
 	)
+end
+
+--- Fetch Notion tasks assigned to user with specific statuses
+--- Supports both single database_id and multiple databases array
+--- @param config table Integration config { api_key, database_id, databases, user_id, statuses }
+--- @param callback function Callback with (tasks, error)
+function M.fetchTasksWithConfig(config, callback)
+	local apiKey = config.api_key
+	if not apiKey then
+		callback(nil, "Notion API key not provided")
+		return
+	end
+
+	local defaultStatuses = config.statuses or { "In Progress", "Ready" }
+	local userId = config.user_id
+
+	-- Build list of databases to query
+	local databasesToQuery = {}
+
+	-- Support multiple databases with per-database statuses
+	if config.databases and #config.databases > 0 then
+		for _, db in ipairs(config.databases) do
+			table.insert(databasesToQuery, {
+				id = db.database_id,
+				statuses = db.statuses or defaultStatuses,
+				status_type = db.status_type,
+			})
+		end
+	elseif config.database_id then
+		-- Legacy single database support
+		table.insert(databasesToQuery, {
+			id = config.database_id,
+			statuses = defaultStatuses,
+		})
+	else
+		callback(nil, "No Notion database configured")
+		return
+	end
+
+	-- Fetch from all databases in parallel
+	local allTasks = {}
+	local pending = #databasesToQuery
+	local hasError = false
+
+	local function checkDone()
+		pending = pending - 1
+		if pending == 0 then
+			callback(allTasks)
+		end
+	end
+
+	print("[Attention] Fetching from " .. #databasesToQuery .. " Notion database(s)")
+	for _, db in ipairs(databasesToQuery) do
+		print("[Attention] Querying Notion DB: " .. db.id .. " with statuses: " .. table.concat(db.statuses, ", ") .. " (type: " .. (db.status_type or "status") .. ")")
+		fetchFromDatabase(apiKey, db.id, userId, db.statuses, db.status_type, function(tasks, err)
+			if err then
+				print("[Attention] Notion database " .. db.id .. " error: " .. err)
+			elseif tasks then
+				print("[Attention] Notion database " .. db.id .. " returned " .. #tasks .. " tasks")
+				for _, task in ipairs(tasks) do
+					table.insert(allTasks, task)
+				end
+			end
+			checkDone()
+		end)
+	end
 end
 
 --- Fetch page detail including blocks (content)
@@ -161,7 +227,7 @@ function M.fetchDetail(pageId, apiKey, callback)
 					local props = pageData.properties or {}
 					local idProp = props.ID and props.ID.unique_id or {}
 					local titleProp = props.Activity and props.Activity.title or {}
-					local statusProp = props.Status and props.Status.status or {}
+					local statusProp = props.Status and (props.Status.status or props.Status.select) or {}
 					local domainProp = props.Domain and props.Domain.select or {}
 
 					-- Try common property names for tags (multi-select)

@@ -111,9 +111,26 @@ local function fetchProject(project, callback)
 		local notionConfig = project.integrations.notion
 		local apiKey = M.config.resolveEnvVar(notionConfig.api_key_env)
 		if apiKey then
+			-- Resolve database IDs from env vars if needed
+			local resolvedDatabases = nil
+			if notionConfig.databases then
+				resolvedDatabases = {}
+				for _, db in ipairs(notionConfig.databases) do
+					local dbId = db.database_id or M.config.resolveEnvVar(db.database_id_env)
+					if dbId then
+						table.insert(resolvedDatabases, {
+							database_id = dbId,
+							statuses = db.statuses,
+							status_type = db.status_type,
+						})
+					end
+				end
+			end
+
 			M.notionApi.fetchTasksWithConfig({
 				api_key = apiKey,
 				database_id = notionConfig.database_id,
+				databases = resolvedDatabases,
 				user_id = notionConfig.user_id,
 				statuses = notionConfig.statuses or { "In Progress", "Ready" },
 			}, function(tasks, err)
