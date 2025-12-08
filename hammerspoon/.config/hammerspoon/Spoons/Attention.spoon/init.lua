@@ -27,8 +27,13 @@ notionApi.getEnvVar = utils.getEnvVar
 local fetch = dofile(spoonPath .. "/fetch.lua")
 local search = dofile(spoonPath .. "/search.lua")
 local styles = dofile(spoonPath .. "/ui/styles.lua")
-local slackUI = dofile(spoonPath .. "/ui/slack-built.lua")
+local slackUI = dofile(spoonPath .. "/ui/slack.lua")
 slackUI.slackApi = slackApi
+local openaiApi = dofile(spoonPath .. "/api/openai.lua")
+openaiApi.getEnvVar = utils.getEnvVar
+local aiChatUI = dofile(spoonPath .. "/ui/ai-chat.lua")
+aiChatUI.openaiApi = openaiApi
+aiChatUI.getEnvVar = utils.getEnvVar
 
 -- Wire up fetch module dependencies
 fetch.config = config
@@ -55,16 +60,75 @@ obj.loadingTimer = nil
 obj.loadingDots = 0
 obj.scrollOffset = 0
 obj.currentIssue = nil
+obj.currentNotionTask = nil
 obj.currentSlackMsg = nil
 obj.currentSlackThread = nil
 obj.currentSlackChannel = nil
 obj.slackViewMode = "thread"
 obj.slackHistoryCache = nil
+obj.previousWindow = nil
 
 -- Search state
 obj.searchQuery = ""
 obj.activeFilter = ""
 obj.searchMode = nil  -- nil = default, "search" = fuzzy search, "llm" = LLM webview search
+
+-- LLM model state
+obj.currentLLMModel = "openai/gpt-4o-mini"
+obj.showModelSelector = false
+obj.modelFilter = ""
+
+-- Available LLM models (synced with ai-chat.tsx)
+local LLM_MODELS = {
+	{ id = "openrouter/auto", name = "Auto (Best)", key = "a" },
+	{ id = "openai/gpt-4o-mini", name = "GPT-4o Mini", key = "b" },
+	{ id = "openai/gpt-4o", name = "GPT-4o", key = "c" },
+	{ id = "anthropic/claude-3.5-haiku", name = "Claude 3.5 Haiku", key = "d" },
+	{ id = "anthropic/claude-sonnet-4", name = "Claude Sonnet 4", key = "e" },
+	{ id = "x-ai/grok-4.1-fast", name = "Grok 4.1 Fast", key = "f" },
+	{ id = "google/gemini-2.0-flash-exp:free", name = "Gemini 2.0 Flash", key = "g" },
+	{ id = "meta-llama/llama-3.3-70b-instruct", name = "Llama 3.3 70B", key = "h" },
+	{ id = "deepseek/deepseek-chat", name = "DeepSeek V3", key = "i" },
+	{ id = "qwen/qwen-2.5-72b-instruct", name = "Qwen 2.5 72B", key = "j" },
+}
+
+-- Helper to get model display name
+local function getModelDisplayName(modelId)
+	for _, m in ipairs(LLM_MODELS) do
+		if m.id == modelId then
+			return m.name
+		end
+	end
+	return modelId:match("/(.+)") or modelId
+end
+
+-- Helper for fuzzy matching
+local function fuzzyMatch(text, query)
+	if not query or query == "" then return true end
+	local lowerText = text:lower()
+	local lowerQuery = query:lower()
+	local queryIndex = 1
+	for i = 1, #lowerText do
+		if lowerText:sub(i, i) == lowerQuery:sub(queryIndex, queryIndex) then
+			queryIndex = queryIndex + 1
+		end
+		if queryIndex > #lowerQuery then
+			return true
+		end
+	end
+	return false
+end
+
+-- Filter models by search query
+local function filterModels(query)
+	local filtered = {}
+	for _, m in ipairs(LLM_MODELS) do
+		if fuzzyMatch(m.name, query) or fuzzyMatch(m.id, query) then
+			table.insert(filtered, m)
+		end
+	end
+	return filtered
+end
 
 -- Cursor stubs
 local function setHandCursor() end
@@ -294,14 +358,20 @@ function obj:render(data)
 	local searchY = padding
 	local searchText = self.searchQuery ~= "" and self.searchQuery or (self.activeFilter ~= "" and self.activeFilter or "")
 	local searchPlaceholder, searchColor, borderColor
+	local modelIndicatorWidth = 180  -- Width for model indicator when in LLM mode
+	local searchBarWidth = boxWidth - padding * 2
+	local showModelIndicator = false
+
 	if self.searchMode == "search" then
 		searchPlaceholder = searchText ~= "" and searchText or ""
 		searchColor = "#e0e0e0"
 		borderColor = "#f97316"  -- Orange when search mode active
 	elseif self.searchMode == "llm" then
-		searchPlaceholder = searchText ~= "" and searchText or ""
+		searchPlaceholder = self.showModelSelector and (self.modelFilter ~= "" and self.modelFilter or "Search models...") or (searchText ~= "" and searchText or "Ask AI...")
 		searchColor = "#e0e0e0"
 		borderColor = "#8b5cf6"  -- Purple for LLM mode
+		showModelIndicator = true
+		searchBarWidth = boxWidth - padding * 2 - modelIndicatorWidth - 8  -- Make room for model indicator
 	elseif self.activeFilter ~= "" then
 		searchPlaceholder = self.activeFilter
 		searchColor = "#f97316"  -- Orange for active filter text
@@ -313,14 +383,91 @@ function obj:render(data)
 	end
 
 	-- Search bar background
-	c[#c + 1] = { type = "rectangle", action = "fill", fillColor = { hex = "#252525", alpha = 1 }, roundedRectRadii = { xRadius = 6, yRadius = 6 }, frame = { x = padding, y = searchY, w = boxWidth - padding * 2, h = searchBarHeight - 8 } }
-	c[#c + 1] = { type = "rectangle", action = "stroke", strokeColor = { hex = borderColor, alpha = 0.6 }, strokeWidth = 1, roundedRectRadii = { xRadius = 6, yRadius = 6 }, frame = { x = padding, y = searchY, w = boxWidth - padding * 2, h = searchBarHeight - 8 } }
-	c[#c + 1] = { type = "text", text = searchPlaceholder, textFont = font, textSize = fontSize, textColor = { hex = searchColor, alpha = 1 }, textAlignment = "left", frame = { x = padding + 12, y = searchY + 6, w = boxWidth - padding * 2 - 24, h = fontSize + 4 } }
+	c[#c + 1] = { type = "rectangle", action = "fill", fillColor = { hex = "#252525", alpha = 1 }, roundedRectRadii = { xRadius = 6, yRadius = 6 }, frame = { x = padding, y = searchY, w = searchBarWidth, h = searchBarHeight - 8 } }
+	c[#c + 1] = { type = "rectangle", action = "stroke", strokeColor = { hex = borderColor, alpha = 0.6 }, strokeWidth = 1, roundedRectRadii = { xRadius = 6, yRadius = 6 }, frame = { x = padding, y = searchY, w = searchBarWidth, h = searchBarHeight - 8 } }
+	c[#c + 1] = { type = "text", text = searchPlaceholder, textFont = font, textSize = fontSize, textColor = { hex = searchColor, alpha = 1 }, textAlignment = "left", frame = { x = padding + 12, y = searchY + 6, w = searchBarWidth - 24, h = fontSize + 4 } }
+
+	-- Model indicator (shown when in LLM mode)
+	if showModelIndicator then
+		local modelIndicatorX = padding + searchBarWidth + 8
+		local modelName = getModelDisplayName(self.currentLLMModel)
+		local hotkeyBadgeWidth = 32
+		local modelNameWidth = modelIndicatorWidth - hotkeyBadgeWidth - 20
+
+		-- Model indicator background
+		c[#c + 1] = { type = "rectangle", action = "fill", fillColor = { hex = "#2a2a2a", alpha = 1 }, roundedRectRadii = { xRadius = 6, yRadius = 6 }, frame = { x = modelIndicatorX, y = searchY, w = modelIndicatorWidth, h = searchBarHeight - 8 } }
+		c[#c + 1] = { type = "rectangle", action = "stroke", strokeColor = { hex = "#8b5cf6", alpha = 0.4 }, strokeWidth = 1, roundedRectRadii = { xRadius = 6, yRadius = 6 }, frame = { x = modelIndicatorX, y = searchY, w = modelIndicatorWidth, h = searchBarHeight - 8 } }
+
+		-- Model name
+		c[#c + 1] = { type = "text", text = modelName, textFont = font, textSize = fontSize - 1, textColor = { hex = "#888888", alpha = 1 }, textAlignment = "left", frame = { x = modelIndicatorX + 8, y = searchY + 7, w = modelNameWidth, h = fontSize + 2 } }
+
+		-- Shift+Space hotkey badge
+		c[#c + 1] = { type = "rectangle", action = "fill", fillColor = { hex = "#333333", alpha = 1 }, roundedRectRadii = { xRadius = 4, yRadius = 4 }, frame = { x = modelIndicatorX + modelIndicatorWidth - hotkeyBadgeWidth - 6, y = searchY + 4, w = hotkeyBadgeWidth, h = searchBarHeight - 16 } }
+		c[#c + 1] = { type = "text", text = "⇧␣", textFont = font, textSize = fontSize - 2, textColor = { hex = "#8b5cf6", alpha = 1 }, textAlignment = "center", frame = { x = modelIndicatorX + modelIndicatorWidth - hotkeyBadgeWidth - 6, y = searchY + 6, w = hotkeyBadgeWidth, h = fontSize } }
+	end
 
 	-- Hover placeholder
 	c[#c + 1] = { type = "rectangle", action = "fill", fillColor = { hex = "#ffffff", alpha = 0 }, frame = { x = 0, y = 0, w = 0, h = 0 } }
 
 	local yPos = padding + searchBarHeight + sectionSpacing
+
+	-- Model selector list (replaces content when active)
+	if self.showModelSelector and self.searchMode == "llm" then
+		local filteredModels = filterModels(self.modelFilter)
+		local modelLineHeight = lineHeight + 8
+
+		if #filteredModels > 0 then
+			for i, model in ipairs(filteredModels) do
+				local isActive = model.id == self.currentLLMModel
+
+				-- Model item background (highlight if active)
+				if isActive then
+					c[#c + 1] = { type = "rectangle", action = "fill", fillColor = { hex = "#2a2a2a", alpha = 1 }, roundedRectRadii = { xRadius = 6, yRadius = 6 }, frame = { x = padding, y = yPos, w = boxWidth - padding * 2, h = modelLineHeight } }
+					c[#c + 1] = { type = "rectangle", action = "stroke", strokeColor = { hex = "#8b5cf6", alpha = 0.6 }, strokeWidth = 1, roundedRectRadii = { xRadius = 6, yRadius = 6 }, frame = { x = padding, y = yPos, w = boxWidth - padding * 2, h = modelLineHeight } }
+				end
+
+				-- Hotkey badge
+				c[#c + 1] = { type = "rectangle", action = "fill", fillColor = { hex = "#333333", alpha = 1 }, roundedRectRadii = { xRadius = 4, yRadius = 4 }, frame = { x = padding + 12, y = yPos + 6, w = 28, h = modelLineHeight - 12 } }
+				c[#c + 1] = { type = "text", text = model.key, textFont = font, textSize = fontSize - 1, textColor = { hex = "#8b5cf6", alpha = 1 }, textAlignment = "center", frame = { x = padding + 12, y = yPos + 8, w = 28, h = fontSize } }
+
+				-- Model name
+				c[#c + 1] = { type = "text", text = model.name, textFont = font, textSize = fontSize, textColor = { hex = "#e0e0e0", alpha = 1 }, textAlignment = "left", frame = { x = padding + 52, y = yPos + 8, w = boxWidth - padding * 2 - 100, h = fontSize + 4 } }
+
+				-- Active indicator
+				if isActive then
+					c[#c + 1] = { type = "text", text = "*", textFont = font, textSize = fontSize + 2, textColor = { hex = "#8b5cf6", alpha = 1 }, textAlignment = "right", frame = { x = boxWidth - padding - 30, y = yPos + 6, w = 20, h = fontSize + 4 } }
+				end
+
+				-- Add clickable item for this model
+				table.insert(self.clickableItems, {
+					type = "llm-model",
+					y = yPos,
+					h = modelLineHeight,
+					x = padding,
+					w = boxWidth - padding * 2,
+					data = model,
+					key = model.key
+				})
+				self.keyMap[model.key] = #self.clickableItems
+
+				yPos = yPos + modelLineHeight + 4
+			end
+		else
+			-- No models match filter
+			c[#c + 1] = { type = "text", text = "No models match \"" .. self.modelFilter .. "\"", textFont = font, textSize = fontSize, textColor = { hex = "#666666", alpha = 1 }, textAlignment = "center", frame = { x = padding, y = yPos + 20, w = boxWidth - padding * 2, h = fontSize + 4 } }
+		end
+
+		-- Skip the rest of the content rendering
+		c:level(hs.canvas.windowLevels.overlay)
+		c:clickActivating(false)
+		c:behaviorAsLabels({ "canJoinAllSpaces", "stationary" })
+		c:show()
+		self.visible = true
+		if not self.escapeWatcher then
+			self:setupEventHandlers()
+		end
+		return
+	end
 
 	-- Calendar section
 	if #calendarEvents > 0 then
@@ -384,6 +531,7 @@ function obj:render(data)
 		local notionTasks = project.data.notion or {}
 		local slackChannels = project.data.slack and project.data.slack.channels or {}
 		local slackDms = project.data.slack and project.data.slack.dms or {}
+		local slackToken = project.data.slack and project.data.slack._token or nil
 		local slackCount = #slackChannels + #slackDms
 
 		-- H2: Project header with color indicator
@@ -485,7 +633,8 @@ function obj:render(data)
 						x = colX,
 						w = columnWidth,
 						data = msg,
-						key = shortcut
+						key = shortcut,
+						_token = slackToken
 					})
 					if shortcut then self.keyMap[shortcut] = #self.clickableItems end
 
@@ -522,7 +671,8 @@ function obj:render(data)
 						x = colX,
 						w = columnWidth,
 						data = msg,
-						key = shortcut
+						key = shortcut,
+						_token = slackToken
 					})
 					if shortcut then self.keyMap[shortcut] = #self.clickableItems end
 
@@ -695,9 +845,9 @@ function obj:renderLinearDetail(issue, resetScroll)
 	local canScrollUp = self.scrollOffset > 0
 	local canScrollDown = self.contentHeight > self.viewHeight + self.scrollOffset
 	local scrollHint = ""
-	if canScrollUp and canScrollDown then scrollHint = "^v"
-	elseif canScrollUp then scrollHint = "^"
-	elseif canScrollDown then scrollHint = "v"
+	if canScrollUp and canScrollDown then scrollHint = "↑↓"
+	elseif canScrollUp then scrollHint = "↑"
+	elseif canScrollDown then scrollHint = "↓"
 	end
 
 	local xPos = padding
@@ -712,6 +862,182 @@ function obj:renderLinearDetail(issue, resetScroll)
 	c[#c + 1] = { type = "text", text = "b", textFont = font, textSize = hintSize, textColor = keyColor, textAlignment = "left", frame = { x = xPos, y = hintY, w = 14, h = 20 } }
 	xPos = xPos + 16
 	c[#c + 1] = { type = "text", text = "back", textFont = font, textSize = hintSize, textColor = textColor, textAlignment = "left", frame = { x = xPos, y = hintY, w = 40, h = 20 } }
+	xPos = xPos + 60
+	c[#c + 1] = { type = "text", text = "esc", textFont = font, textSize = hintSize, textColor = keyColor, textAlignment = "left", frame = { x = xPos, y = hintY, w = 30, h = 20 } }
+	xPos = xPos + 32
+	c[#c + 1] = { type = "text", text = "close", textFont = font, textSize = hintSize, textColor = textColor, textAlignment = "left", frame = { x = xPos, y = hintY, w = 50, h = 20 } }
+
+	c:level(hs.canvas.windowLevels.overlay)
+	c:clickActivating(false)
+	c:show()
+	self.visible = true
+	self:setupEventHandlers()
+end
+
+function obj:renderNotionDetail(task, resetScroll)
+	if self.loadingTimer then
+		self.loadingTimer:stop()
+		self.loadingTimer = nil
+	end
+
+	if task then
+		self.currentNotionTask = task
+	else
+		task = self.currentNotionTask
+	end
+	if not task then return end
+
+	if resetScroll ~= false then
+		self.scrollOffset = 0
+	end
+
+	self.currentView = "notion-detail"
+	self.clickableItems = {}
+	self.hoveredIndex = nil
+	self.keyMap = {}
+	self.keyMap["b"] = 1
+	self.keyMap["o"] = 2
+
+	local font = "CaskaydiaCove Nerd Font Mono"
+	local fontSize = 14
+	local lineHeight = fontSize + 8
+	local padding = 24
+	local boxWidth = 900
+	local boxHeight = 600
+	local footerHeight = 36
+	local contentTop = 60
+
+	local screen = hs.screen.mainScreen()
+	local frame = screen:frame()
+	local boxX = frame.x + (frame.w - boxWidth) / 2
+	local boxY = frame.y + (frame.h - boxHeight) / 2
+
+	if self.canvas then
+		self.canvas:delete()
+	end
+
+	self.canvas = hs.canvas.new({ x = boxX, y = boxY, w = boxWidth, h = boxHeight })
+	self.canvasFrame = { x = boxX, y = boxY, w = boxWidth, h = boxHeight }
+	self.lastCanvasSize = { w = boxWidth, h = boxHeight }
+	local c = self.canvas
+
+	c[1] = { type = "rectangle", action = "fill", fillColor = { hex = "#1a1a1a", alpha = 0.95 }, roundedRectRadii = { xRadius = 10, yRadius = 10 } }
+	c[2] = { type = "rectangle", action = "stroke", strokeColor = { hex = "#c9a67a", alpha = 0.9 }, strokeWidth = 2, roundedRectRadii = { xRadius = 10, yRadius = 10 } }
+
+	table.insert(self.clickableItems, { type = "back", y = padding, h = 30, x = padding, w = 90, key = "b" })
+	c[3] = { type = "text", text = "b", textFont = font, textSize = fontSize, textColor = { hex = "#c9a67a", alpha = 1 }, textAlignment = "left", frame = { x = padding, y = padding, w = 16, h = 30 } }
+	c[4] = { type = "text", text = "<- Back", textFont = font, textSize = fontSize, textColor = { hex = "#888888", alpha = 1 }, textAlignment = "left", frame = { x = padding + 20, y = padding, w = 70, h = 30 } }
+
+	-- Open in Notion button
+	table.insert(self.clickableItems, { type = "open-notion", y = padding, h = 30, x = boxWidth - padding - 140, w = 140, data = task, key = "o" })
+	c[5] = { type = "text", text = "o", textFont = font, textSize = fontSize, textColor = { hex = "#c9a67a", alpha = 1 }, textAlignment = "right", frame = { x = boxWidth - padding - 140, y = padding, w = 16, h = 30 } }
+	c[6] = { type = "text", text = "Open in Notion ->", textFont = font, textSize = fontSize, textColor = { hex = "#888888", alpha = 1 }, textAlignment = "right", frame = { x = boxWidth - padding - 120, y = padding, w = 120, h = 30 } }
+
+	c[7] = { type = "rectangle", action = "fill", fillColor = { hex = "#ffffff", alpha = 0 }, frame = { x = 0, y = 0, w = 0, h = 0 } }
+
+	local titleY = padding + 10
+	c[#c + 1] = { type = "text", text = task.identifier, textFont = font, textSize = fontSize + 2, textColor = { hex = "#8b8b8b", alpha = 1 }, textAlignment = "center", frame = { x = padding, y = titleY, w = boxWidth - (padding * 2), h = 30 } }
+
+	local clipTop = padding + 45
+	local clipHeight = boxHeight - clipTop - footerHeight - 8
+	c[#c + 1] = { type = "rectangle", action = "clip", frame = { x = 0, y = clipTop, w = boxWidth, h = clipHeight } }
+
+	local scrollY = -self.scrollOffset
+	local yPos = clipTop + 5 + scrollY
+
+	c[#c + 1] = { type = "text", text = task.title or "Untitled", textFont = font, textSize = fontSize + 6, textColor = { hex = "#ffffff", alpha = 1 }, textAlignment = "left", frame = { x = padding, y = yPos, w = boxWidth - (padding * 2), h = 36 } }
+	yPos = yPos + 40
+
+	-- Render badges (domain + tags) inline
+	local hasBadges = task.domain or (task.tags and #task.tags > 0)
+	if hasBadges then
+		local badgeX = padding
+		local badgeFontSize = 11
+		local badgePadding = 8
+		local badgeGap = 6
+		local badgeHeight = 18
+
+		-- Collect all badges (domain first, then tags)
+		local allBadges = {}
+		if task.domain then
+			table.insert(allBadges, task.domain)
+		end
+		for _, tag in ipairs(task.tags or {}) do
+			table.insert(allBadges, tag)
+		end
+
+		-- Render each badge
+		for _, badge in ipairs(allBadges) do
+			local badgeWidth = #badge * 7 + badgePadding * 2
+			-- Badge background
+			c[#c + 1] = { type = "rectangle", action = "fill", fillColor = { hex = "#3a3a3a", alpha = 1 }, roundedRectRadii = { xRadius = 4, yRadius = 4 }, frame = { x = badgeX, y = yPos, w = badgeWidth, h = badgeHeight } }
+			-- Badge text
+			c[#c + 1] = { type = "text", text = badge, textFont = font, textSize = badgeFontSize, textColor = { hex = "#a0a0a0", alpha = 1 }, textAlignment = "center", frame = { x = badgeX, y = yPos + 2, w = badgeWidth, h = badgeHeight - 2 } }
+			badgeX = badgeX + badgeWidth + badgeGap
+		end
+		yPos = yPos + badgeHeight + 12
+	end
+
+	local status = task.status or "Unknown"
+	c[#c + 1] = { type = "text", text = status, textFont = font, textSize = fontSize, textColor = { hex = "#f97316", alpha = 1 }, textAlignment = "left", frame = { x = padding, y = yPos, w = boxWidth - (padding * 2), h = lineHeight } }
+	yPos = yPos + lineHeight + 16
+
+	c[#c + 1] = { type = "rectangle", action = "fill", fillColor = { hex = "#444444", alpha = 1 }, frame = { x = padding, y = yPos, w = boxWidth - (padding * 2), h = 1 } }
+	yPos = yPos + 20
+
+	c[#c + 1] = { type = "text", text = "Content", textFont = font, textSize = fontSize, textColor = { hex = "#c9a67a", alpha = 1 }, textAlignment = "left", frame = { x = padding, y = yPos, w = boxWidth - (padding * 2), h = lineHeight } }
+	yPos = yPos + lineHeight + 4
+
+	local content = task.content or "(No content)"
+	if #content > 3000 then content = content:sub(1, 3000) .. "..." end
+	-- Better height calculation: count actual newlines and estimate wrapped lines
+	local contentWidth = boxWidth - (padding * 2)
+	local charsPerLine = math.floor(contentWidth / 8)  -- ~8px per char at fontSize - 1 (13px)
+	local lineCount = 0
+	-- Count actual lines by splitting on newlines
+	for line in (content .. "\n"):gmatch("([^\n]*)\n") do
+		-- Each actual line may wrap based on its length
+		lineCount = lineCount + math.max(1, math.ceil(#line / charsPerLine))
+	end
+	local contentLineHeight = 18  -- line height for content text
+	local contentHeight = math.max(100, lineCount * contentLineHeight + 20)  -- Add some padding
+	c[#c + 1] = { type = "text", text = content, textFont = font, textSize = fontSize - 1, textColor = { hex = "#cccccc", alpha = 1 }, textAlignment = "left", frame = { x = padding, y = yPos, w = contentWidth, h = contentHeight } }
+	yPos = yPos + contentHeight + 20
+
+	self.contentHeight = yPos + self.scrollOffset - padding
+	self.viewHeight = boxHeight - contentTop - footerHeight - 8
+
+	c[#c + 1] = { type = "resetClip" }
+
+	local footerY = boxHeight - footerHeight
+	c[#c + 1] = { type = "rectangle", action = "fill", fillColor = { hex = "#252525", alpha = 1 }, frame = { x = 0, y = footerY, w = boxWidth, h = footerHeight } }
+	c[#c + 1] = { type = "rectangle", action = "fill", fillColor = { hex = "#444444", alpha = 1 }, frame = { x = padding, y = footerY, w = boxWidth - (padding * 2), h = 1 } }
+
+	local hintY = footerY + 10
+	local hintSize = fontSize - 2
+	local keyColor = { hex = "#c9a67a", alpha = 1 }
+	local textColor = { hex = "#666666", alpha = 1 }
+
+	local canScrollUp = self.scrollOffset > 0
+	local canScrollDown = self.contentHeight > self.viewHeight + self.scrollOffset
+	local scrollHint = ""
+	if canScrollUp and canScrollDown then scrollHint = "↑↓"
+	elseif canScrollUp then scrollHint = "↑"
+	elseif canScrollDown then scrollHint = "↓"
+	end
+
+	local xPos = padding
+	c[#c + 1] = { type = "text", text = "j/k", textFont = font, textSize = hintSize, textColor = keyColor, textAlignment = "left", frame = { x = xPos, y = hintY, w = 30, h = 20 } }
+	xPos = xPos + 32
+	c[#c + 1] = { type = "text", text = "scroll " .. scrollHint, textFont = font, textSize = hintSize, textColor = textColor, textAlignment = "left", frame = { x = xPos, y = hintY, w = 80, h = 20 } }
+	xPos = xPos + 90
+	c[#c + 1] = { type = "text", text = "b", textFont = font, textSize = hintSize, textColor = keyColor, textAlignment = "left", frame = { x = xPos, y = hintY, w = 14, h = 20 } }
+	xPos = xPos + 16
+	c[#c + 1] = { type = "text", text = "back", textFont = font, textSize = hintSize, textColor = textColor, textAlignment = "left", frame = { x = xPos, y = hintY, w = 40, h = 20 } }
+	xPos = xPos + 60
+	c[#c + 1] = { type = "text", text = "o", textFont = font, textSize = hintSize, textColor = keyColor, textAlignment = "left", frame = { x = xPos, y = hintY, w = 14, h = 20 } }
+	xPos = xPos + 16
+	c[#c + 1] = { type = "text", text = "open", textFont = font, textSize = hintSize, textColor = textColor, textAlignment = "left", frame = { x = xPos, y = hintY, w = 40, h = 20 } }
 	xPos = xPos + 60
 	c[#c + 1] = { type = "text", text = "esc", textFont = font, textSize = hintSize, textColor = keyColor, textAlignment = "left", frame = { x = xPos, y = hintY, w = 30, h = 20 } }
 	xPos = xPos + 32
@@ -762,7 +1088,7 @@ function obj:renderSlackDetail(msg, thread, resetScroll, isInitialLoading)
 				if selfRef.slackHistoryCache and #selfRef.slackHistoryCache > 0 then
 					slackUI.switchView(selfRef, "history", selfRef.slackHistoryCache)
 				else
-					slackApi.fetchHistory(selfRef.currentSlackChannel, function(messages, err)
+					slackApi.fetchHistoryWithConfig(selfRef.currentSlackChannel, { token = selfRef.currentSlackToken }, function(messages, err)
 						slackUI.switchView(selfRef, "history", messages)
 					end)
 				end
@@ -774,7 +1100,7 @@ function obj:renderSlackDetail(msg, thread, resetScroll, isInitialLoading)
 			end
 			local channelId = selfRef.currentSlackMsg.channel and selfRef.currentSlackMsg.channel.id
 			if channelId and threadTs then
-				slackApi.fetchThread(channelId, threadTs, function(threadMsgs, err)
+				slackApi.fetchThreadWithConfig(channelId, threadTs, { token = selfRef.currentSlackToken }, function(threadMsgs, err)
 					slackUI.switchView(selfRef, "thread", threadMsgs)
 				end)
 			end
@@ -793,7 +1119,7 @@ function obj:renderSlackDetail(msg, thread, resetScroll, isInitialLoading)
 				oldestTs = selfRef.currentSlackThread[1].ts
 			end
 
-			slackApi.fetchHistory(channelId, function(olderMessages, err)
+			slackApi.fetchHistoryWithConfig(channelId, { token = selfRef.currentSlackToken }, function(olderMessages, err)
 				if olderMessages and #olderMessages > 0 then
 					local combined = {}
 					for _, m in ipairs(olderMessages) do
@@ -864,12 +1190,38 @@ function obj:setupEventHandlers()
 		local char = event:getCharacters()
 		local mods = event:getFlags()
 
+		-- Let through keys with heavy modifier combinations (meh = ctrl+alt+shift, hyper = cmd+ctrl+alt+shift)
+		-- These are typically system-level hotkeys that should always work
+		local modCount = 0
+		if mods.ctrl then modCount = modCount + 1 end
+		if mods.alt then modCount = modCount + 1 end
+		if mods.shift then modCount = modCount + 1 end
+		if mods.cmd then modCount = modCount + 1 end
+		if modCount >= 3 then
+			return false  -- Let system hotkeys pass through
+		end
+
+		-- Cmd+Escape - emergency force close (always works)
+		if keyCode == 53 and mods.cmd then
+			selfRef:forceCleanup()
+			return true
+		end
+
 		-- Escape key
 		if keyCode == 53 then
+			-- If in LLM mode with model selector open, close model selector first (stay in LLM mode)
+			if selfRef.searchMode == "llm" and selfRef.showModelSelector then
+				selfRef.showModelSelector = false
+				selfRef.modelFilter = ""
+				selfRef:render(selfRef.cache)
+				return true
+			end
 			-- If in search mode, exit search mode (back to default)
 			if selfRef.searchMode then
 				selfRef.searchMode = nil
 				selfRef.searchQuery = ""
+				selfRef.showModelSelector = false
+				selfRef.modelFilter = ""
 				selfRef:render(selfRef.cache)
 				return true
 			end
@@ -879,7 +1231,7 @@ function obj:setupEventHandlers()
 				selfRef:render(selfRef.cache)
 				return true
 			end
-			if selfRef.currentView == "linear-detail" or selfRef.currentView == "slack-detail" then
+			if selfRef.currentView == "linear-detail" or selfRef.currentView == "slack-detail" or selfRef.currentView == "notion-detail" then
 				selfRef.scrollOffset = 0
 				selfRef:render(selfRef.cache)
 			else
@@ -924,16 +1276,94 @@ function obj:setupEventHandlers()
 			return true
 		end
 
-		-- When in LLM search mode (placeholder for future)
+		-- When in LLM search mode - open AI chat webview
 		if selfRef.searchMode == "llm" then
-			-- Return/Enter key - submit LLM query (placeholder)
-			if keyCode == 36 then
-				if selfRef.searchQuery ~= "" then
-					hs.alert.show("LLM Search: " .. selfRef.searchQuery .. " (coming soon)")
+			-- Model selector mode has different key handling
+			if selfRef.showModelSelector then
+				-- ESC is handled at the top of the event handler
+
+				-- Enter key - select first filtered model
+				if keyCode == 36 then
+					local filtered = filterModels(selfRef.modelFilter)
+					if #filtered > 0 then
+						selfRef.currentLLMModel = filtered[1].id
+						selfRef.showModelSelector = false
+						selfRef.modelFilter = ""
+						selfRef:render(selfRef.cache)
+					end
+					return true
 				end
+
+				-- Backspace key - remove last character from filter
+				if keyCode == 51 then
+					if selfRef.modelFilter ~= "" then
+						selfRef.modelFilter = selfRef.modelFilter:sub(1, -2)
+						selfRef:render(selfRef.cache)
+					end
+					return true
+				end
+
+				-- Letter keys for quick model selection (only when filter is empty)
+				if selfRef.modelFilter == "" and char and char:match("^[a-j]$") then
+					for _, model in ipairs(LLM_MODELS) do
+						if model.key == char then
+							selfRef.currentLLMModel = model.id
+							selfRef.showModelSelector = false
+							selfRef.modelFilter = ""
+							selfRef:render(selfRef.cache)
+							return true
+						end
+					end
+				end
+
+				-- Handle typing for model filter
+				if char and #char == 1 and not mods.cmd and not mods.ctrl and not mods.alt then
+					local charCode = char:byte()
+					if (charCode >= 32 and charCode <= 126) then
+						selfRef.modelFilter = selfRef.modelFilter .. char
+						selfRef:render(selfRef.cache)
+						return true
+					end
+				end
+
+				-- Block all other keys in model selector
+				return true
+			end
+
+			-- Shift+Space toggles model selector
+			if keyCode == 49 and mods.shift and not mods.cmd and not mods.ctrl and not mods.alt then
+				selfRef.showModelSelector = true
+				selfRef.modelFilter = ""
+				selfRef:render(selfRef.cache)
+				return true
+			end
+
+			-- Return/Enter key - open AI chat with query and selected model
+			if keyCode == 36 then
+				local query = selfRef.searchQuery
+				local model = selfRef.currentLLMModel
+				-- Save the original window before we hide
+				local originalWindow = selfRef.previousWindow
 				selfRef.searchMode = nil
 				selfRef.searchQuery = ""
-				selfRef:render(selfRef.cache)
+				selfRef.showModelSelector = false
+				selfRef.modelFilter = ""
+				selfRef:hide()  -- Hide the main dashboard (clears previousWindow)
+				-- Pass model to AI chat and sync it
+				aiChatUI.currentModel = model
+				-- Pass the original window so AI chat can restore focus to it
+				aiChatUI.previousWindow = originalWindow
+				aiChatUI.show(query, {
+					onClose = function()
+						-- "Back" pressed - get the original window before closing
+						local windowToPass = aiChatUI.getPreviousWindow()
+						-- Close AI chat WITHOUT restoring focus (we're going back to dashboard)
+						aiChatUI.close(false)
+						-- Re-show dashboard with original window preserved
+						selfRef.previousWindow = windowToPass
+						selfRef:show()
+					end
+				})
 				return true
 			end
 
@@ -998,7 +1428,47 @@ function obj:setupEventHandlers()
 			end
 		end
 
-		-- Handle keyboard shortcuts for items (only when not in search mode)
+		-- Scroll keys for notion-detail view
+		if selfRef.currentView == "notion-detail" then
+			local scrollDown = (mods.ctrl and keyCode == 2) or (keyCode == 38)
+			local scrollUp = (mods.ctrl and keyCode == 32) or (keyCode == 40)
+
+			if scrollDown then
+				local maxScroll = math.max(0, (selfRef.contentHeight or 0) - (selfRef.viewHeight or 400))
+				selfRef.scrollOffset = math.min(selfRef.scrollOffset + 100, maxScroll)
+				selfRef:renderNotionDetail(nil, false)
+				return true
+			end
+
+			if scrollUp then
+				selfRef.scrollOffset = math.max(0, selfRef.scrollOffset - 100)
+				selfRef:renderNotionDetail(nil, false)
+				return true
+			end
+		end
+
+		-- Block all keys when in detail views (except those explicitly handled above)
+		if selfRef.currentView == "linear-detail" or selfRef.currentView == "notion-detail" or selfRef.currentView == "slack-detail" then
+			-- Handle specific shortcuts for detail views, then block all others
+			if char and selfRef.keyMap[char] then
+				local itemIdx = selfRef.keyMap[char]
+				local item = selfRef.clickableItems[itemIdx]
+				if item then
+					if item.type == "back" then
+						selfRef.scrollOffset = 0
+						selfRef:render(selfRef.cache)
+					elseif item.type == "open-notion" then
+						if item.data and item.data.url then
+							hs.urlevent.openURL(item.data.url)
+							selfRef:hide()
+						end
+					end
+				end
+			end
+			return true  -- Block all keys in detail views
+		end
+
+		-- Handle keyboard shortcuts for items in main view (only when not in search mode)
 		if char and selfRef.keyMap[char] then
 			local itemIdx = selfRef.keyMap[char]
 			local item = selfRef.clickableItems[itemIdx]
@@ -1019,6 +1489,22 @@ function obj:setupEventHandlers()
 						end
 					end)
 				elseif item.type == "notion" then
+					selfRef:showLoader()
+					local apiKey = item.data._apiKey
+					if apiKey then
+						notionApi.fetchDetail(item.data.id, apiKey, function(task, err)
+							if task then
+								selfRef:renderNotionDetail(task)
+							else
+								selfRef:render(selfRef.cache)
+								hs.alert.show("Failed to load Notion page")
+							end
+						end)
+					else
+						selfRef:render(selfRef.cache)
+						hs.alert.show("No API key for Notion page")
+					end
+				elseif item.type == "open-notion" then
 					if item.data and item.data.url then
 						hs.urlevent.openURL(item.data.url)
 						selfRef:hide()
@@ -1028,10 +1514,12 @@ function obj:setupEventHandlers()
 					local isDM = item.data.channel and item.data.channel.is_im
 					selfRef.currentSlackChannel = channelId
 
+					local slackToken = item._token
+					selfRef.currentSlackToken = slackToken
 					if isDM and channelId then
 						selfRef.slackViewMode = "history"
 						selfRef:renderSlackDetail(item.data, {}, false, true)
-						slackApi.fetchHistory(channelId, function(messages, err)
+						slackApi.fetchHistoryWithConfig(channelId, { token = slackToken }, function(messages, err)
 							if err or not messages then
 								selfRef:hide()
 								hs.alert.show("Failed to load Slack history")
@@ -1044,7 +1532,7 @@ function obj:setupEventHandlers()
 						local threadTs = item.data.thread_ts or item.data.ts
 						if channelId and threadTs then
 							selfRef:renderSlackDetail(item.data, {}, false, true)
-							slackApi.fetchThread(channelId, threadTs, function(thread, err)
+							slackApi.fetchThreadWithConfig(channelId, threadTs, { token = slackToken }, function(thread, err)
 								if err or not thread then
 									selfRef:hide()
 									hs.alert.show("Failed to load Slack thread")
@@ -1059,6 +1547,11 @@ function obj:setupEventHandlers()
 					end
 				elseif item.type == "back" then
 					selfRef.scrollOffset = 0
+					selfRef:render(selfRef.cache)
+				elseif item.type == "llm-model" then
+					selfRef.currentLLMModel = item.data.id
+					selfRef.showModelSelector = false
+					selfRef.modelFilter = ""
 					selfRef:render(selfRef.cache)
 				end
 			end
@@ -1141,20 +1634,41 @@ function obj:setupEventHandlers()
 						end)
 						return true
 					elseif item.type == "notion" then
-						if item.data and item.data.url then
-							hs.urlevent.openURL(item.data.url)
+						selfRef:showLoader()
+						local apiKey = item.data._apiKey
+						if apiKey then
+							notionApi.fetchDetail(item.data.id, apiKey, function(task, err)
+								if task then
+									selfRef:renderNotionDetail(task)
+								else
+									selfRef:render(selfRef.cache)
+									hs.alert.show("Failed to load Notion page")
+								end
+							end)
+						else
+							selfRef:render(selfRef.cache)
+							hs.alert.show("No API key for Notion page")
 						end
-						selfRef:hide()
 						return true
+					elseif item.type == "open-notion" then
+						if relX >= item.x and relX <= item.x + item.w then
+							if item.data and item.data.url then
+								hs.urlevent.openURL(item.data.url)
+							end
+							selfRef:hide()
+							return true
+						end
 					elseif item.type == "slack" then
 						selfRef:showLoader()
 						local channelId = item.data.channel and item.data.channel.id
 						local isDM = item.data.channel and item.data.channel.is_im
 						selfRef.currentSlackChannel = channelId
 
+						local slackToken = item._token
+						selfRef.currentSlackToken = slackToken
 						if isDM and channelId then
 							selfRef.slackViewMode = "history"
-							slackApi.fetchHistory(channelId, function(messages, err)
+							slackApi.fetchHistoryWithConfig(channelId, { token = slackToken }, function(messages, err)
 								if err or not messages then
 									selfRef:hide()
 									hs.alert.show("Failed to load Slack history")
@@ -1166,7 +1680,7 @@ function obj:setupEventHandlers()
 							selfRef.slackViewMode = "thread"
 							local threadTs = item.data.thread_ts or item.data.ts
 							if channelId and threadTs then
-								slackApi.fetchThread(channelId, threadTs, function(thread, err)
+								slackApi.fetchThreadWithConfig(channelId, threadTs, { token = slackToken }, function(thread, err)
 									if err or not thread then
 										selfRef:hide()
 										hs.alert.show("Failed to load Slack thread")
@@ -1180,6 +1694,14 @@ function obj:setupEventHandlers()
 							end
 						end
 						return true
+					elseif item.type == "llm-model" then
+						if relX >= item.x and relX <= item.x + item.w then
+							selfRef.currentLLMModel = item.data.id
+							selfRef.showModelSelector = false
+							selfRef.modelFilter = ""
+							selfRef:render(selfRef.cache)
+							return true
+						end
 					end
 				end
 			end
@@ -1211,6 +1733,10 @@ function obj:setupEventHandlers()
 end
 
 function obj:show()
+	-- Save the currently focused window to restore later (if not already set)
+	if not self.previousWindow then
+		self.previousWindow = hs.window.focusedWindow()
+	end
 	self.searchQuery = ""
 	self.activeFilter = ""
 	self.searchMode = nil
@@ -1231,12 +1757,39 @@ function obj:hide()
 		self.loadingTimer = nil
 	end
 	slackUI.closeWebview(self)
+	aiChatUI.close()  -- Also close AI chat if open
 	if self.canvas then
 		self.canvas:hide()
 		self.canvas:delete()
 		self.canvas = nil
 	end
 	self.visible = false
+	-- Stop all eventtaps to release keyboard
+	self:stopAllEventtaps()
+	self.currentView = "main"
+	self.clickableItems = {}
+	self.canvasFrame = nil
+	self.hoveredIndex = nil
+	self.scrollOffset = 0
+	self.currentIssue = nil
+	self.currentNotionTask = nil
+	self.currentSlackMsg = nil
+	self.currentSlackThread = nil
+	self.slackHistoryCache = nil
+	self.searchQuery = ""
+	self.activeFilter = ""
+	self.searchMode = nil
+	self.showModelSelector = false
+	self.modelFilter = ""
+	-- Restore focus to the previously focused window
+	if self.previousWindow then
+		self.previousWindow:focus()
+		self.previousWindow = nil
+	end
+end
+
+--- Stop all eventtaps to release keyboard control
+function obj:stopAllEventtaps()
 	if self.escapeWatcher then
 		self.escapeWatcher:stop()
 		self.escapeWatcher = nil
@@ -1253,18 +1806,21 @@ function obj:hide()
 		self.scrollWatcher:stop()
 		self.scrollWatcher = nil
 	end
-	self.currentView = "main"
-	self.clickableItems = {}
-	self.canvasFrame = nil
-	self.hoveredIndex = nil
-	self.scrollOffset = 0
-	self.currentIssue = nil
-	self.currentSlackMsg = nil
-	self.currentSlackThread = nil
-	self.slackHistoryCache = nil
-	self.searchQuery = ""
-	self.activeFilter = ""
-	self.searchMode = nil
+end
+
+--- Force cleanup - call this if Attention gets stuck
+function obj:forceCleanup()
+	print("[Attention] Force cleanup triggered")
+	self:stopAllEventtaps()
+	slackUI.closeWebview(self)
+	aiChatUI.close()
+	if self.canvas then
+		self.canvas:hide()
+		self.canvas:delete()
+		self.canvas = nil
+	end
+	self.visible = false
+	resetCursor()
 end
 
 function obj:toggle()
