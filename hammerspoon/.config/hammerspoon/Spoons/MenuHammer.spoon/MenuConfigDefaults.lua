@@ -1274,7 +1274,7 @@ menuHammerMenuList = {
 								name = "Fuse",
 								wezterm = { dir = "~/dev/deckfusion", workspace = "T" },
 								arc = { space = "DF", workspace = "B" },
-								windsurf = { dir = "~/dev/deckfusion", workspace = "X" },
+								cursor = { dir = "~/dev/deckfusion", workspace = "X" },
 								orbstack = { workspace = "D" },
 							})
 						end,

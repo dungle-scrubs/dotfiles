@@ -466,15 +466,15 @@ function projectLauncher.open(config)
 		end)
 	end
 
-	if config.windsurf then
+	if config.cursor then
 		table.insert(steps, function(next)
-			local dir = config.windsurf.dir:gsub("^~", os.getenv("HOME"))
+			local dir = config.cursor.dir:gsub("^~", os.getenv("HOME"))
 			launchAndMove(
 				function()
-					hs.task.new("/Applications/Windsurf.app/Contents/Resources/app/bin/windsurf", nil, { dir }):start()
+					hs.task.new("/Applications/Cursor.app/Contents/Resources/app/bin/cursor", nil, { dir }):start()
 				end,
-				"Windsurf",
-				config.windsurf.workspace,
+				"Cursor",
+				config.cursor.workspace,
 				next
 			)
 		end)
