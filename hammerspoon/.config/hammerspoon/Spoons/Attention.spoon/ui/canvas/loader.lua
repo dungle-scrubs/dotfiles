@@ -4,6 +4,7 @@
 -- Use global path set by init.lua
 local spoonPath = _G.AttentionSpoonPath
 local helpers = dofile(spoonPath .. "/ui/canvas/helpers.lua")
+local utils = dofile(spoonPath .. "/utils.lua")
 
 ---@class AttentionLoaderCanvas
 local M = {}
@@ -12,10 +13,10 @@ local M = {}
 --- @param state table The Attention spoon state object
 --- @return hs.canvas canvas The created canvas
 function M.render(state)
-	-- Stop any existing loading timer
-	if state.loadingTimer then
-		state.loadingTimer:stop()
-		state.loadingTimer = nil
+	-- Stop any existing loading animator
+	if state.loadingAnimator then
+		state.loadingAnimator.stop()
+		state.loadingAnimator = nil
 	end
 
 	-- Calculate size based on last known size or default
@@ -43,7 +44,7 @@ function M.render(state)
 	-- Add elements
 	c[1] = helpers.background()
 	c[2] = helpers.border()
-	c[3] = helpers.text("Loading.  ", {
+	c[3] = helpers.text(utils.getLoadingText(), {
 		x = 0,
 		y = (boxHeight - helpers.fontSize) / 2,
 		w = boxWidth,
@@ -59,12 +60,9 @@ function M.render(state)
 	state.visible = true
 
 	-- Start loading animation
-	state.loadingDots = 0
-	state.loadingTimer = hs.timer.doEvery(0.3, function()
-		state.loadingDots = (state.loadingDots % 3) + 1
-		local dots = string.rep(".", state.loadingDots) .. string.rep(" ", 3 - state.loadingDots)
+	state.loadingAnimator = utils.createLoadingAnimator("Loading", function(text)
 		if state.canvas and state.canvas[3] then
-			state.canvas[3].text = "Loading" .. dots
+			state.canvas[3].text = text
 		end
 	end)
 

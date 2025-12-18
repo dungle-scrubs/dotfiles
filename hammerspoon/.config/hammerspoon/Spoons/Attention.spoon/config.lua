@@ -7,11 +7,11 @@ local M = {}
 local configCache = nil
 local configPath = os.getenv("HOME") .. "/.config/hammerspoon/attention-config.lua"
 
---- Get environment variable from ~/.env/services/.env
+--- Get environment variable from ~/.env/services
 --- @param varName string The variable name to look up
 --- @return string|nil value The value, or nil if not found
 local function getEnvVar(varName)
-	local envFile = os.getenv("HOME") .. "/.env/services/.env"
+	local envFile = os.getenv("HOME") .. "/.env/services"
 	local output, status = hs.execute("grep '^" .. varName .. "=' " .. envFile .. " | cut -d= -f2-")
 	if status and output and #output > 0 then
 		local value = output:gsub("^%s+", ""):gsub("%s+$", "")

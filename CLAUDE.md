@@ -44,6 +44,27 @@ hs -c "hs.reload()"     # Reload config (ignore "message port invalidated" error
 
 **Important**: Always reload Hammerspoon after any config change.
 
+#### Attention Spoon Loading Indicator
+
+When implementing loading states in the Attention spoon, **always use the shared loading animator utility** from `utils.lua`. Do not create custom loading animations.
+
+```lua
+local utils = dofile(spoonPath .. "/utils.lua")
+
+-- Set initial text
+canvas[3].text = utils.getLoadingText()  -- "Loading ⠋"
+
+-- Start animation
+self.loadingAnimator = utils.createLoadingAnimator("Loading", function(text)
+    canvas[3].text = text
+end)
+
+-- Stop when done
+self.loadingAnimator.stop()
+```
+
+This ensures consistent, fixed-width loading indicators with a smooth braille spinner animation.
+
 ### AeroSpace
 
 ```bash

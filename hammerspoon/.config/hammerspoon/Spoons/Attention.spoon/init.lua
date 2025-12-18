@@ -56,8 +56,7 @@ obj.hoverWatcher = nil
 obj.lastCanvasSize = nil
 obj.selectedIndex = nil
 obj.keyMap = {}
-obj.loadingTimer = nil
-obj.loadingDots = 0
+obj.loadingAnimator = nil
 obj.scrollOffset = 0
 obj.currentIssue = nil
 obj.currentNotionTask = nil
@@ -149,9 +148,9 @@ function obj:needsFetch()
 end
 
 function obj:showLoader()
-	if self.loadingTimer then
-		self.loadingTimer:stop()
-		self.loadingTimer = nil
+	if self.loadingAnimator then
+		self.loadingAnimator.stop()
+		self.loadingAnimator = nil
 	end
 
 	local font = "CaskaydiaCove Nerd Font Mono"
@@ -182,28 +181,25 @@ function obj:showLoader()
 
 	c[1] = { type = "rectangle", action = "fill", fillColor = { hex = "#1a1a1a", alpha = 0.95 }, roundedRectRadii = { xRadius = 10, yRadius = 10 } }
 	c[2] = { type = "rectangle", action = "stroke", strokeColor = { hex = "#5e6ad2", alpha = 0.9 }, strokeWidth = 2, roundedRectRadii = { xRadius = 10, yRadius = 10 } }
-	c[3] = { type = "text", text = "Loading.  ", textFont = font, textSize = fontSize, textColor = { hex = "#5e6ad2", alpha = 1 }, textAlignment = "center", frame = { x = 0, y = (boxHeight - fontSize) / 2, w = boxWidth, h = fontSize + 4 } }
+	c[3] = { type = "text", text = utils.getLoadingText(), textFont = font, textSize = fontSize, textColor = { hex = "#5e6ad2", alpha = 1 }, textAlignment = "center", frame = { x = 0, y = (boxHeight - fontSize) / 2, w = boxWidth, h = fontSize + 4 } }
 
 	c:level(hs.canvas.windowLevels.overlay)
 	c:clickActivating(false)
 	c:show()
 	self.visible = true
 
-	self.loadingDots = 0
 	local selfRef = self
-	self.loadingTimer = hs.timer.doEvery(0.3, function()
-		selfRef.loadingDots = (selfRef.loadingDots % 3) + 1
-		local dots = string.rep(".", selfRef.loadingDots) .. string.rep(" ", 3 - selfRef.loadingDots)
+	self.loadingAnimator = utils.createLoadingAnimator("Loading", function(text)
 		if selfRef.canvas and selfRef.canvas[3] then
-			selfRef.canvas[3].text = "Loading" .. dots
+			selfRef.canvas[3].text = text
 		end
 	end)
 end
 
 function obj:render(data)
-	if self.loadingTimer then
-		self.loadingTimer:stop()
-		self.loadingTimer = nil
+	if self.loadingAnimator then
+		self.loadingAnimator.stop()
+		self.loadingAnimator = nil
 	end
 
 	self.currentView = "main"
@@ -721,9 +717,9 @@ function obj:render(data)
 end
 
 function obj:renderLinearDetail(issue, resetScroll)
-	if self.loadingTimer then
-		self.loadingTimer:stop()
-		self.loadingTimer = nil
+	if self.loadingAnimator then
+		self.loadingAnimator.stop()
+		self.loadingAnimator = nil
 	end
 
 	if issue then
@@ -875,9 +871,9 @@ function obj:renderLinearDetail(issue, resetScroll)
 end
 
 function obj:renderNotionDetail(task, resetScroll)
-	if self.loadingTimer then
-		self.loadingTimer:stop()
-		self.loadingTimer = nil
+	if self.loadingAnimator then
+		self.loadingAnimator.stop()
+		self.loadingAnimator = nil
 	end
 
 	if task then
@@ -1054,9 +1050,9 @@ function obj:renderSlackDetail(msg, thread, resetScroll, isInitialLoading)
 	if self.paginationInProgress then
 		return
 	end
-	if self.loadingTimer then
-		self.loadingTimer:stop()
-		self.loadingTimer = nil
+	if self.loadingAnimator then
+		self.loadingAnimator.stop()
+		self.loadingAnimator = nil
 	end
 
 	local selfRef = self
@@ -1468,6 +1464,15 @@ function obj:setupEventHandlers()
 			return true  -- Block all keys in detail views
 		end
 
+		-- "r" key refreshes data in main view
+		if char == "r" and not mods.cmd and not mods.ctrl and not mods.alt then
+			selfRef:showLoader()
+			selfRef:fetchAll(function(data)
+				selfRef:render(data)
+			end)
+			return true
+		end
+
 		-- Handle keyboard shortcuts for items in main view (only when not in search mode)
 		if char and selfRef.keyMap[char] then
 			local itemIdx = selfRef.keyMap[char]
@@ -1752,9 +1757,9 @@ end
 
 function obj:hide()
 	resetCursor()
-	if self.loadingTimer then
-		self.loadingTimer:stop()
-		self.loadingTimer = nil
+	if self.loadingAnimator then
+		self.loadingAnimator.stop()
+		self.loadingAnimator = nil
 	end
 	slackUI.closeWebview(self)
 	aiChatUI.close()  -- Also close AI chat if open
@@ -1849,7 +1854,10 @@ end
 function obj:init()
 	self:scheduleDailyRefresh()
 	if self:needsFetch() then
-		self:refresh()
+		-- Delay initial fetch to ensure shell environment is ready at boot
+		hs.timer.doAfter(3, function()
+			self:refresh()
+		end)
 	end
 	return self
 end
