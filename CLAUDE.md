@@ -78,6 +78,15 @@ brew bundle --file=homebrew/Brewfile  # Install all packages
 brew bundle dump --file=homebrew/Brewfile --force  # Export current packages
 ```
 
+### WezTerm
+
+**Important**: `~/.wezterm.lua` must NOT exist. WezTerm uses `~/.config/wezterm/init.lua` (managed by stow). If `~/.wezterm.lua` exists, it takes precedence and breaks the stow-managed config.
+
+```bash
+# Check and remove if it exists
+rm -f ~/.wezterm.lua
+```
+
 ## Architecture
 
 ### Stow Package Structure
