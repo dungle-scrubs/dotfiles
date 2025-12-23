@@ -158,6 +158,16 @@ function y() {
 	rm -f -- "$tmp"
 }
 
+# Superfile file manager with directory tracking
+function yy() {
+	export SPF_LAST_DIR="$HOME/Library/Application Support/superfile/lastdir"
+	command spf "$@"
+	[ ! -f "$SPF_LAST_DIR" ] || {
+		. "$SPF_LAST_DIR"
+		rm -f -- "$SPF_LAST_DIR" > /dev/null
+	}
+}
+
 # Directory navigation helpers
 cx() { cd "$@" && l; }
 fcd() { cd "$(find . -type d -not -path '*/.*' | fzf)" && l; }

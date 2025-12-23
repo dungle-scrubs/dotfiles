@@ -137,14 +137,26 @@ local function resetCursor() end
 function obj:fetchAll(callback)
 	fetch.fetchAll(function(data)
 		self.cache = data
-		self.lastFetchDate = os.date("%Y-%m-%d")
-		callback(data)
+		-- Only mark as fetched if we got actual data
+		local itemCount = fetch.countItems(data)
+		if itemCount > 0 then
+			self.lastFetchDate = os.date("%Y-%m-%d")
+			self.retryCount = 0
+		else
+			print("[Attention] Fetch returned empty data, will retry on next show")
+		end
+		if callback then callback(data) end
 	end)
 end
 
 function obj:needsFetch()
 	local today = os.date("%Y-%m-%d")
 	return self.lastFetchDate ~= today
+end
+
+-- Check if cache has meaningful data
+function obj:hasData()
+	return fetch.countItems(self.cache) > 0
 end
 
 function obj:showLoader()
@@ -1746,7 +1758,9 @@ function obj:show()
 	self.activeFilter = ""
 	self.searchMode = nil
 	self:showLoader()
-	if self.cache.projects and next(self.cache.projects) and not self:needsFetch() then
+	-- Fetch if: new day, no cache, or cache is empty (failed fetches)
+	local shouldFetch = self:needsFetch() or not self.cache.projects or not self:hasData()
+	if not shouldFetch then
 		self:render(self.cache)
 	else
 		self:fetchAll(function(data)
@@ -1842,21 +1856,44 @@ function obj:refresh()
 	end)
 end
 
+-- Refresh with automatic retry on failure (exponential backoff)
+function obj:refreshWithRetry()
+	self.retryCount = self.retryCount or 0
+	local maxRetries = 3
+	local baseDelay = 30 -- seconds
+
+	self:fetchAll(function()
+		if self:hasData() then
+			print("Attention dashboard refreshed at " .. os.date("%Y-%m-%d %H:%M"))
+		elseif self.retryCount < maxRetries then
+			self.retryCount = self.retryCount + 1
+			local delay = baseDelay * (2 ^ (self.retryCount - 1)) -- 30s, 60s, 120s
+			print(string.format("[Attention] Fetch failed, retry %d/%d in %ds", self.retryCount, maxRetries, delay))
+			hs.timer.doAfter(delay, function()
+				self:refreshWithRetry()
+			end)
+		else
+			print("[Attention] All retries exhausted, will retry on next show()")
+		end
+	end)
+end
+
 function obj:scheduleDailyRefresh()
 	if self.dailyTimer then
 		self.dailyTimer:stop()
 	end
 	self.dailyTimer = hs.timer.doAt("06:00", "1d", function()
-		self:refresh()
+		self:refreshWithRetry()
 	end)
 end
 
 function obj:init()
+	self.retryCount = 0
 	self:scheduleDailyRefresh()
 	if self:needsFetch() then
 		-- Delay initial fetch to ensure shell environment is ready at boot
 		hs.timer.doAfter(3, function()
-			self:refresh()
+			self:refreshWithRetry()
 		end)
 	end
 	return self
