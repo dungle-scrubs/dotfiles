@@ -278,3 +278,7 @@ alt-shift-l = ['join-with right', 'mode main', 'exec-and-forget hs -c "aerospace
 #[[on-window-detected]]
 #if.app-id = 'dev.kdrag0n.MacVirt'
 #run = ['move-node-to-workspace D']
+
+[[on-window-detected]]
+if.app-id = 'com.chabomakers.Antinote-setapp'
+run = ['layout floating']
