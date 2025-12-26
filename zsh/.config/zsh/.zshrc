@@ -1,5 +1,9 @@
+# ===== WezTerm Config Protection =====
+# Claude Code login creates ~/.wezterm.lua which overrides stow-managed config
+[[ -f ~/.wezterm.lua ]] && rm -f ~/.wezterm.lua
+
 # ===== Oh My Zsh Configuration =====
- 
+
 export ZSH="$HOME/.oh-my-zsh"
 zstyle ':omz:update' mode auto
 zstyle ':omz:update' frequency 7
@@ -249,3 +253,9 @@ export PATH="$HOME/.claude-mod/bin:$PATH"
 # Claude-mod environment variables
 export CLAUDE_MOD_ENV_DIR="$HOME/.claude-mod"
 export CLAUDE_MOD_MCP_DIR="$HOME/.claude-mod/mcp"
+
+# Amp CLI
+export PATH="$HOME/.amp/bin:$PATH"
+
+# direnv - load environment from .envrc files
+eval "$(direnv hook zsh)"
