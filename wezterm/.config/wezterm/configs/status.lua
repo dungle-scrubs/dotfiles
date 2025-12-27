@@ -166,11 +166,18 @@ function M.load(config)
 			end
 		end
 
-		getActiveKeytableKeys()
-		getActiveKeytable()
-		getProcessName()
-		getGitInfo()
-		getWorkspace()
+		local active_key_table = window:active_key_table()
+
+		if active_key_table then
+			-- Key table active: show ONLY hints (full right status width)
+			getActiveKeytableKeys()
+			getActiveKeytable()
+		else
+			-- Normal mode: show standard status info
+			getProcessName()
+			getGitInfo()
+			getWorkspace()
+		end
 
 		window:set_right_status(Wezterm.format(elements))
 	end)
