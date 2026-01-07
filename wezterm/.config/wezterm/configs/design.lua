@@ -12,14 +12,27 @@ local blue_2 = "#6f88a6"
 local background = "#1a1c23"
 local foreground = "#b1b1b1"
 
+local TAB_MAX_WIDTH = 28
+local TAB_PADDING = 4 -- 2 spaces on each side
+local MAX_TITLE_LENGTH = TAB_MAX_WIDTH - TAB_PADDING
+
 local function tab_title(tab_info)
 	local usr_title = tab_info.tab_title
 	local index = tab_info.tab_index + 1 .. " : "
 
+	local title
 	if usr_title and #usr_title > 0 then
-		return index .. usr_title
+		title = index .. usr_title
+	else
+		title = tostring(tab_info.tab_index + 1)
 	end
-	return tab_info.tab_index + 1
+
+	-- Truncate with ".." if too long
+	if #title > MAX_TITLE_LENGTH then
+		title = title:sub(1, MAX_TITLE_LENGTH - 2) .. ".."
+	end
+
+	return title
 end
 
 Wezterm.on("format-tab-title", function(tab)
@@ -33,7 +46,7 @@ Wezterm.on("format-tab-title", function(tab)
 	return {
 		{ Background = { Color = background } },
 		{ Foreground = { Color = foreground } },
-		{ Text = " " .. title .. " " },
+		{ Text = "  " .. title .. "  " },
 	}
 end)
 
@@ -62,6 +75,7 @@ function M.apply(config)
 
 	config.use_fancy_tab_bar = false
 	config.tab_bar_at_bottom = true
+	config.tab_max_width = TAB_MAX_WIDTH
 
 	config.command_palette_rows = 24
 	config.command_palette_bg_color = "#1a1c23"

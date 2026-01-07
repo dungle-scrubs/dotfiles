@@ -6,6 +6,8 @@ local keybinds = require("configs.keybinds")
 local launch_menu = require("configs.launch_menu")
 local startup = require("configs.gui_startup")
 local status = require("configs.status")
+local focus_zoom = require("functions.focus_zoom")
+focus_zoom.init()
 
 local config = Wezterm.config_builder()
 

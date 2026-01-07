@@ -1,6 +1,6 @@
 [core]
 	editor = nvim
-  pager = less -x4
+        pager = less -x4
 [user]
 	name = Kevin
 	email = kevinfrilot@icloud.com

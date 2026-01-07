@@ -1,4 +1,5 @@
 local utils = require("configs.util")
+local focus_zoom = require("functions.focus_zoom")
 local mux = Wezterm.mux
 local M = {}
 
@@ -157,6 +158,15 @@ function M.load(config)
 			end
 		end
 
+		local function getFocusZoomIndicator()
+			if focus_zoom.is_enabled() then
+				table.insert(elements, { Foreground = { Color = "#56b6c2" } })
+				table.insert(elements, { Background = { Color = bg } })
+				table.insert(elements, { Text = " " .. Wezterm.nerdfonts.cod_screen_full .. " ZOOM " })
+				table.insert(elements, { Text = "|" })
+			end
+		end
+
 		local function getProcessName()
 			local process = utils.basename(pane:get_foreground_process_name())
 			if process then
@@ -174,6 +184,7 @@ function M.load(config)
 			getActiveKeytable()
 		else
 			-- Normal mode: show standard status info
+			getFocusZoomIndicator()
 			getProcessName()
 			getGitInfo()
 			getWorkspace()

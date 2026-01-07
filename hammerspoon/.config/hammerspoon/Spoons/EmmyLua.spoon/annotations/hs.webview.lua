@@ -59,8 +59,6 @@ function M:allowNavigationGestures(value, ...) end
 -- Notes:
 --  * This method allows you to prevent a webview from being able to open a new window by any method.   This includes right-clicking on a link and selecting "Open in a New Window", JavaScript pop-ups, links with the target of "__blank", etc.
 --  * If you just want to prevent automatic JavaScript windows, set the preference value javaScriptCanOpenWindowsAutomatically to false when creating the web view - this method blocks *all* methods.
----@param value boolean|nil
----@return hs.webview
 function M:allowNewWindows(value, ...) end
 
 -- Get or set whether or not the webview can accept keyboard for web form entry. Defaults to false.
@@ -70,8 +68,6 @@ function M:allowNewWindows(value, ...) end
 --
 -- Returns:
 --  * If a value is provided, then this method returns the webview object; otherwise the current value
----@param value boolean|nil
----@return hs.webview
 function M:allowTextEntry(value, ...) end
 
 -- Get or set the alpha level of the window containing the hs.webview object.
@@ -216,9 +212,6 @@ function M:darkMode(state, ...) end
 --
 -- Notes:
 --  * This method is automatically called during garbage collection, notably during a Hammerspoon termination or reload, with a fade time of 0.
----@param propagate boolean|nil
----@param fadeOutTime number|nil
----@return nil
 function M:delete(propagate, fadeOutTime, ...) end
 
 -- Get or set whether or not the webview should delete itself when its window is closed.
@@ -254,9 +247,6 @@ function M:estimatedProgress() end
 --
 -- Returns:
 --  * the webview object
----@param script string
----@param callback function|nil
----@return hs.webview
 function M:evaluateJavaScript(script, callback, ...) end
 
 -- Get or set whether or not invalid SSL server certificates that are approved by the ssl callback function are accepted as valid for browsing with the webview.
@@ -360,9 +350,6 @@ function M:hswindow() end
 --
 -- Notes:
 --  * Web Pages generated in this manner are not added to the webview history list
----@param html string
----@param baseURL string|nil
----@return hs.webview
 function M:html(html, baseURL, ...) end
 
 -- Returns a boolean value indicating if all content current displayed in the webview was loaded over securely encrypted connections.
@@ -395,8 +382,6 @@ function M:isVisible() end
 --
 -- Notes:
 --  * see the notes for `hs.drawing.windowLevels`
----@param theLevel number|nil
----@return hs.webview
 function M:level(theLevel, ...) end
 
 -- Returns a boolean value indicating whether or not the webview is still loading content.
@@ -442,8 +427,6 @@ function M:magnification(value, ...) end
 --
 -- Notes:
 --  * The return value of the callback function is ignored except when the `action` argument is equal to `didFailNavigation` or `didFailProvisionalNavigation`.  If the return value when the action argument is one of these values is a string, it will be treated as html and displayed in the webview as the error message.  If the return value is the boolean value true, then no change will be made to the webview (it will continue to display the previous web page).  All other return values or no return value at all, if these navigation actions occur, will cause a default error page to be displayed in the webview.
----@param fn function|nil
----@return hs.webview
 function M:navigationCallback(fn) end
 
 -- Get the most recent navigation identifier for the specified webview.
@@ -483,10 +466,6 @@ function M:navigationID() end
 --  * Preferences can only be set when the webview object is created.  To change the preferences of an open webview, you will need to close it and recreate it with this method.
 --
 --  * developerExtrasEnabled is not listed in Apple's documentation, but is included in the WebKit2 documentation.
----@param rect table
----@param preferencesTable table|nil
----@param userContentController hs.webview.usercontent|nil
----@return hs.webview
 function M.new(rect, preferencesTable, userContentController, ...) end
 
 -- Create a webviewObject with some presets common to an interactive web browser.
@@ -680,8 +659,6 @@ function M:shadow(value, ...) end
 --
 -- Returns:
 --  * The webview object
----@param fadeInTime number|nil
----@return hs.webview
 function M:show(fadeInTime, ...) end
 
 -- Get or set the size of a webview window
@@ -790,8 +767,6 @@ function M:topLeft(point, ...) end
 -- Notes:
 --  * When enabled, the webview's background color is equal to the body's `background-color` (transparent by default)
 --  * Setting `background-color:rgba(0, 225, 0, 0.3)` on `<body>` will give a translucent green webview background
----@param value boolean|nil
----@return hs.webview
 function M:transparent(value, ...) end
 
 -- Get or set the URL to render for the webview.
@@ -913,8 +888,6 @@ M.windowMasks = {}
 --
 -- Returns:
 --  * if a mask is provided, then the webviewObject is returned; otherwise the current mask value is returned.
----@param mask number|string|table|nil
----@return hs.webview
 function M:windowStyle(mask, ...) end
 
 -- Sets the title for the webview window.

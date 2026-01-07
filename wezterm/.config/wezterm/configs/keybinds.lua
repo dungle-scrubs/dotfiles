@@ -2,6 +2,7 @@
 local b = require("functions.balance")
 local func = require("functions/funcs")
 local sessioniser = require("functions.sessioniser")
+local focus_zoom = require("functions.focus_zoom")
 local paths = require("configs.paths")
 local act = Wezterm.action
 
@@ -120,31 +121,36 @@ function M.apply(config)
 		{ key = "h", mods = "CTRL|ALT", action = act.ActivateTabRelative(-1) },
 		{ key = "l", mods = "CTRL|ALT", action = act.ActivateTabRelative(1) },
 
-		-- PANES
+		-- PANES (with optional focus-zoom via Alt+z toggle)
 		{
 			key = "h",
 			mods = "ALT",
-			action = act.ActivatePaneDirection("Left"),
+			action = Wezterm.action_callback(focus_zoom.navigate_with_zoom("Left", "x")),
 		},
 		{
 			key = "j",
 			mods = "ALT",
-			action = act.ActivatePaneDirection("Down"),
+			action = Wezterm.action_callback(focus_zoom.navigate_with_zoom("Down", "y")),
 		},
 		{
 			key = "k",
 			mods = "ALT",
-			action = act.ActivatePaneDirection("Up"),
+			action = Wezterm.action_callback(focus_zoom.navigate_with_zoom("Up", "y")),
 		},
 		{
 			key = "l",
 			mods = "ALT",
-			action = act.ActivatePaneDirection("Right"),
+			action = Wezterm.action_callback(focus_zoom.navigate_with_zoom("Right", "x")),
 		},
 		{
 			key = "r",
 			mods = "ALT",
 			action = act.RotatePanes("Clockwise"),
+		},
+		{
+			key = "z",
+			mods = "ALT",
+			action = Wezterm.action_callback(focus_zoom.toggle()),
 		},
 
 		-- PASS THROUGH TO TERMINAL
