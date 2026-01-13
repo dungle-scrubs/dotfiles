@@ -9,7 +9,7 @@
     <array>
         <string>/bin/bash</string>
         <string>-c</string>
-        <string>docker system prune --volumes -f</string>
+        <string>/usr/local/bin/docker system prune --volumes -f</string>
     </array>
     
     <key>RunAtLoad</key>

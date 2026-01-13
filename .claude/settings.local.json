@@ -1,0 +1,51 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(stow:*)",
+      "Bash(launchctl load:*)",
+      "Read(//Users/kevin/.config/**)",
+      "Read(//Users/kevin/**)",
+      "Bash(readlink:*)",
+      "Bash(wezterm --version:*)",
+      "Bash(wezterm ls-fonts:*)",
+      "Bash(wezterm show-config:*)",
+      "Bash(wezterm cli:*)",
+      "Bash(lua:*)",
+      "Bash(log show:*)",
+      "Bash(mv:*)",
+      "Bash(pkill:*)",
+      "Bash(git log:*)",
+      "Bash(claude --version:*)",
+      "Bash(/tmp/original_init.lua)",
+      "Bash(git add:*)",
+      "Bash(git restore:*)",
+      "Bash(open:*)",
+      "Bash(killall:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Skill(ai-docs)"
+    ],
+    "deny": [],
+    "ask": [],
+    "additionalDirectories": [
+      "/Users/kevin/Library/LaunchAgents"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/kevin/dotfiles/.claude/hooks/code-validator.sh",
+            "timeout": 120
+          }
+        ]
+      }
+    ]
+  },
+  "outputStyle": "Explanatory",
+  "spinnerTipsEnabled": false
+}

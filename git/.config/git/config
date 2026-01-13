@@ -1,6 +1,7 @@
 [core]
 	editor = nvim
         pager = less -x4
+	excludesFile = /Users/kevin/.gitignore_global
 [user]
 	name = Kevin
 	email = kevinfrilot@icloud.com

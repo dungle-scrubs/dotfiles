@@ -151,7 +151,20 @@ alias pip=pip3
 alias docker-compose='docker compose'
 
 # ===== Custom Functions =====
- 
+
+# 1Password service account wrapper - injects token from keychain for varlock/op
+# Setup (one-time):
+#   1. Create service account at 1password.com → Settings → Service Accounts
+#   2. Store token in keychain:
+#      security add-generic-password -a dev-secrets -s OP_SERVICE_ACCOUNT_TOKEN -w "<token>"
+#   3. Set "Allow all applications" in Keychain Access → Access Control
+# Usage: vl varlock run -- node server.js
+#        vl op read op://Services/neo4j/password
+vl() {
+  OP_SERVICE_ACCOUNT_TOKEN=$(security find-generic-password -a dev-secrets -s OP_SERVICE_ACCOUNT_TOKEN -w) \
+  "$@"
+}
+
 # Yazi file manager with directory tracking
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
@@ -160,16 +173,6 @@ function y() {
 		builtin cd -- "$cwd"
 	fi
 	rm -f -- "$tmp"
-}
-
-# Superfile file manager with directory tracking
-function yy() {
-	export SPF_LAST_DIR="$HOME/Library/Application Support/superfile/lastdir"
-	command spf "$@"
-	[ ! -f "$SPF_LAST_DIR" ] || {
-		. "$SPF_LAST_DIR"
-		rm -f -- "$SPF_LAST_DIR" > /dev/null
-	}
 }
 
 # Directory navigation helpers
