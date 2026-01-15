@@ -704,10 +704,6 @@ local function runTask(command)
 		:start()
 end
 
-shiftCtrl("i", function()
-	runTask("/opt/homebrew/bin/aerospace workspace-back-and-forth")
-end)
-
 shiftCtrl("p", function()
 	runTask(
 		"/opt/homebrew/bin/aerospace list-workspaces --monitor focused --empty no | /opt/homebrew/bin/aerospace workspace prev"

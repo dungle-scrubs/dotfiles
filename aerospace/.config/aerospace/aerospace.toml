@@ -23,11 +23,7 @@ after-startup-command = [
   'exec-and-forget borders active_color=0xff00ff00 inactive_color=0xff494d64 width=5.0',
 ]
 
-exec-on-workspace-change = [
-  # '/bin/bash',
-  # '-c',
-  # '/opt/homebrew/opt/sketchybar/bin/sketchybar --trigger aerospace_workspace_change AEROSPACE_FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE AEROSPACE_PREV_WORKSPACE=$AEROSPACE_PREV_WORKSPACE',
-]
+exec-on-workspace-change = []
 
 # Start AeroSpace at login
 start-at-login = true
@@ -158,12 +154,12 @@ alt-d = 'workspace D'
 alt-e = 'workspace E'
 alt-f = 'workspace F'
 alt-g = 'workspace G'
-alt-i = 'workspace I'
+# alt-i handled by aerospace-invader daemon
 alt-m = 'workspace M'
 alt-n = 'workspace N'
-alt-o = 'workspace-back-and-forth'
+# alt-o handled by aerospace-invader daemon
 alt-minus = 'resize smart -50'
-alt-p = 'resize smart +50'
+alt-p = 'workspace-back-and-forth'
 alt-q = 'workspace Q'
 alt-r = 'workspace R'
 alt-s = 'workspace S'
@@ -210,12 +206,12 @@ alt-shift-y = ['move-node-to-workspace Y', 'workspace Y']
 alt-shift-z = ['move-node-to-workspace Z', 'workspace Z']
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
-alt-tab = 'workspace-back-and-forth'
+# alt-tab = 'workspace-back-and-forth'  # TODO: reassign
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-workspace-to-monitor
 alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
-alt-shift-semicolon = ['mode service', 'exec-and-forget hs -c "aerospaceOverlay.show()"']
+alt-shift-semicolon = ['mode service', 'exec-and-forget /Users/kevin/dev/aerospace-invader/aerospace-invader whichkey service']
 
 # 'service' binding mode declaration.
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -225,29 +221,29 @@ alt-shift-semicolon = ['mode service', 'exec-and-forget hs -c "aerospaceOverlay.
 # rotate hangul and english
 
 [mode.service.binding]
-esc = ['reload-config', 'mode main', 'exec-and-forget hs -c "aerospaceOverlay.hide()"']
-e = ['enable toggle', 'mode main', 'exec-and-forget hs -c "aerospaceOverlay.hide()"']
-r = ['flatten-workspace-tree', 'mode main', 'exec-and-forget hs -c "aerospaceOverlay.hide()"']
+esc = ['reload-config', 'mode main']
+e = ['enable toggle', 'mode main']
+r = ['flatten-workspace-tree', 'mode main']
 #s = ['layout sticky tiling', 'mode main'] # sticky is not yet supported https://github.com/nikitabobko/AeroSpace/issues/2
-f = ['layout floating tiling', 'mode main', 'exec-and-forget hs -c "aerospaceOverlay.hide()"']
-alt-shift-semicolon = ['fullscreen', 'mode main', 'exec-and-forget hs -c "aerospaceOverlay.hide()"']
-backspace = ['close-all-windows-but-current', 'mode main', 'exec-and-forget hs -c "aerospaceOverlay.hide()"']
+f = ['layout floating tiling', 'mode main']
+alt-shift-semicolon = ['fullscreen', 'mode main']
+backspace = ['close-all-windows-but-current', 'mode main']
 
 # Layout
-slash = ['layout tiles horizontal vertical', 'mode main', 'exec-and-forget hs -c "aerospaceOverlay.hide()"']
-comma = ['layout accordion horizontal vertical', 'mode main', 'exec-and-forget hs -c "aerospaceOverlay.hide()"']
+slash = ['layout tiles horizontal vertical', 'mode main']
+comma = ['layout accordion horizontal vertical', 'mode main']
 
 # Move window (hjkl)
-h = ['move left', 'mode main', 'exec-and-forget hs -c "aerospaceOverlay.hide()"']
-j = ['move down', 'mode main', 'exec-and-forget hs -c "aerospaceOverlay.hide()"']
-k = ['move up', 'mode main', 'exec-and-forget hs -c "aerospaceOverlay.hide()"']
-l = ['move right', 'mode main', 'exec-and-forget hs -c "aerospaceOverlay.hide()"']
+h = ['move left', 'mode main']
+j = ['move down', 'mode main']
+k = ['move up', 'mode main']
+l = ['move right', 'mode main']
 
 # Join with (alt-shift-hjkl)
-alt-shift-h = ['join-with left', 'mode main', 'exec-and-forget hs -c "aerospaceOverlay.hide()"']
-alt-shift-j = ['join-with down', 'mode main', 'exec-and-forget hs -c "aerospaceOverlay.hide()"']
-alt-shift-k = ['join-with up', 'mode main', 'exec-and-forget hs -c "aerospaceOverlay.hide()"']
-alt-shift-l = ['join-with right', 'mode main', 'exec-and-forget hs -c "aerospaceOverlay.hide()"']
+alt-shift-h = ['join-with left', 'mode main']
+alt-shift-j = ['join-with down', 'mode main']
+alt-shift-k = ['join-with up', 'mode main']
+alt-shift-l = ['join-with right', 'mode main']
 
 # alt-shift-r = ['exec-and-forget /opt/homebrew/bin/sketchybar --reload']
 
