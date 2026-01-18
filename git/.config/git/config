@@ -1,7 +1,7 @@
 [core]
 	editor = nvim
-        pager = less -x4
-	excludesFile = /Users/kevin/.gitignore_global
+	pager = less -x4
+	excludesFile = ~/.gitignore_global
 [user]
 	name = Kevin
 	email = kevinfrilot@icloud.com
@@ -10,5 +10,3 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
-[safe]
-	directory = /private/tmp

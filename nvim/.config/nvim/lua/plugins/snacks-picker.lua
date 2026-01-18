@@ -24,7 +24,7 @@ return {
       {
         "<leader>fC",
         function()
-          Snacks.picker.files({ dirs = { "~/.config", "~/dotfiles" }, hidden = true })
+          Snacks.picker.files({ dirs = { "~/.config", "~/dev/dotfiles" }, hidden = true })
         end,
         desc = "Find ~/.config file",
       },

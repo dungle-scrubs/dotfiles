@@ -5,3 +5,5 @@
 --ignore=node_modules
 --ignore=package.json
 --ignore=pnpm-lock.yaml
+--ignore=CLAUDE.md
+--ignore=TMUX.md

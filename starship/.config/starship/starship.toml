@@ -1,26 +1,62 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
 add_newline = false
+palette = "catppuccin_mocha"
+command_timeout = 1000
 
 format = """$directory$character"""
-palette = "catppuccin_mocha"
 right_format = """$all"""
-command_timeout = 1000
 
 [character]
 success_symbol = '[➜](bold green)'
 error_symbol = '[✗](bold red)'
-vimcmd_symbol = '[](green)'
+vimcmd_symbol = '[](green)'
+
+[directory]
+truncation_symbol = '…/'
+fish_style_pwd_dir_length = 1
+repo_root_style = 'bold cyan'
+
+[cmd_duration]
+min_time = 2_000
+show_notifications = true
+min_time_to_notify = 45_000
+
+[status]
+disabled = false
+pipestatus = true
 
 [git_branch]
 format = '[$symbol$branch(:$remote_branch)]($style) '
+
+[git_status]
+format = '([$all_status$ahead_behind]($style) )'
+
+[git_metrics]
+disabled = false
+
+[direnv]
+disabled = false
+format = '[$symbol$allowed]($style) '
+symbol = '▲ '
+
+[time]
+disabled = false
+format = '[$time]($style) '
+time_format = '%H:%M'
 
 [aws]
 format = '[$symbol(profile: "$profile" )(\(region: $region\) )]($style)'
 disabled = false
 style = 'bold blue'
-symbol = " "
+symbol = " "
 
 [golang]
-format = '[ ](bold cyan)'
+format = '[ ](bold cyan)'
+
+[nodejs]
+format = '[$symbol($version )]($style)'
+symbol = ' '
 
 [palettes.catppuccin_mocha]
 rosewater = "#f5e0dc"

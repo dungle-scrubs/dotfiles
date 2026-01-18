@@ -159,7 +159,7 @@ alt-m = 'workspace M'
 alt-n = 'workspace N'
 # alt-o handled by aerospace-invader daemon
 alt-minus = 'resize smart -50'
-alt-p = 'workspace-back-and-forth'
+# alt-p handled by aerospace-invader daemon (toggle with previous)
 alt-q = 'workspace Q'
 alt-r = 'workspace R'
 alt-s = 'workspace S'
@@ -211,7 +211,7 @@ alt-shift-z = ['move-node-to-workspace Z', 'workspace Z']
 alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
-alt-shift-semicolon = ['mode service', 'exec-and-forget /Users/kevin/dev/aerospace-invader/aerospace-invader whichkey service']
+alt-shift-semicolon = ['mode service', 'exec-and-forget /opt/homebrew/bin/aerospace-invader whichkey service']
 
 # 'service' binding mode declaration.
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -221,7 +221,7 @@ alt-shift-semicolon = ['mode service', 'exec-and-forget /Users/kevin/dev/aerospa
 # rotate hangul and english
 
 [mode.service.binding]
-esc = ['reload-config', 'mode main']
+esc = ['reload-config', 'mode main', 'exec-and-forget pkill -f "aerospace-invader whichkey"']
 e = ['enable toggle', 'mode main']
 r = ['flatten-workspace-tree', 'mode main']
 #s = ['layout sticky tiling', 'mode main'] # sticky is not yet supported https://github.com/nikitabobko/AeroSpace/issues/2

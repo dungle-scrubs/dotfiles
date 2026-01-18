@@ -7,4 +7,6 @@ foo.*
 *.log
 data
 .DS_Store
-logs/
+**/logs/
+.claude/
+node_modules/

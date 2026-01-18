@@ -2,11 +2,7 @@
   "name": "dotfiles",
   "private": true,
   "scripts": {
-    "prepare": "husky",
-    "lint:lua": "lua-language-server --check hammerspoon/.config/hammerspoon --checklevel=Warning --logpath=/tmp/lua-ls-log 2>&1 | grep -v 'Diagnosis complete' | (! grep -E '\\[(Error|Warning)\\]')",
-    "lint:webview": "pnpm --dir hammerspoon/.config/hammerspoon/Spoons/Attention.spoon/webview run lint",
-    "typecheck:webview": "pnpm --dir hammerspoon/.config/hammerspoon/Spoons/Attention.spoon/webview run typecheck",
-    "check": "pnpm lint:lua && pnpm lint:webview && pnpm typecheck:webview"
+    "prepare": "husky"
   },
   "devDependencies": {
     "husky": "^9.1.7"
