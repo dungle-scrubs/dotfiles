@@ -1,4 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "include": ["src/ai-chat.tsx", "src/lib/**/*", "src/tokens.ts"]
-}
