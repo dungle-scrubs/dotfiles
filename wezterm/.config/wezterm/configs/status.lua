@@ -14,6 +14,7 @@ local icons = {
 	arrow_up = Wezterm.nerdfonts.fa_arrow_up,
 	arrow_down = Wezterm.nerdfonts.fa_arrow_down,
 	arrow_right = Wezterm.nerdfonts.cod_arrow_small_right,
+	claude = Wezterm.nerdfonts.md_robot,
 }
 
 ---Adds key table hints to the status elements
@@ -189,6 +190,53 @@ local function add_focus_zoom_indicator(elements)
 	end
 end
 
+---Load work directories from config file
+---@return table
+local function load_work_dirs()
+	local home = os.getenv("HOME") or ""
+	local path = home .. "/.config/claude-work-dirs"
+	local file = io.open(path, "r")
+	if not file then
+		return {}
+	end
+
+	local dirs = {}
+	for line in file:lines() do
+		line = line:gsub("^%s+", ""):gsub("%s+$", "")
+		if line ~= "" and not line:match("^#") then
+			local dir = line:match("^([^:]+)")
+			if dir then
+				table.insert(dirs, dir)
+			end
+		end
+	end
+	file:close()
+	return dirs
+end
+
+local work_dirs = load_work_dirs()
+
+---Adds Claude account indicator to status elements
+---@param elements table
+---@param pane Pane
+local function add_claude_indicator(elements, pane)
+	local cwd = pane:get_current_working_dir()
+	if not cwd then
+		return
+	end
+
+	local cwd_path = cwd.file_path or ""
+	for _, dir in ipairs(work_dirs) do
+		if cwd_path:find(dir, 1, true) then
+			table.insert(elements, { Foreground = { Color = colors.cyan } })
+			table.insert(elements, { Background = { Color = colors.background } })
+			table.insert(elements, { Text = " " .. icons.claude .. " WORK " })
+			table.insert(elements, { Text = "|" })
+			return
+		end
+	end
+end
+
 ---Adds current process name to status elements
 ---@param elements table
 ---@param pane Pane
@@ -214,6 +262,7 @@ function M.load(config)
 			add_keytable_hints(elements, active_key_table, M.config)
 			add_keytable_name(elements, active_key_table)
 		else
+			add_claude_indicator(elements, pane)
 			add_focus_zoom_indicator(elements)
 			add_process_name(elements, pane)
 			add_git_info(elements, pane)

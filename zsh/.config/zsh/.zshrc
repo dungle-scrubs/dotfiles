@@ -92,6 +92,25 @@ load-nvmrc() {
 }
 add-zsh-hook chpwd load-nvmrc
 
+# Auto-switch Claude credentials based on directory
+load-claude-config() {
+  local config_file="$HOME/.config/claude-work-dirs"
+  [[ ! -f "$config_file" ]] && { unset CLAUDE_CONFIG_DIR; return; }
+
+  local line dir config_dir
+  while IFS=: read -r dir config_dir; do
+    [[ -z "$dir" || "$dir" == \#* ]] && continue
+    if [[ "$PWD" == "$dir"* ]]; then
+      export CLAUDE_CONFIG_DIR="$config_dir"
+      return
+    fi
+  done < "$config_file"
+
+  unset CLAUDE_CONFIG_DIR
+}
+add-zsh-hook chpwd load-claude-config
+load-claude-config  # Run on shell start
+
 # ===== Aliases =====
 
 # File listing
