@@ -30,6 +30,7 @@ config.max_fps = 120
 config.prefer_egl = true
 config.front_end = "WebGpu"
 config.audible_bell = "Disabled"
+config.detect_password_input = true
 config.default_workspace = "admin"
 config.automatically_reload_config = false
 config.status_update_interval = 200

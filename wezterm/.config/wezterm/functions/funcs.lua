@@ -45,7 +45,7 @@ M.new_scratch_workspace = function(window, pane, workspace)
 		return
 	end
 
-	os.execute("mkdir " .. new_workspace)
+	Wezterm.run_child_process({ "mkdir", new_workspace })
 
 	Wezterm.log_error(new_workspace)
 	window:perform_action(
@@ -83,6 +83,48 @@ M.switch_to_previous_workspace = function(window, pane)
 	end
 
 	M.switch_workspace(window, pane, workspace)
+end
+
+M.duplicate_workspace = function(window, pane)
+	local current_workspace = window:active_workspace()
+	local cwd = pane:get_current_working_dir()
+
+	if not cwd then
+		Wezterm.log_warn("Cannot duplicate: no current working directory")
+		return
+	end
+
+	-- Extract the file path from the URL object
+	local dir_path = cwd.file_path or tostring(cwd):gsub("^file://", "")
+
+	-- Find next available suffix (workspace-2, workspace-3, etc.)
+	local existing_workspaces = Wezterm.mux.get_workspace_names()
+	local base_name = current_workspace:gsub("%-(%d+)$", "") -- strip existing -N suffix
+	local max_suffix = 1
+
+	for _, ws in ipairs(existing_workspaces) do
+		-- Check if workspace matches pattern "basename" or "basename-N"
+		if ws == base_name then
+			max_suffix = math.max(max_suffix, 1)
+		else
+			local suffix = ws:match("^" .. base_name:gsub("([%(%)%.%%%+%-%*%?%[%]%^%$])", "%%%1") .. "%-(%d+)$")
+			if suffix then
+				max_suffix = math.max(max_suffix, tonumber(suffix))
+			end
+		end
+	end
+
+	local new_workspace = base_name .. "-" .. (max_suffix + 1)
+
+	window:perform_action(
+		act.SwitchToWorkspace({
+			name = new_workspace,
+			spawn = { cwd = dir_path },
+		}),
+		pane
+	)
+
+	Wezterm.GLOBAL.previous_workspace = current_workspace
 end
 
 M.get_files_in_directory = function(path)

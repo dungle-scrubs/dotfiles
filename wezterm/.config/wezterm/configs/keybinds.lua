@@ -2,6 +2,7 @@
 local b = require("functions.balance")
 local func = require("functions/funcs")
 local sessioniser = require("functions.sessioniser")
+local project_tab = require("functions.project_tab")
 local focus_zoom = require("functions.focus_zoom")
 local paths = require("configs.paths")
 local act = Wezterm.action
@@ -52,14 +53,29 @@ function M.apply(config)
 				name = "pane",
 				one_shot = true,
 			}),
-			-- action = Wezterm.action.QuickSelectArgs({
-			-- 	alphabet = "abc",
-			-- }),
-			-- action = act.EmitEvent("user-activate-pane-table", "pane", false),
-			-- action = act.ActivateKeyTable({
-			-- 	name = "pane",
-			-- 	one_shot = false,
-			-- }),
+		},
+		-- Quick Select: labels appear on matches, press letter to copy
+		{
+			key = "q",
+			mods = "LEADER",
+			action = act.QuickSelectArgs({
+				patterns = {
+					"https?://\\S+", -- URLs
+					"[a-f0-9]{7,40}", -- git hashes (7-40 hex chars)
+					"(?:/[\\w.-]+)+", -- file paths
+					"\\b[\\w.+-]+@[\\w.-]+\\.[a-z]{2,}\\b", -- emails
+					"\\b(?:sha256-)?[A-Za-z0-9+/=]{40,}\\b", -- SRI hashes, base64 tokens
+				},
+			}),
+		},
+		-- CharSelect: emoji/unicode picker
+		{
+			key = "u",
+			mods = "LEADER",
+			action = act.CharSelect({
+				copy_on_select = true,
+				copy_to = "ClipboardAndPrimarySelection",
+			}),
 		},
 		{
 			key = "t",
@@ -211,6 +227,8 @@ function M.apply(config)
 			{ key = "d", desc = "Close", action = Wezterm.action.CloseCurrentTab({ confirm = true }) },
 			{ key = "h", desc = "Move left", action = act.MoveTabRelative(-1) },
 			{ key = "l", desc = "Move right", action = act.MoveTabRelative(1) },
+			{ key = "p", desc = "Project", action = Wezterm.action_callback(project_tab.open) },
+			{ key = "c", desc = "Clone", action = Wezterm.action_callback(func.duplicate_workspace) },
 			{
 				key = "n",
 				desc = "New",
@@ -319,6 +337,9 @@ function M.apply(config)
 						act.PromptInputLine({
 							description = "Project name (optional, press Enter to skip):",
 							action = Wezterm.action_callback(function(inner_window, inner_pane, line)
+								if not line then
+									return
+								end
 								local project_name = line
 								if #line == 0 then
 									project_name = ("scratch-" .. os.date("%Y%m%d-%H%M%S"))
@@ -352,6 +373,9 @@ function M.apply(config)
 						act.PromptInputLine({
 							description = "Project name (optional, press Enter to skip):",
 							action = Wezterm.action_callback(function(inner_window, inner_pane, line)
+								if not line then
+									return
+								end
 								local project_name = line
 								if #line == 0 then
 									project_name = ("scratch-" .. os.date("%Y%m%d-%H%M%S"))
