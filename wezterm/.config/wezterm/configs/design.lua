@@ -1,21 +1,14 @@
+local colors = require("configs.colors")
+
 local M = {}
 
-Wezterm.color.get_default_colors()
-
-local black = "#000000"
-local white = "#d8d8d8"
-local yellow = "#ccb266"
-local soft_red = "#bf8585"
-local purple = "#7F718E"
-local blue_1 = "#647f9d"
-local blue_2 = "#6f88a6"
-local background = "#1a1c23"
-local foreground = "#b1b1b1"
-
 local TAB_MAX_WIDTH = 28
-local TAB_PADDING = 4 -- 2 spaces on each side
+local TAB_PADDING = 4
 local MAX_TITLE_LENGTH = TAB_MAX_WIDTH - TAB_PADDING
 
+---Formats a tab title with index prefix, truncating if needed
+---@param tab_info table
+---@return string
 local function tab_title(tab_info)
 	local usr_title = tab_info.tab_title
 	local index = tab_info.tab_index + 1 .. " : "
@@ -27,7 +20,6 @@ local function tab_title(tab_info)
 		title = tostring(tab_info.tab_index + 1)
 	end
 
-	-- Truncate with ".." if too long
 	if #title > MAX_TITLE_LENGTH then
 		title = title:sub(1, MAX_TITLE_LENGTH - 2) .. ".."
 	end
@@ -37,24 +29,19 @@ end
 
 Wezterm.on("format-tab-title", function(tab)
 	local title = tab_title(tab)
-	foreground = "#737373" -- foreground (above)
-	background = background
+	local fg = tab.is_active and colors.yellow or colors.inactive_fg
 
-	if tab.is_active then
-		foreground = yellow
-	end
 	return {
-		{ Background = { Color = background } },
-		{ Foreground = { Color = foreground } },
+		{ Background = { Color = colors.background } },
+		{ Foreground = { Color = fg } },
 		{ Text = "  " .. title .. "  " },
 	}
 end)
 
+---Applies design configuration to WezTerm
+---@param config table
 function M.apply(config)
-	-- WINDOWS
-	-- config.window_background_opacity = 0.8
-	-- config.macos_window_background_blur = 7
-	config.window_decorations = "RESIZE" -- hide the title bar
+	config.window_decorations = "RESIZE"
 	config.window_padding = {
 		left = 10,
 		right = 10,
@@ -62,7 +49,7 @@ function M.apply(config)
 		bottom = 10,
 	}
 	config.window_frame = {
-		active_titlebar_bg = background,
+		active_titlebar_bg = colors.background,
 	}
 
 	config.inactive_pane_hsb = {
@@ -78,39 +65,36 @@ function M.apply(config)
 	config.tab_max_width = TAB_MAX_WIDTH
 
 	config.command_palette_rows = 24
-	config.command_palette_bg_color = "#1a1c23"
-	config.command_palette_fg_color = "#b1b1b1"
+	config.command_palette_bg_color = colors.background
+	config.command_palette_fg_color = colors.foreground
 	config.command_palette_font_size = 16
-	-- config.command_palette_font = wezterm.font("JetBrains Mono")
 
-	-- CURSOR
 	config.cursor_blink_rate = 0
 	config.cursor_thickness = 2
 
-	-- FONTS
 	config.font = Wezterm.font("JetBrains Mono")
-	-- config.font = wezterm.font("Fira Code")
 	config.font_size = 16
-	config.harfbuzz_features =
-		{ "ss01", "ss02", "ss03", "ss04", "ss05", "ss07", "cv02", "cv14", "cv27", "cv29", "cv30" }
+	config.harfbuzz_features = {
+		"ss01", "ss02", "ss03", "ss04", "ss05", "ss07",
+		"cv02", "cv14", "cv27", "cv29", "cv30",
+	}
 
-	-- COLORS
 	config.bold_brightens_ansi_colors = false
 	config.colors = {
-		background = background,
-		foreground = foreground,
-		cursor_bg = foreground,
-		selection_bg = soft_red,
-		selection_fg = black,
+		background = colors.background,
+		foreground = colors.foreground,
+		cursor_bg = colors.foreground,
+		selection_bg = colors.soft_red,
+		selection_fg = colors.black,
 		ansi = {
-			black, -- term: black
-			soft_red, -- term: red
-			foreground, -- term: green (i don't want any green in my term! yuck)
-			yellow, -- term: yellow
-			blue_1, -- term: blue
-			purple, -- term: magenta
-			blue_2, -- term: cyan
-			white, -- term: white
+			colors.black,
+			colors.soft_red,
+			colors.foreground,
+			colors.yellow,
+			colors.blue,
+			colors.purple,
+			colors.blue_alt,
+			colors.white,
 		},
 	}
 end

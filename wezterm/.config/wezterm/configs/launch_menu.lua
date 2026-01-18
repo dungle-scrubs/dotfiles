@@ -1,13 +1,16 @@
 local paths = require("configs.paths")
+
 local M = {}
 
 local home = Wezterm.home_dir
 local env_paths = paths.env_paths()
-Wezterm.log_info(env_paths)
 
+---Creates a launch menu entry to edit config in a directory
+---@param dir string
+---@return table
 local function edit_config(dir)
 	return {
-		label = "edit" .. " " .. dir,
+		label = "edit " .. dir,
 		cwd = home .. "/.config/" .. dir,
 		set_environment_variables = {
 			PATH = env_paths,
@@ -16,6 +19,8 @@ local function edit_config(dir)
 	}
 end
 
+---Applies launch menu configuration
+---@param config table
 function M.apply(config)
 	config.launch_menu = {
 		edit_config("wezterm"),
@@ -28,24 +33,7 @@ function M.apply(config)
 			},
 			args = { "zsh", "-c", "-l", 'FILE=$(fd -t f | fzf); if [ -n "$FILE" ]; then nvim "$FILE"; fi' },
 		},
-		-- edit_config("aerc"),
-		-- {
-		-- 	label = "log",
-		-- 	cwd = home .. "/src/content",
-		-- 	set_environment_variables = {
-		-- 		PATH = env_paths,
-		-- 	},
-		-- 	args = { "zsh", "-c", "-l", "zk log" },
-		-- },
-		-- {
-		-- 	label = "navi",
-		-- 	cwd = home .. "/.local/share/navi",
-		-- 	set_environment_variables = {
-		-- 		PATH = env_paths,
-		-- 	},
-		-- 	-- for some reason, this folder needs to be explicityly cd'd into?
-		-- 	args = { "zsh", "-c", "cd" .. home .. "/.local/share/navi && nvim $(fd -t f | fzf)" },
-		-- },
 	}
 end
+
 return M

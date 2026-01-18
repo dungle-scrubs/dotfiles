@@ -1,53 +1,80 @@
--- wezterm utils
-
 local M = {}
 
--- Get the filename from a path
-M.basename = function(s)
+---Extracts the filename from a path
+---@param s string|nil
+---@return string|nil
+function M.basename(s)
 	if not s then
-		return
+		return nil
 	end
-
 	return string.gsub(s, "(.*[/\\])(.*)", "%2")
 end
 
-M.filter = function(tbl, callback)
-	local filt_table = {}
-
+---Filters a table by a predicate function
+---@param tbl table
+---@param callback fun(value: any, index: number): boolean
+---@return table
+function M.filter(tbl, callback)
+	local result = {}
 	for i, v in ipairs(tbl) do
 		if callback(v, i) then
-			table.insert(filt_table, v)
+			table.insert(result, v)
 		end
 	end
-	return filt_table
+	return result
 end
 
-M.file_exists = function(name)
+---Checks if a file exists and is readable
+---@param name string
+---@return boolean
+function M.file_exists(name)
 	local f = io.open(name, "r")
-	if f ~= nil then
+	if f then
 		io.close(f)
 		return true
-	else
-		return false
 	end
+	return false
 end
 
---- Check if a file or directory exists in this path
-M.exists = function(file)
+---Checks if a file or directory exists at the given path
+---@param file string
+---@return boolean
+---@return string|nil error
+function M.exists(file)
 	local ok, err, code = os.rename(file, file)
-	if not ok then
-		if code == 13 then
-			-- Permission denied, but it exists
-			return true
-		end
+	if not ok and code == 13 then
+		return true, nil
 	end
-	return ok, err
+	return ok or false, err
 end
 
---- Check if a directory exists in this path
-M.dir_exists = function(path)
-	-- "/" works on both Unix and Windows
+---Checks if a directory exists at the given path
+---@param path string
+---@return boolean
+function M.dir_exists(path)
 	return M.exists(path .. "/")
+end
+
+---Lists files in a directory as selector choices
+---@param path string
+---@return table[] choices Array of {label, id} tables
+function M.get_files_in_directory(path)
+	local files = {}
+	local pfile = io.popen('ls -1 "' .. path .. '"')
+	if not pfile then
+		Wezterm.log_error("get_files_in_directory: failed to list " .. path)
+		return {}
+	end
+
+	for filename in pfile:lines() do
+		table.insert(files, {
+			label = filename,
+			id = path .. "/" .. filename,
+		})
+	end
+
+	pfile:close()
+	return files
 end
 
 return M

@@ -1,36 +1,31 @@
+local paths = require("configs.paths")
 local act = Wezterm.action
 local io = require("io")
 local os = require("os")
 
+---Opens the current pane's scrollback in neovim
 Wezterm.on("trigger-nvim-with-scrollback", function(window, pane)
-	-- Retrieve the text from the pane
 	local text = pane:get_lines_as_text(pane:get_dimensions().scrollback_rows)
 
-	-- Create a temporary file to pass to vim
 	local name = os.tmpname()
 	local f = io.open(name, "w+")
-	if f == nil then
-		Wezterm.log_error("Could not open temporary file")
+	if not f then
+		Wezterm.log_error("trigger-nvim-with-scrollback: failed to create temp file")
 		return
 	end
+
 	f:write(text)
 	f:flush()
 	f:close()
 
-	-- Open a new window running neovim and tell it to open the file
 	window:perform_action(
 		act.SpawnCommandInNewTab({
-			args = { "/opt/homebrew/bin/nvim", name },
+			args = { paths.nvim, name },
 		}),
 		pane
 	)
 
-	-- Wait "enough" time for vim to read the file before we remove it.
-	-- The window creation and process spawn are asynchronous wrt. running
-	-- this script and are not awaitable, so we just pick a number.
-	--
-	-- Note: We don't strictly need to remove this file, but it is nice
-	-- to avoid cluttering up the temporary directory.
-	Wezterm.sleep_ms(1000)
-	os.remove(name)
+	Wezterm.time.call_after(1, function()
+		os.remove(name)
+	end)
 end)

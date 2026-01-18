@@ -1,143 +1,26 @@
----@diagnostic disable: unused-local
-local b = require("functions.balance")
-local func = require("functions/funcs")
-local sessioniser = require("functions.sessioniser")
-local project_tab = require("functions.project_tab")
+local balance = require("functions.balance")
+local projects = require("functions.projects")
+local workspace = require("functions.workspace")
 local focus_zoom = require("functions.focus_zoom")
 local paths = require("configs.paths")
 local act = Wezterm.action
 
--- local env_paths = paths.env_paths()
-
 local M = {}
 
--- custom events
 require("configs.events")
 
 function M.apply(config)
 	config.leader = {
 		mods = "ALT",
 		key = "Space",
-		-- timeout_milliseconds = 800
 	}
 
-	-- LEADER KEYBINDS
 	config.keys = {
+		-- TIER 1: Direct keys (no leader)
 		-- Shift+Enter for newlines (useful for Claude Code multi-line input)
 		{ key = "Enter", mods = "SHIFT", action = act.SendString("\n") },
 
-		{ key = "k", mods = "LEADER", action = act.ShowLauncherArgs({ flags = "FUZZY|KEY_ASSIGNMENTS" }) },
-		{
-			key = "b",
-			mods = "LEADER",
-			action = act.Multiple({
-				Wezterm.action_callback(b.balance_panes("x")),
-			}),
-		},
-		{
-			key = "y",
-			mods = "LEADER",
-			action = act.ActivateCopyMode,
-		},
-		{
-			key = "s",
-			mods = "LEADER",
-			action = act.EmitEvent("trigger-nvim-with-scrollback"),
-		},
-
-		-- KEY TABLES
-		{
-			key = "p",
-			mods = "LEADER",
-			action = act.ActivateKeyTable({
-				name = "pane",
-				one_shot = true,
-			}),
-		},
-		-- Quick Select: labels appear on matches, press letter to copy
-		{
-			key = "q",
-			mods = "LEADER",
-			action = act.QuickSelectArgs({
-				patterns = {
-					"https?://\\S+", -- URLs
-					"[a-f0-9]{7,40}", -- git hashes (7-40 hex chars)
-					"(?:/[\\w.-]+)+", -- file paths
-					"\\b[\\w.+-]+@[\\w.-]+\\.[a-z]{2,}\\b", -- emails
-					"\\b(?:sha256-)?[A-Za-z0-9+/=]{40,}\\b", -- SRI hashes, base64 tokens
-				},
-			}),
-		},
-		-- CharSelect: emoji/unicode picker
-		{
-			key = "u",
-			mods = "LEADER",
-			action = act.CharSelect({
-				copy_on_select = true,
-				copy_to = "ClipboardAndPrimarySelection",
-			}),
-		},
-		{
-			key = "t",
-			mods = "LEADER",
-			action = act.ActivateKeyTable({
-				name = "tab",
-				one_shot = true,
-			}),
-		},
-		{
-			key = "w",
-			mods = "LEADER",
-			action = act.ActivateKeyTable({
-				name = "workspace",
-				one_shot = true,
-			}),
-		},
-		{
-			key = "f",
-			mods = "LEADER",
-			action = act.ActivateKeyTable({
-				name = "framework",
-				desc = "create framework",
-				one_shot = true,
-			}),
-		},
-
-		-- "SUPER" (cmd on mac). Mainly for launching and 'generic' operations.
-		-- WINDOWS / TABS / PANES
-		{
-			key = "w",
-			mods = "SUPER",
-			action = Wezterm.action.CloseCurrentTab({ confirm = true }),
-		},
-
-		-- LAUNCHERS
-		{
-			key = "o",
-			mods = "SUPER",
-			action = Wezterm.action_callback(sessioniser.open),
-		},
-		{
-			key = "e",
-			mods = "SUPER",
-			action = act.ShowLauncherArgs({ flags = "FUZZY|WORKSPACES" }),
-		},
-		{
-			key = "p",
-			mods = "SUPER",
-			action = act.ShowLauncherArgs({ flags = "FUZZY|LAUNCH_MENU_ITEMS" }),
-		},
-		{
-			key = "k",
-			mods = "SUPER",
-			action = act.ActivateCommandPalette,
-		},
-
-		-- TABS
-		{ key = "h", mods = "CTRL|ALT", action = act.ActivateTabRelative(-1) },
-		{ key = "l", mods = "CTRL|ALT", action = act.ActivateTabRelative(1) },
-
-		-- PANES (with optional focus-zoom via Alt+z toggle)
+		-- Pane navigation (Alt+hjkl)
 		{
 			key = "h",
 			mods = "ALT",
@@ -158,47 +41,157 @@ function M.apply(config)
 			mods = "ALT",
 			action = Wezterm.action_callback(focus_zoom.navigate_with_zoom("Right", "x")),
 		},
+
+		-- Tab navigation (Ctrl+Alt+h/l)
+		{ key = "h", mods = "CTRL|ALT", action = act.ActivateTabRelative(-1) },
+		{ key = "l", mods = "CTRL|ALT", action = act.ActivateTabRelative(1) },
+
+		-- Workspace navigation (Ctrl+Alt+Shift+h/l)
 		{
-			key = "r",
-			mods = "ALT",
-			action = act.RotatePanes("Clockwise"),
+			key = "h",
+			mods = "CTRL|ALT|SHIFT",
+			action = Wezterm.action_callback(function(window, pane)
+				local workspaces = Wezterm.mux.get_workspace_names()
+				table.sort(workspaces)
+				local current = window:active_workspace()
+				for i, ws in ipairs(workspaces) do
+					if ws == current then
+						local prev_idx = i > 1 and i - 1 or #workspaces
+						workspace.switch(window, pane, workspaces[prev_idx])
+						return
+					end
+				end
+			end),
 		},
 		{
-			key = "z",
-			mods = "ALT",
-			action = Wezterm.action_callback(focus_zoom.toggle()),
+			key = "l",
+			mods = "CTRL|ALT|SHIFT",
+			action = Wezterm.action_callback(function(window, pane)
+				local workspaces = Wezterm.mux.get_workspace_names()
+				table.sort(workspaces)
+				local current = window:active_workspace()
+				for i, ws in ipairs(workspaces) do
+					if ws == current then
+						local next_idx = i < #workspaces and i + 1 or 1
+						workspace.switch(window, pane, workspaces[next_idx])
+						return
+					end
+				end
+			end),
 		},
 
-		-- PASS THROUGH TO TERMINAL
+		-- Debug overlay
+		{ key = "L", mods = "CTRL", action = Wezterm.action.ShowDebugOverlay },
+
+		-- TIER 2: Leader + single key
+		-- o = open project picker (workspace)
 		{
 			key = "o",
-			mods = "LEADER|CTRL",
-			action = act.SendKey({ key = "o", mods = "ALT" }),
+			mods = "LEADER",
+			action = Wezterm.action_callback(projects.open_workspace),
 		},
-
-		-- COMBO
-		-- i.e, (ctrl + shift + l)
-		{ key = "L", mods = "CTRL", action = Wezterm.action.ShowDebugOverlay },
+		-- p = pane key table
+		{
+			key = "p",
+			mods = "LEADER",
+			action = act.ActivateKeyTable({
+				name = "pane",
+				one_shot = true,
+			}),
+		},
+		-- t = tab key table
+		{
+			key = "t",
+			mods = "LEADER",
+			action = act.ActivateKeyTable({
+				name = "tab",
+				one_shot = true,
+			}),
+		},
+		-- w = workspace key table
+		{
+			key = "w",
+			mods = "LEADER",
+			action = act.ActivateKeyTable({
+				name = "workspace",
+				one_shot = true,
+			}),
+		},
+		-- y = yank (copy mode)
+		{
+			key = "y",
+			mods = "LEADER",
+			action = act.ActivateCopyMode,
+		},
+		-- s = scrollback to nvim
+		{
+			key = "s",
+			mods = "LEADER",
+			action = act.EmitEvent("trigger-nvim-with-scrollback"),
+		},
+		-- q = quickselect
+		{
+			key = "q",
+			mods = "LEADER",
+			action = act.QuickSelectArgs({
+				patterns = {
+					"https?://\\S+", -- URLs
+					"[a-f0-9]{7,40}", -- git hashes (7-40 hex chars)
+					"(?:/[\\w.-]+)+", -- file paths
+					"\\b[\\w.+-]+@[\\w.-]+\\.[a-z]{2,}\\b", -- emails
+					"\\b(?:sha256-)?[A-Za-z0-9+/=]{40,}\\b", -- SRI hashes, base64 tokens
+				},
+			}),
+		},
+		-- u = unicode/emoji picker
+		{
+			key = "u",
+			mods = "LEADER",
+			action = act.CharSelect({
+				copy_on_select = true,
+				copy_to = "ClipboardAndPrimarySelection",
+			}),
+		},
+		-- b = balance panes
+		{
+			key = "b",
+			mods = "LEADER",
+			action = act.Multiple({
+				Wezterm.action_callback(balance.balance_panes("x")),
+			}),
+		},
+		-- z = zoom (focus zoom toggle)
+		{
+			key = "z",
+			mods = "LEADER",
+			action = Wezterm.action_callback(focus_zoom.toggle()),
+		},
+		-- r = rotate panes
+		{
+			key = "r",
+			mods = "LEADER",
+			action = act.RotatePanes("Clockwise"),
+		},
+		-- k = keys (command palette)
+		{
+			key = "k",
+			mods = "LEADER",
+			action = act.ActivateCommandPalette,
+		},
+		-- l = launch menu
+		{
+			key = "l",
+			mods = "LEADER",
+			action = act.ShowLauncherArgs({ flags = "FUZZY|LAUNCH_MENU_ITEMS" }),
+		},
 	}
 
-	-- KEYTABLES
+	-- TIER 3: Key tables
 	config.key_tables = {
 		pane = {
-			{
-				key = "d",
-				desc = "Close",
-				action = act.CloseCurrentPane({ confirm = false }),
-			},
-			{
-				key = "s",
-				desc = "Split horiz",
-				action = act.SplitPane({ direction = "Down", size = { Percent = 33 } }),
-			},
-			{
-				key = "v",
-				desc = "Split vert",
-				action = act.SplitPane({ direction = "Right", size = { Percent = 33 } }),
-			},
+			{ key = "d", desc = "Close", action = act.CloseCurrentPane({ confirm = false }) },
+			{ key = "s", desc = "Split horiz", action = act.SplitPane({ direction = "Down", size = { Percent = 33 } }) },
+			{ key = "v", desc = "Split vert", action = act.SplitPane({ direction = "Right", size = { Percent = 33 } }) },
 			{
 				key = "z",
 				desc = "Resize",
@@ -207,11 +200,7 @@ function M.apply(config)
 					one_shot = false,
 				}),
 			},
-			{
-				key = "S",
-				desc = "Swap",
-				action = act.PaneSelect({ mode = "Activate" }),
-			},
+			{ key = "S", desc = "Swap", action = act.PaneSelect({ mode = "Activate" }) },
 			{ key = "t", desc = "Break to tab", action = act.PaneSelect({ mode = "MoveToNewTab" }) },
 			{ key = "Escape", action = "PopKeyTable" },
 		},
@@ -223,17 +212,10 @@ function M.apply(config)
 			{ key = "Escape", action = "PopKeyTable" },
 		},
 		tab = {
-			{ key = "t", desc = "Tabs", action = act.ShowLauncherArgs({ flags = "FUZZY|TABS" }) },
 			{ key = "d", desc = "Close", action = Wezterm.action.CloseCurrentTab({ confirm = true }) },
 			{ key = "h", desc = "Move left", action = act.MoveTabRelative(-1) },
 			{ key = "l", desc = "Move right", action = act.MoveTabRelative(1) },
-			{ key = "p", desc = "Project", action = Wezterm.action_callback(project_tab.open) },
-			{ key = "c", desc = "Clone", action = Wezterm.action_callback(func.duplicate_workspace) },
-			{
-				key = "n",
-				desc = "New",
-				action = act.SpawnTab("CurrentPaneDomain"),
-			},
+			{ key = "n", desc = "New", action = act.SpawnTab("CurrentPaneDomain") },
 			{
 				key = "N",
 				desc = "New w/ name",
@@ -243,12 +225,11 @@ function M.apply(config)
 							description = "New tab name (optional, press Enter to skip):",
 							action = Wezterm.action_callback(function(inner_window, inner_pane, line)
 								local project_name = line or ""
-
 								inner_window:perform_action(
 									act.SpawnCommandInNewTab({
 										domain = "CurrentPaneDomain",
 										args = {
-											"/Users/kevin/.config/wezterm/scripts/set_tab_name.sh",
+											paths.scripts .. "/set_tab_name.sh",
 											project_name,
 										},
 									}),
@@ -265,140 +246,46 @@ function M.apply(config)
 				desc = "Rename",
 				action = act.PromptInputLine({
 					description = "Enter new name for tab",
-					action = Wezterm.action_callback(function(window, pane, line)
-						-- line will be `nil` if they hit escape without entering anything
-						-- An empty string if they just hit enter
-						-- Or the actual line of text they wrote
+					action = Wezterm.action_callback(function(window, _, line)
 						if line then
 							window:active_tab():set_title(line)
 						end
 					end),
 				}),
 			},
+			{ key = "c", desc = "Clone", action = Wezterm.action_callback(workspace.duplicate) },
+			{ key = "p", desc = "Project", action = Wezterm.action_callback(projects.open_tab) },
 			{ key = "Escape", action = "PopKeyTable" },
 		},
 		workspace = {
 			{ key = "w", desc = "Workspaces", action = act.ShowLauncherArgs({ flags = "FUZZY|WORKSPACES" }) },
 			{
 				key = "o",
-				desc = "previous",
+				desc = "Previous",
 				action = Wezterm.action_callback(function(window, pane)
-					func.switch_to_previous_workspace(window, pane)
+					workspace.switch_to_previous(window, pane)
 				end),
 			},
 			{
 				key = "d",
-				desc = "delete",
+				desc = "Delete",
 				action = Wezterm.action_callback(function(window, pane)
-					local workspace = window:active_workspace()
-					func.kill_workspace(window, pane, workspace)
+					local ws = window:active_workspace()
+					workspace.kill(window, pane, ws)
 				end),
 			},
-			-- Prompt for a name to use for a new workspace and switch to it.
-			{
-				key = "n",
-				desc = "new",
-				action = act.PromptInputLine({
-					description = Wezterm.format({
-						{ Attribute = { Intensity = "Bold" } },
-						{ Text = "Enter name for new workspace" },
-					}),
-					action = Wezterm.action_callback(function(window, pane, input)
-						-- line will be `nil` if they hit escape without entering anything
-						-- An empty string if they just hit enter
-						-- Or the actual line of text they wrote
-						if input then
-							func.new_scratch_workspace(window, pane, input)
-						end
-					end),
-				}),
-			},
+			{ key = "n", desc = "New", action = Wezterm.action_callback(projects.open_workspace) },
 			{
 				key = "r",
-				desc = "rename",
+				desc = "Rename",
 				action = act.PromptInputLine({
 					description = "Enter new workspace name:",
-					action = Wezterm.action_callback(function(window, pane, line)
+					action = Wezterm.action_callback(function(_, _, line)
 						if line then
 							Wezterm.mux.rename_workspace(Wezterm.mux.get_active_workspace(), line)
 						end
 					end),
 				}),
-			},
-			{ key = "Escape", action = "PopKeyTable" },
-		},
-		framework = {
-			{
-				key = "a",
-				desc = "Astro",
-				action = Wezterm.action_callback(function(window, pane)
-					-- Prompt the user for a project name (optional)
-					window:perform_action(
-						act.PromptInputLine({
-							description = "Project name (optional, press Enter to skip):",
-							action = Wezterm.action_callback(function(inner_window, inner_pane, line)
-								if not line then
-									return
-								end
-								local project_name = line
-								if #line == 0 then
-									project_name = ("scratch-" .. os.date("%Y%m%d-%H%M%S"))
-								end
-
-								-- Use the prompted input or create a "scratch-<timestamp>" name
-								inner_window:perform_action(
-									act.SwitchToWorkspace({
-										name = project_name,
-										spawn = {
-											args = {
-												"/Users/kevin/.config/wezterm/scripts/create_astro.sh",
-												project_name,
-											},
-										},
-									}),
-									inner_pane
-								)
-							end),
-						}),
-						pane
-					)
-				end),
-			},
-			{
-				key = "n",
-				desc = "Next.js",
-				action = Wezterm.action_callback(function(window, pane)
-					-- Prompt the user for a project name (optional)
-					window:perform_action(
-						act.PromptInputLine({
-							description = "Project name (optional, press Enter to skip):",
-							action = Wezterm.action_callback(function(inner_window, inner_pane, line)
-								if not line then
-									return
-								end
-								local project_name = line
-								if #line == 0 then
-									project_name = ("scratch-" .. os.date("%Y%m%d-%H%M%S"))
-								end
-
-								-- Use the prompted input or create a "scratch-<timestamp>" name
-								inner_window:perform_action(
-									act.SwitchToWorkspace({
-										name = project_name,
-										spawn = {
-											args = {
-												"/Users/kevin/.config/wezterm/scripts/create_next.sh",
-												project_name,
-											},
-										},
-									}),
-									inner_pane
-								)
-							end),
-						}),
-						pane
-					)
-				end),
 			},
 			{ key = "Escape", action = "PopKeyTable" },
 		},
