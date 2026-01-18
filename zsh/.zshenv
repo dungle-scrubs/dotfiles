@@ -1,3 +1,3 @@
-# Tell Zsh to use ~/.config/zsh as the location for Zsh files
+# Minimal .zshenv - runs for ALL shells including non-interactive scripts
+# Only set ZDOTDIR here - everything else goes in .zprofile
 export ZDOTDIR=$HOME/.config/zsh
-. "$HOME/.cargo/env"

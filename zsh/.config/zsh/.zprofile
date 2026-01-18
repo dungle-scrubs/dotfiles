@@ -1,87 +1,88 @@
-# ===== Environment Variables =====
+# ===== Core Environment =====
 export XDG_CONFIG_HOME="$HOME/.config"
-export GOKU_EDN_CONFIG_FILE="$XDG_CONFIG_HOME/karabiner/karabiner.edn"
+export DOTFILES="$HOME/dev/dotfiles"
 export LANG=en_US.UTF-8
 export EDITOR=/opt/homebrew/bin/nvim
-export HOMEBREW_NO_ENV_HINTS=1
-export IDEAVIM_RC="$HOME/.config/ideavim/.ideavimrc"
-export PYENV_ROOT="$HOME/.pyenv"
+export PAGER="less -R"
+
+# ===== XDG Paths =====
+export GOKU_EDN_CONFIG_FILE="$XDG_CONFIG_HOME/karabiner/karabiner.edn"
+export IDEAVIM_RC="$XDG_CONFIG_HOME/ideavim/.ideavimrc"
+export STARSHIP_CONFIG="$XDG_CONFIG_HOME/starship/starship.toml"
+export ATUIN_CONFIG_DIR="$XDG_CONFIG_HOME/atuin"
 export CLAUDE_CONFIG_DIR="$HOME/.claude"
 
-# Environment variables moved from .zshrc
-export STARSHIP_CONFIG=$HOME/.config/starship/starship.toml
+# ===== Shell Behavior =====
+export HISTFILE="$ZDOTDIR/.zsh_history"
 export DISABLE_AUTO_TITLE="true"
 export COMPLETION_WAITING_DOTS="true"
-export HISTFILE="$ZDOTDIR/.zsh_history"
-export ATUIN_CONFIG_DIR="$HOME/.config/atuin"
+
+# ===== Tool Config =====
+export HOMEBREW_NO_ENV_HINTS=1
 export BAT_THEME="Monokai Extended"
 export BAT_STYLE="full"
-export PAGER="less -R"
 export BAT_PAGER="less -RF"
 export MCP_DEBUG=false
 export NODE_OPTIONS="--max-old-space-size=16384"
 
-# ===== Path Management =====
-typeset -U path_dirs
-path_dirs=(
-  "$HOME/Library/Python/3.13/bin",
-  "/opt/homebrew/bin",
-  "/opt/homebrew/opt/lua-language-server",
-  "/Library/Frameworks/Python.framework/Versions/3.13/bin",
-  "$PYENV_ROOT/bin", 
-  "$HOME/Library/pnpm",
-  "$HOME/Library/Application Support/Herd/bin/",
-  "$HOME/.local/bin",
-  "$HOME/.config/scripts/",
-  "$HOME/.atuin/bin",
-  "$HOME/go/bin",
-  "$HOME/.npm-global/bin",
-  "$HOME/Library/pnpm",
-  "$HOME/.codeium/windsurf/bin",
-  "$HOME/ai-stuff/bin",
-  "$HOME/.claude/local",
-  "$HOME/.claude-mod/bin"
-)
+# ===== Language Runtimes =====
+export PYENV_ROOT="$HOME/.pyenv"
+export NVM_DIR="$HOME/.nvm"
+export NVM_LAZY_LOAD=true
+export PNPM_HOME="$HOME/Library/pnpm"
 
-export PATH=$(printf "%s:" "${path_dirs[@]}")$PATH
-# Clean PATH of any commas that might have been introduced by:
-# - Claude Code shell snapshots containing corrupted PATH with agent-x/bin,
-# - Previous development setups that incorrectly used PATH=$PATH,/path syntax
-# - Applications that modify PATH with trailing commas
-export PATH=$(echo "$PATH" | tr ',' ' ' | tr -s ' ' ':' | sed 's/::/:/g')
-  
-# Homebrew path (calculate once)
-eval "$(/opt/homebrew/bin/brew shellenv)"
-
-# ===== Language Environment Setup =====
- 
 # PHP (Herd)
 export HERD_PHP_82_INI_SCAN_DIR="$HOME/Library/Application Support/Herd/config/php/82/"
 export HERD_PHP_84_INI_SCAN_DIR="$HOME/Library/Application Support/Herd/config/php/84/"
 
-# PNPM
-export PNPM_HOME="$HOME/Library/pnpm"
+# ===== PATH (consolidated, no duplicates) =====
+typeset -U path  # Ensures uniqueness
 
-# NVM environment
-export NVM_LAZY_LOAD=true
-export NVM_DIR="$HOME/.nvm"
+# Homebrew first (sets HOMEBREW_PREFIX)
+eval "$(/opt/homebrew/bin/brew shellenv)"
 
-# Ruby environment
-if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
+# Build PATH array - order matters (first = highest priority)
+path=(
+  "$HOME/.local/bin"
+  "$HOME/.config/scripts"
+  "$HOME/.claude/local"
+  "$HOME/.claude-mod/bin"
+  "$HOME/.amp/bin"
+  "$HOME/.atuin/bin"
+  "$HOME/.codeium/windsurf/bin"
+  "$HOME/ai-stuff/bin"
+  "$PNPM_HOME"
+  "$HOME/.npm-global/bin"
+  "$HOME/go/bin"
+  "$PYENV_ROOT/bin"
+  "$HOME/Library/Python/3.13/bin"
+  "/Library/Frameworks/Python.framework/Versions/3.13/bin"
+  "$HOMEBREW_PREFIX/opt/lua-language-server/bin"
+  "$HOME/Library/Application Support/Herd/bin"
+  $path
+)
 
-# Lua environment
-if command -v luarocks &> /dev/null; then
-  eval "$(luarocks path --bin)"
-fi
+# ===== Runtime Initializers =====
+# These spawn subshells but only run once per login
+
+# Cargo/Rust
+[[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
 
 # Pyenv
-eval "$(pyenv init -)"
+command -v pyenv &>/dev/null && eval "$(pyenv init -)"
 
-# ===== Private Environment Variables =====
-# Load private environment variables (not version controlled)
-[ -f "$ZDOTDIR/.zprofile.private" ] && source "$ZDOTDIR/.zprofile.private"
+# Rbenv
+command -v rbenv &>/dev/null && eval "$(rbenv init -)"
 
+# Luarocks
+command -v luarocks &>/dev/null && eval "$(luarocks path --bin)"
 
-# Added by OrbStack: command-line tools and integration
-# This won't be added again if you remove it.
-source ~/.orbstack/shell/init.zsh 2>/dev/null || :
+# ===== Private Environment =====
+[[ -f "$ZDOTDIR/.zprofile.private" ]] && source "$ZDOTDIR/.zprofile.private"
+
+# ===== External Integrations =====
+# OrbStack
+[[ -f ~/.orbstack/shell/init.zsh ]] && source ~/.orbstack/shell/init.zsh
+
+# Herd injected PHP binary (from installer)
+[[ -f "$HOME/.local/bin/env" ]] && source "$HOME/.local/bin/env"

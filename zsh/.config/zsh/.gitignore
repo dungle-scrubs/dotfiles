@@ -2,3 +2,5 @@
 .zsh_history
 .zshrc.pre-oh-my-zsh
 ohmyzsh/
+cache/
+.zprofile.private
