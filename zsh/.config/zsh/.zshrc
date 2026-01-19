@@ -167,6 +167,11 @@ alias ccy='claude --dangerously-skip-permissions'
 alias ccyc='claude --dangerously-skip-permissions --continue'
 alias cm='claude-mod'
 
+# Codex
+alias co='codex'
+alias coy='codex --yolo'
+alias coyc='codex resume --last --yolo'
+
 # Python
 alias python=python3
 alias pip=pip3
