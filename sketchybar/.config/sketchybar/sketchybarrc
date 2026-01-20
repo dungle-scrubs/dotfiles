@@ -179,6 +179,55 @@ sbar.exec("osascript -e 'tell application \"System Events\" to get name of first
   front_app:set({ label = { string = app } })
 end)
 
+-- AeroSpace workspace indicator (right of CPU/disk, only if aerospace is running)
+local workspace = sbar.add("item", "workspace", {
+  position = "q",
+  icon = { drawing = false },
+  label = {
+    string = "",
+    font = fonts.text_semibold,
+    color = c(colors.base),
+    padding_left = 6,
+    padding_right = 6,
+  },
+  background = {
+    color = c(colors.overlay0),
+    corner_radius = 4,
+    height = 20,
+  },
+  drawing = false,
+})
+
+sbar.add("event", "aerospace_workspace_change")
+
+local function update_workspace()
+  sbar.exec("aerospace list-workspaces --focused 2>/dev/null", function(result)
+    local ws = type(result) == "string" and result:gsub("%s+", "") or ""
+    if ws ~= "" then
+      workspace:set({
+        drawing = true,
+        label = { string = ws },
+      })
+    else
+      workspace:set({ drawing = false })
+    end
+  end)
+end
+
+update_workspace()
+workspace:subscribe("aerospace_workspace_change", function()
+  update_workspace()
+end)
+workspace:subscribe("mouse.clicked", close_popups)
+
+-- Spacer between workspace and CPU
+sbar.add("item", "workspace_cpu_spacer", {
+  position = "q",
+  width = 10,
+  icon = { drawing = false },
+  label = { drawing = false },
+})
+
 -- CPU Mini (notch-adjacent left)
 local cpu_percent = sbar.add("item", "cpu_percent", {
   position = "q",
@@ -271,6 +320,52 @@ disk_percent:subscribe("routine", function()
   update_disk()
 end)
 
+-- Spacer between DISK and RAM
+sbar.add("item", "disk_ram_spacer", {
+  position = "q",
+  width = 14,
+  icon = { drawing = false },
+  label = { drawing = false },
+})
+
+-- RAM Mini (notch-adjacent left)
+local ram_percent = sbar.add("item", "ram_percent", {
+  position = "q",
+  icon = { drawing = false },
+  label = {
+    string = "0%",
+    font = fonts.text_heavy,
+    color = c(colors.text),
+  },
+  y_offset = -4,
+  update_freq = 5,
+  width = 0,
+})
+
+local ram_label = sbar.add("item", "ram_label", {
+  position = "q",
+  icon = { drawing = false },
+  label = {
+    string = "RAM",
+    font = fonts.label_tiny,
+    color = c(colors.overlay1),
+  },
+  y_offset = 6,
+})
+
+local function update_ram()
+  sbar.exec("ps -A -o %mem | awk '{sum+=$1} END {printf \"%.0f\", sum}'", function(result)
+    local pct = type(result) == "string" and result:gsub("%s+", "") or "0"
+    if pct == "" then pct = "0" end
+    ram_percent:set({ label = { string = pct .. "%" } })
+  end)
+end
+
+update_ram()
+ram_percent:subscribe("routine", function()
+  update_ram()
+end)
+
 -- API Usage (notch-adjacent right, with popup)
 local api_usage = sbar.add("item", "api_usage", {
   position = "e",
@@ -280,7 +375,7 @@ local api_usage = sbar.add("item", "api_usage", {
     color = c(colors.mauve),
   },
   label = {
-    string = "API",
+    string = "AI",
     font = fonts.text_semibold,
     color = c(colors.text),
   },
