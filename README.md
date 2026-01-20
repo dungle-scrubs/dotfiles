@@ -16,6 +16,7 @@ macOS dotfiles managed with [GNU Stow](https://www.gnu.org/software/stow/).
 | [starship](starship/) | Cross-shell prompt |
 | [wezterm](wezterm/) | Terminal emulator |
 | [yazi](yazi/) | Terminal file manager |
+| [sketchybar](sketchybar/) | Menu bar configuration |
 | [zsh](zsh/) | Shell configuration |
 
 ## Requirements

@@ -1,0 +1,601 @@
+#!/usr/bin/env lua
+
+local user = os.getenv("USER") or ""
+local lua_paths = {
+  "/Users/" .. user .. "/.local/share/sketchybar_lua/?.so",
+  "/opt/homebrew/share/sketchybar_lua/?.so",
+  "/usr/local/share/sketchybar_lua/?.so",
+}
+
+for _, path in ipairs(lua_paths) do
+  package.cpath = package.cpath .. ";" .. path
+end
+
+local sbar = require("sketchybar")
+local config_dir = os.getenv("CONFIG_DIR") or ("/Users/" .. user .. "/.config/sketchybar")
+
+-- Load Catppuccin colors
+package.path = package.path .. ";" .. config_dir .. "/?.lua"
+local colors = require("colors")
+
+-- Nerd Font icons (Material Design + Font Awesome)
+local icons = {
+  apple = "󰀵",      -- nf-md-apple
+  brain = "󰠭",      -- nf-md-brain (Anthropic)
+  openai = "󰧑",     -- nf-md-openai
+  terminal = "",   -- nf-oct-terminal (Codex)
+  api = "󱁉",        -- nf-md-api (API usage)
+  wifi = "󰖩",       -- nf-md-wifi
+  wifi_off = "󰖪",   -- nf-md-wifi_off
+  vpn = "󰦝",        -- nf-md-shield_lock
+  battery = {
+    "󰂎", -- 0%
+    "󰁺", -- 10%
+    "󰁻", -- 20%
+    "󰁼", -- 30%
+    "󰁽", -- 40%
+    "󰁾", -- 50%
+    "󰁿", -- 60%
+    "󰂀", -- 70%
+    "󰂁", -- 80%
+    "󰂂", -- 90%
+    "󰁹", -- 100%
+  },
+  battery_charging = "󰂄",
+  volume_high = "󰕾",
+  volume_mid = "󰖀",
+  volume_low = "󰕿",
+  volume_mute = "󰝟",
+}
+
+-- Font definitions
+local fonts = {
+  text = "SF Pro:Regular:12.0",
+  text_semibold = "SF Pro:Semibold:12.0",
+  text_heavy = "SF Pro:Heavy:12.0",
+  icon = "Hack Nerd Font:Regular:16.0",
+  icon_small = "Hack Nerd Font:Regular:14.0",
+  label_tiny = "SF Pro:Semibold:7.0",
+  label_small = "SF Pro:Semibold:9.0",
+}
+
+-- Helper to format color for sketchybar
+local function c(color)
+  return string.format("0x%08x", color)
+end
+
+-- Bar
+sbar.bar({
+  position = "top",
+  height = 34,
+  color = c(colors.base),
+  padding_left = 8,
+  padding_right = 8,
+})
+
+-- Defaults
+sbar.default({
+  icon = {
+    font = fonts.icon,
+    color = c(colors.text),
+    padding_right = 4,
+  },
+  label = {
+    font = fonts.text,
+    color = c(colors.text),
+    padding_left = 4,
+  },
+  padding_left = 6,
+  padding_right = 6,
+})
+
+-- Apple menu with popup
+local apple = sbar.add("item", "apple", {
+  position = "left",
+  icon = {
+    string = icons.apple,
+    font = fonts.icon,
+    color = c(colors.text),
+    padding_left = 4,
+    padding_right = 4,
+  },
+  label = { drawing = false },
+  popup = {
+    height = 35,
+    blur_radius = 50,
+    background = {
+      color = c(colors.surface0),
+      border_width = 2,
+      corner_radius = 9,
+      border_color = c(colors.blue),
+    },
+  },
+})
+
+local popup_items = {
+  { name = "apple.prefs", icon = "󰒓", label = "System Settings", cmd = "open -a 'System Settings'" },
+  { name = "apple.activity", icon = "󰍛", label = "Activity Monitor", cmd = "open -a 'Activity Monitor'" },
+  { name = "apple.lock", icon = "󰌾", label = "Lock Screen", cmd = "pmset displaysleepnow" },
+}
+
+for _, item in ipairs(popup_items) do
+  local popup_item = sbar.add("item", item.name, {
+    position = "popup.apple",
+    icon = {
+      string = item.icon,
+      font = fonts.icon,
+      padding_left = 8,
+      padding_right = 4,
+    },
+    label = {
+      string = item.label,
+      font = fonts.text_semibold,
+      padding_right = 8,
+    },
+  })
+  popup_item:subscribe("mouse.clicked", function()
+    sbar.exec(item.cmd)
+    apple:set({ popup = { drawing = false } })
+  end)
+end
+
+apple:subscribe("mouse.clicked", function()
+  sbar.exec("sketchybar --set api_usage popup.drawing=off")
+  apple:set({ popup = { drawing = "toggle" } })
+end)
+
+apple:subscribe("mouse.exited.global", function()
+  apple:set({ popup = { drawing = false } })
+end)
+
+-- Close all popups helper
+local function close_popups()
+  sbar.exec("sketchybar --set apple popup.drawing=off --set api_usage popup.drawing=off")
+end
+
+-- Active app name (next to Apple logo)
+local front_app = sbar.add("item", "front_app", {
+  position = "left",
+  icon = { drawing = false },
+  label = {
+    string = "Finder",
+    font = fonts.text_semibold,
+    color = c(colors.subtext0),
+  },
+})
+
+sbar.add("event", "front_app_switched")
+
+front_app:subscribe("front_app_switched", function(env)
+  front_app:set({ label = { string = env.INFO or "—" } })
+  -- Close any open popups when switching apps
+  sbar.exec("sketchybar --set apple popup.drawing=off --set api_usage popup.drawing=off")
+end)
+front_app:subscribe("mouse.clicked", close_popups)
+
+-- Initialize with current app
+sbar.exec("osascript -e 'tell application \"System Events\" to get name of first application process whose frontmost is true'", function(result)
+  local app = type(result) == "string" and result:gsub("%s+$", "") or "Finder"
+  front_app:set({ label = { string = app } })
+end)
+
+-- CPU Mini (notch-adjacent left)
+local cpu_percent = sbar.add("item", "cpu_percent", {
+  position = "q",
+  icon = { drawing = false },
+  label = {
+    string = "0%",
+    font = fonts.text_heavy,
+    color = c(colors.text),
+  },
+  y_offset = -4,
+  update_freq = 2,
+  width = 0,
+})
+
+local cpu_label = sbar.add("item", "cpu_label", {
+  position = "q",
+  icon = { drawing = false },
+  label = {
+    string = "CPU",
+    font = fonts.label_tiny,
+    color = c(colors.overlay1),
+  },
+  y_offset = 6,
+})
+
+-- Spacer between CPU and DISK
+sbar.add("item", "cpu_disk_spacer", {
+  position = "q",
+  width = 14,
+  icon = { drawing = false },
+  label = { drawing = false },
+})
+
+local function update_cpu()
+  sbar.exec([[
+    CORE_COUNT=$(sysctl -n machdep.cpu.thread_count)
+    CPU_INFO=$(ps -eo pcpu,user)
+    CPU_SYS=$(echo "$CPU_INFO" | grep -v $(whoami) | sed "s/[^ 0-9\.]//g" | awk "{sum+=\$1} END {print sum/(100.0 * $CORE_COUNT)}")
+    CPU_USER=$(echo "$CPU_INFO" | grep $(whoami) | sed "s/[^ 0-9\.]//g" | awk "{sum+=\$1} END {print sum/(100.0 * $CORE_COUNT)}")
+    echo "$CPU_SYS $CPU_USER" | awk '{printf "%.0f", ($1 + $2)*100}'
+  ]], function(result)
+    local pct = type(result) == "string" and result or "0"
+    pct = pct:gsub("%s+", "")
+    if pct == "" then pct = "0" end
+    cpu_percent:set({ label = { string = pct .. "%" } })
+  end)
+end
+
+update_cpu()
+cpu_percent:subscribe("routine", function()
+  update_cpu()
+end)
+
+-- Disk Mini (notch-adjacent left)
+local disk_percent = sbar.add("item", "disk_percent", {
+  position = "q",
+  icon = { drawing = false },
+  label = {
+    string = "0%",
+    font = fonts.text_heavy,
+    color = c(colors.text),
+  },
+  y_offset = -4,
+  update_freq = 60,
+  width = 0,
+})
+
+local disk_label = sbar.add("item", "disk_label", {
+  position = "q",
+  icon = { drawing = false },
+  label = {
+    string = "DISK",
+    font = fonts.label_tiny,
+    color = c(colors.overlay1),
+  },
+  y_offset = 6,
+})
+
+local function update_disk()
+  sbar.exec("df -H / | awk 'NR==2 {print $5}'", function(result)
+    local pct = type(result) == "string" and result or "0%"
+    pct = pct:gsub("%s+", "")
+    if pct == "" then pct = "0%" end
+    disk_percent:set({ label = { string = pct } })
+  end)
+end
+
+update_disk()
+disk_percent:subscribe("routine", function()
+  update_disk()
+end)
+
+-- API Usage (notch-adjacent right, with popup)
+local api_usage = sbar.add("item", "api_usage", {
+  position = "e",
+  icon = {
+    string = icons.api,
+    font = fonts.icon_small,
+    color = c(colors.mauve),
+  },
+  label = {
+    string = "API",
+    font = fonts.text_semibold,
+    color = c(colors.text),
+  },
+  update_freq = 1800,
+  popup = {
+    align = "left",
+    height = 30,
+    background = {
+      color = c(colors.surface0),
+      border_width = 2,
+      corner_radius = 9,
+      border_color = c(colors.blue),
+    },
+  },
+})
+
+local api_anthropic = sbar.add("item", "api_usage.anthropic", {
+  position = "popup.api_usage",
+  icon = { drawing = false },
+  label = {
+    string = "Anthropic   $0.00      30d",
+    font = "Hack Nerd Font:Regular:12.0",
+    padding_left = 10,
+    padding_right = 10,
+  },
+})
+
+local api_openai = sbar.add("item", "api_usage.openai", {
+  position = "popup.api_usage",
+  icon = { drawing = false },
+  label = {
+    string = "OpenAI      $0.00      30d",
+    font = "Hack Nerd Font:Regular:12.0",
+    padding_left = 10,
+    padding_right = 10,
+  },
+})
+
+local api_codex = sbar.add("item", "api_usage.codex", {
+  position = "popup.api_usage",
+  icon = { drawing = false },
+  label = {
+    string = "Codex          0%  session",
+    font = "Hack Nerd Font:Regular:12.0",
+    padding_left = 10,
+    padding_right = 10,
+  },
+})
+
+local function update_api_usage()
+  -- Anthropic
+  sbar.exec([[
+    export OP_SERVICE_ACCOUNT_TOKEN=$(security find-generic-password -a dev-secrets -s OP_SERVICE_ACCOUNT_TOKEN -w 2>/dev/null)
+    if [ -z "$OP_SERVICE_ACCOUNT_TOKEN" ]; then echo "0"; exit 0; fi
+    KEY=$(op read "op://Models/anthropic/admin-key" 2>/dev/null)
+    if [ -z "$KEY" ]; then echo "0"; exit 0; fi
+    START=$(date -v-30d -u +%Y-%m-%dT00:00:00Z)
+    curl -s "https://api.anthropic.com/v1/organizations/cost_report?starting_at=$START&bucket_width=1d&limit=31" \
+      -H "x-api-key: $KEY" \
+      -H "anthropic-version: 2023-06-01" \
+      -H "Content-Type: application/json" 2>/dev/null \
+    | jq '[.data[].amount] | add // 0'
+  ]], function(result)
+    local cost = tonumber(type(result) == "string" and result:gsub("%s+", "") or "0") or 0
+    api_anthropic:set({ label = { string = string.format("%-10s%7s  %7s", "Anthropic", "$"..string.format("%.2f", cost), "30d") } })
+  end)
+
+  -- OpenAI
+  sbar.exec([[
+    export OP_SERVICE_ACCOUNT_TOKEN=$(security find-generic-password -a dev-secrets -s OP_SERVICE_ACCOUNT_TOKEN -w 2>/dev/null)
+    if [ -z "$OP_SERVICE_ACCOUNT_TOKEN" ]; then echo "0"; exit 0; fi
+    KEY=$(op read "op://Models/openai/admin-key" 2>/dev/null)
+    if [ -z "$KEY" ]; then echo "0"; exit 0; fi
+    START=$(date -v-30d +%s)
+    END=$(date +%s)
+    curl -s "https://api.openai.com/v1/organization/costs?start_time=$START&end_time=$END&bucket_width=1d" \
+      -H "Authorization: Bearer $KEY" \
+      -H "Content-Type: application/json" 2>/dev/null \
+    | jq '[.data[].results[].amount.value] | add // 0'
+  ]], function(result)
+    local cost = tonumber(type(result) == "string" and result:gsub("%s+", "") or "0") or 0
+    api_openai:set({ label = { string = string.format("%-10s%7s  %7s", "OpenAI", "$"..string.format("%.2f", cost), "30d") } })
+  end)
+
+  -- Codex
+  sbar.exec([[
+    LATEST=$(find ~/.codex/sessions -name "rollout-*.jsonl" -type f 2>/dev/null | sort -r | head -1)
+    if [ -z "$LATEST" ]; then echo "0"; exit 0; fi
+    grep '"token_count"' "$LATEST" 2>/dev/null | tail -1 | jq -r '.payload.rate_limits.primary.used_percent // 0'
+  ]], function(result)
+    local pct = tonumber(type(result) == "string" and result:gsub("%s+", "") or "0") or 0
+    api_codex:set({ label = { string = string.format("%-10s%7s  %7s", "Codex", string.format("%.0f%%", pct), "session") } })
+  end)
+end
+
+update_api_usage()
+api_usage:subscribe("routine", function()
+  update_api_usage()
+end)
+
+api_usage:subscribe("mouse.clicked", function()
+  sbar.exec("sketchybar --set apple popup.drawing=off")
+  api_usage:set({ popup = { drawing = "toggle" } })
+end)
+
+-- Date/Time (vertically stacked)
+local date_label = sbar.add("item", "date_label", {
+  position = "right",
+  icon = { drawing = false },
+  label = {
+    string = "Mon Jan 20",
+    font = fonts.label_small,
+    color = c(colors.subtext0),
+  },
+  y_offset = 6,
+  width = 0,
+})
+
+local time_label = sbar.add("item", "time_label", {
+  position = "right",
+  icon = { drawing = false },
+  label = {
+    string = "12:00",
+    font = fonts.text_heavy,
+    color = c(colors.text),
+  },
+  y_offset = -4,
+  update_freq = 30,
+})
+
+local function update_datetime()
+  sbar.exec("date '+%a %b %d'", function(result)
+    local d = type(result) == "string" and result:gsub("%s+$", "") or ""
+    date_label:set({ label = { string = d } })
+  end)
+  sbar.exec("date '+%I:%M %p'", function(result)
+    local t = type(result) == "string" and result:gsub("%s+$", ""):gsub("^0", "") or ""
+    time_label:set({ label = { string = t } })
+  end)
+end
+
+update_datetime()
+time_label:subscribe("routine", function()
+  update_datetime()
+end)
+time_label:subscribe("mouse.clicked", close_popups)
+date_label:subscribe("mouse.clicked", close_popups)
+
+-- Wifi/IP (right)
+local wifi = sbar.add("item", "wifi", {
+  position = "right",
+  update_freq = 30,
+  icon = {
+    string = icons.wifi,
+    font = fonts.icon_small,
+    color = c(colors.blue),
+  },
+  label = { string = "..." },
+})
+
+sbar.add("event", "wifi_change", "com.apple.system.config.network_change")
+
+local function update_wifi()
+  sbar.exec("scutil --nwi | grep address | sed 's/.*://' | tr -d ' ' | head -1", function(ip)
+    ip = type(ip) == "string" and ip:gsub("%s+", "") or ""
+    sbar.exec("scutil --nwi | grep -m1 'utun'", function(vpn)
+      vpn = type(vpn) == "string" and vpn or ""
+      local icon, label, icon_color
+      if vpn:find("utun") then
+        icon = icons.vpn
+        label = "VPN"
+        icon_color = c(colors.green)
+      elseif ip ~= "" then
+        icon = icons.wifi
+        label = ip
+        icon_color = c(colors.blue)
+      else
+        icon = icons.wifi_off
+        label = "Off"
+        icon_color = c(colors.overlay0)
+      end
+      wifi:set({
+        icon = { string = icon, color = icon_color },
+        label = { string = label },
+      })
+    end)
+  end)
+end
+
+update_wifi()
+wifi:subscribe({ "routine", "wifi_change" }, function()
+  update_wifi()
+end)
+wifi:subscribe("mouse.clicked", close_popups)
+
+-- Battery (right)
+local battery = sbar.add("item", "battery", {
+  position = "right",
+  update_freq = 60,
+  icon = {
+    string = icons.battery[11],
+    font = fonts.icon,
+    color = c(colors.green),
+  },
+  label = { string = "100%" },
+})
+
+sbar.add("event", "power_source_change", "com.apple.system.config.powerSourceChange")
+
+local function update_battery()
+  sbar.exec("pmset -g batt", function(result)
+    local output = type(result) == "string" and result or ""
+    local pct = tonumber(output:match("(%d+)%%")) or 0
+    local charging = output:find("AC Power") or output:find("charging")
+
+    local icon, icon_color
+    if charging then
+      icon = icons.battery_charging
+      icon_color = c(colors.yellow)
+    else
+      -- Map 0-100% to battery icon array (1-11)
+      local idx = math.floor(pct / 10) + 1
+      idx = math.min(idx, 11)
+      icon = icons.battery[idx]
+      -- Color based on level
+      if pct > 50 then
+        icon_color = c(colors.green)
+      elseif pct > 20 then
+        icon_color = c(colors.yellow)
+      else
+        icon_color = c(colors.red)
+      end
+    end
+
+    battery:set({
+      icon = { string = icon, color = icon_color },
+      label = { string = pct .. "%" },
+    })
+  end)
+end
+
+update_battery()
+battery:subscribe({ "routine", "system_woke", "power_source_change" }, function()
+  update_battery()
+end)
+battery:subscribe("mouse.clicked", close_popups)
+
+-- Volume (right)
+local volume = sbar.add("item", "volume", {
+  position = "right",
+  icon = {
+    string = icons.volume_high,
+    font = fonts.icon_small,
+    color = c(colors.lavender),
+  },
+  label = { string = "0%" },
+})
+
+sbar.add("event", "volume_change", "com.apple.audioOutputVolumeDidChange")
+
+local function update_volume()
+  sbar.exec("osascript -e 'output volume of (get volume settings)'", function(result)
+    local vol = tonumber(type(result) == "string" and result:gsub("%s+", "") or "0") or 0
+    local icon
+    if vol == 0 then
+      icon = icons.volume_mute
+    elseif vol < 33 then
+      icon = icons.volume_low
+    elseif vol < 66 then
+      icon = icons.volume_mid
+    else
+      icon = icons.volume_high
+    end
+    volume:set({
+      icon = { string = icon },
+      label = { string = vol .. "%" },
+    })
+  end)
+end
+
+update_volume()
+volume:subscribe("volume_change", function()
+  update_volume()
+end)
+volume:subscribe("mouse.clicked", close_popups)
+
+
+-- Lock/unlock animation
+sbar.add("event", "lock", "com.apple.screenIsLocked")
+sbar.add("event", "unlock", "com.apple.screenIsUnlocked")
+
+local animator = sbar.add("item", "animator", {
+  position = "left",
+  drawing = false,
+  updates = true,
+})
+
+animator:subscribe("lock", function()
+  sbar.exec(string.format([[
+    sketchybar --animate sin 5 \
+               --bar color=%s \
+               --bar y_offset=-34 \
+                     margin=-200 \
+                     blur_radius=0
+  ]], c(colors.transparent)))
+end)
+
+animator:subscribe("unlock", function()
+  sbar.exec(string.format([[
+    sketchybar --animate sin 5 \
+               --bar color=%s \
+               --animate sin 25 \
+               --bar y_offset=0 \
+                     margin=0
+  ]], c(colors.base)))
+end)
+
+sbar.event_loop()
