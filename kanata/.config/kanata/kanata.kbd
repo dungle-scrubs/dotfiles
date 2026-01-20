@@ -39,14 +39,14 @@
 
 (defalias
   ;; -------------------------------------------------------------------------
-  ;; Caps Lock: Escape (tap) / Left Ctrl (hold)
+  ;; Caps Lock: Escape (tap) / Meh (hold) - Ctrl+Opt+Shift
   ;; -------------------------------------------------------------------------
-  cap (tap-hold-release 200 200 esc lctl)
+  cap (tap-hold-release 200 200 esc (multi lctl lalt lsft))
 
   ;; -------------------------------------------------------------------------
-  ;; Tab: Tab (tap) / Meh (hold) - Ctrl+Opt+Shift
+  ;; Tab: Tab (tap) / Hyper (hold) - Ctrl+Opt+Shift+Cmd
   ;; -------------------------------------------------------------------------
-  tab (tap-hold-release 200 200 tab (multi lctl lalt lsft))
+  tab (tap-hold-release 200 200 tab (multi lctl lalt lsft lmet))
 
   ;; -------------------------------------------------------------------------
   ;; Right Cmd: F13 (tap) / Right Cmd (hold) - SuperWhisper trigger
