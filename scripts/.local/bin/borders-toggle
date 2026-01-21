@@ -1,0 +1,16 @@
+#!/bin/bash
+# Toggle JankyBorders based on window count on focused workspace
+# Only show borders when there's more than one window
+
+FOCUSED_WS=$(aerospace list-workspaces --focused 2>/dev/null)
+if [[ -z "$FOCUSED_WS" ]]; then
+  exit 0
+fi
+
+WINDOW_COUNT=$(aerospace list-windows --workspace "$FOCUSED_WS" 2>/dev/null | wc -l | tr -d ' ')
+
+if [[ "$WINDOW_COUNT" -gt 1 ]]; then
+  borders active_color=0xff00ff00 inactive_color=0xff494d64 width=5.0
+else
+  borders active_color=0x00000000 inactive_color=0x00000000 width=0.0
+fi
