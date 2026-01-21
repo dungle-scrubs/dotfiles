@@ -141,7 +141,7 @@ for _, item in ipairs(popup_items) do
 end
 
 apple:subscribe("mouse.clicked", function()
-  sbar.exec("sketchybar --set api_usage popup.drawing=off")
+  sbar.exec("sketchybar --set api_usage popup.drawing=off --set docker popup.drawing=off")
   apple:set({ popup = { drawing = "toggle" } })
 end)
 
@@ -478,7 +478,7 @@ api_usage:subscribe("routine", function()
 end)
 
 api_usage:subscribe("mouse.clicked", function()
-  sbar.exec("sketchybar --set apple popup.drawing=off")
+  sbar.exec("sketchybar --set apple popup.drawing=off --set docker popup.drawing=off")
   api_usage:set({ popup = { drawing = "toggle" } })
 end)
 
@@ -512,7 +512,7 @@ local docker = sbar.add("item", "docker", {
 local docker_popup_items = {}
 
 local function update_docker()
-  sbar.exec("docker ps --format '{{.Names}}|{{.Status}}' 2>/dev/null", function(result)
+  sbar.exec("/usr/local/bin/docker ps --format '{{.Names}}|{{.Status}}' 2>/dev/null", function(result)
     local lines = {}
     if type(result) == "string" and result ~= "" then
       for line in result:gmatch("[^\n]+") do
