@@ -1,6 +1,6 @@
 ---
 --- API Usage Monitor Item
---- Displays Anthropic, OpenAI, and Codex API usage/costs in a popup.
+--- Displays AI provider usage/costs in a popup.
 --- Fetches costs from APIs using 1Password-stored credentials.
 ---
 
@@ -34,22 +34,15 @@ return function(sbar, colors, styles)
     },
   })
 
+  -- Format: %-10s (name left)  %8s (value right)  %8s (period right)
+  local fmt = "%-10s  %8s  %8s"
+
+  -- Alphabetical order: Anthropic, Codex, MiniMax, OpenAI, Z.ai
   local api_anthropic = sbar.add("item", "api_usage.anthropic", {
     position = "popup.api_usage",
     icon = { drawing = false },
     label = {
-      string = "Anthropic   $0.00      30d",
-      font = fonts.popup,
-      padding_left = popup.padding,
-      padding_right = popup.padding,
-    },
-  })
-
-  local api_openai = sbar.add("item", "api_usage.openai", {
-    position = "popup.api_usage",
-    icon = { drawing = false },
-    label = {
-      string = "OpenAI      $0.00      30d",
+      string = string.format(fmt, "Anthropic", "$0.00", "30d"),
       font = fonts.popup,
       padding_left = popup.padding,
       padding_right = popup.padding,
@@ -60,7 +53,40 @@ return function(sbar, colors, styles)
     position = "popup.api_usage",
     icon = { drawing = false },
     label = {
-      string = "Codex          0%  session",
+      string = string.format(fmt, "Codex", "0%", "session"),
+      font = fonts.popup,
+      padding_left = popup.padding,
+      padding_right = popup.padding,
+    },
+  })
+
+  sbar.add("item", "api_usage.minimax", {
+    position = "popup.api_usage",
+    icon = { drawing = false },
+    label = {
+      string = string.format(fmt, "MiniMax", "-", "no plan"),
+      font = fonts.popup,
+      padding_left = popup.padding,
+      padding_right = popup.padding,
+    },
+  })
+
+  local api_openai = sbar.add("item", "api_usage.openai", {
+    position = "popup.api_usage",
+    icon = { drawing = false },
+    label = {
+      string = string.format(fmt, "OpenAI", "$0.00", "30d"),
+      font = fonts.popup,
+      padding_left = popup.padding,
+      padding_right = popup.padding,
+    },
+  })
+
+  sbar.add("item", "api_usage.zai", {
+    position = "popup.api_usage",
+    icon = { drawing = false },
+    label = {
+      string = string.format(fmt, "Z.ai", "-", "no bal"),
       font = fonts.popup,
       padding_left = popup.padding,
       padding_right = popup.padding,
@@ -88,7 +114,7 @@ return function(sbar, colors, styles)
       | jq '[.data[].amount] | add // 0'
     ]], function(result)
       local cost = tonumber(type(result) == "string" and result:gsub("%s+", "") or "0") or 0
-      api_anthropic:set({ label = { string = string.format("%-10s%7s  %7s", "Anthropic", "$"..string.format("%.2f", cost), "30d") } })
+      api_anthropic:set({ label = { string = string.format(fmt, "Anthropic", "$"..string.format("%.2f", cost), "30d") } })
     end)
 
     -- OpenAI
@@ -105,7 +131,7 @@ return function(sbar, colors, styles)
       | jq '[.data[].results[].amount.value] | add // 0'
     ]], function(result)
       local cost = tonumber(type(result) == "string" and result:gsub("%s+", "") or "0") or 0
-      api_openai:set({ label = { string = string.format("%-10s%7s  %7s", "OpenAI", "$"..string.format("%.2f", cost), "30d") } })
+      api_openai:set({ label = { string = string.format(fmt, "OpenAI", "$"..string.format("%.2f", cost), "30d") } })
     end)
 
     -- Codex
@@ -115,8 +141,9 @@ return function(sbar, colors, styles)
       grep '"token_count"' "$LATEST" 2>/dev/null | tail -1 | jq -r '.payload.rate_limits.primary.used_percent // 0'
     ]], function(result)
       local pct = tonumber(type(result) == "string" and result:gsub("%s+", "") or "0") or 0
-      api_codex:set({ label = { string = string.format("%-10s%7s  %7s", "Codex", string.format("%.0f%%", pct), "session") } })
+      api_codex:set({ label = { string = string.format(fmt, "Codex", string.format("%.0f%%", pct), "session") } })
     end)
+
   end
 
   update_api_usage()
