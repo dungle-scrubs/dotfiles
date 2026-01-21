@@ -79,10 +79,10 @@ key-mapping.preset = 'qwerty'
 [gaps]
 inner.horizontal = 15
 inner.vertical = 15
-outer.top = [{ monitor.main = 5 }, { monitor."MDS-156F13" = 5 }, 40]
-outer.left = 5
-outer.bottom = 5
-outer.right = 5
+outer.top = 0
+outer.left = 0
+outer.bottom = 0
+outer.right = 0
 
 # See https://nikitabobko.github.io/AeroSpace/guide#exec-env-vars
 [exec] # Again, you don't need to copy all config sections to your config.
