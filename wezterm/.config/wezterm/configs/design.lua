@@ -72,7 +72,7 @@ function M.apply(config)
 	config.cursor_blink_rate = 0
 	config.cursor_thickness = 2
 
-	config.font = Wezterm.font("JetBrains Mono")
+	config.font = Wezterm.font("JetBrainsMono Nerd Font Mono")
 	config.font_size = 16
 	config.harfbuzz_features = {
 		"ss01", "ss02", "ss03", "ss04", "ss05", "ss07",
