@@ -1,0 +1,132 @@
+#!/bin/bash
+#
+# Arc Browser Space Navigation
+# Uses SketchyBar's cached state for next/prev
+#
+
+set -euo pipefail
+
+ACTION="${1:-list}"
+ARG="${2:-}"
+CACHE="/tmp/arc_spaces_cache"
+
+# Check if Arc is running
+is_running() {
+  pgrep -x "Arc" >/dev/null 2>&1
+}
+
+# Get all space names from Arc
+get_spaces() {
+  osascript -e 'tell application "Arc" to get name of every space of first window' 2>/dev/null | tr ',' '\n' | sed 's/^ *//'
+}
+
+# Get active space from Arc
+get_active() {
+  osascript -e 'tell application "Arc" to tell first window to get name of active space' 2>/dev/null
+}
+
+# Read cached state from SketchyBar
+read_cache() {
+  if [[ -f "$CACHE" ]]; then
+    head -1 "$CACHE"  # spaces csv
+  else
+    get_spaces | tr '\n' ',' | sed 's/,$//'
+  fi
+}
+
+read_cache_active() {
+  if [[ -f "$CACHE" ]]; then
+    tail -1 "$CACHE"  # active space
+  else
+    get_active
+  fi
+}
+
+# Switch via menu click (requires Accessibility)
+switch_to_space() {
+  local target="$1"
+  osascript -e "
+    tell application \"Arc\" to activate
+    delay 0.05
+    tell application \"System Events\"
+      tell process \"Arc\"
+        click menu item \"$target\" of menu \"Spaces\" of menu bar 1
+      end tell
+    end tell
+  " >/dev/null 2>&1
+}
+
+# Calculate next/prev space name from cache
+get_next_space() {
+  local csv=$(read_cache)
+  local active=$(read_cache_active | tr -d '\n')
+
+  # Parse into array
+  IFS=',' read -ra spaces <<< "$csv"
+  local count=${#spaces[@]}
+  local idx=0
+
+  # Find current index
+  for i in "${!spaces[@]}"; do
+    local name=$(echo "${spaces[$i]}" | sed 's/^ *//' | tr -d '\n')
+    if [[ "$name" == "$active" ]]; then
+      idx=$i
+      break
+    fi
+  done
+
+  # Next with wrap
+  local next_idx=$(( (idx + 1) % count ))
+  echo "${spaces[$next_idx]}" | sed 's/^ *//'
+}
+
+get_prev_space() {
+  local csv=$(read_cache)
+  local active=$(read_cache_active | tr -d '\n')
+
+  IFS=',' read -ra spaces <<< "$csv"
+  local count=${#spaces[@]}
+  local idx=0
+
+  for i in "${!spaces[@]}"; do
+    local name=$(echo "${spaces[$i]}" | sed 's/^ *//' | tr -d '\n')
+    if [[ "$name" == "$active" ]]; then
+      idx=$i
+      break
+    fi
+  done
+
+  # Prev with wrap
+  local prev_idx=$(( (idx - 1 + count) % count ))
+  echo "${spaces[$prev_idx]}" | sed 's/^ *//'
+}
+
+if ! is_running; then
+  exit 0
+fi
+
+case "$ACTION" in
+  list)
+    get_spaces
+    ;;
+  active)
+    get_active
+    ;;
+  next)
+    target=$(get_next_space)
+    switch_to_space "$target"
+    ;;
+  prev)
+    target=$(get_prev_space)
+    switch_to_space "$target"
+    ;;
+  goto)
+    if [[ -n "$ARG" ]]; then
+      switch_to_space "$ARG"
+    fi
+    ;;
+  *)
+    echo "Usage: arc-space [list|active|next|prev|goto NAME]"
+    exit 1
+    ;;
+esac

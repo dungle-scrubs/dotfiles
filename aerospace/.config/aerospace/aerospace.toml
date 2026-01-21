@@ -138,6 +138,10 @@ alt-shift-right = 'move right'
 shift-ctrl-alt-left = 'exec-and-forget sh -c "aerospace list-workspaces --monitor focused --empty no | aerospace workspace --wrap-around prev"'
 shift-ctrl-alt-right = 'exec-and-forget sh -c "aerospace list-workspaces --monitor focused --empty no | aerospace workspace --wrap-around next"'
 
+# Arc browser space navigation (meh+h/l) - SketchyBar controls the switch
+ctrl-shift-alt-h = 'exec-and-forget sketchybar --trigger arc_space_prev'
+ctrl-shift-alt-l = 'exec-and-forget sketchybar --trigger arc_space_next'
+
 # See: https://nikitabobko.github.io/AeroSpace/commands#resize
 # alt-shift-minus = 'resize smart -50'
 # alt-shift-equal = 'resize smart +50'

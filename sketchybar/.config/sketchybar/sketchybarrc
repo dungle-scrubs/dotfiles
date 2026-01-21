@@ -79,6 +79,7 @@ end
 -- Load items (order matters for positioning: left items first, then right)
 require("apple")(sbar, colors, styles)
 require("front_app")(sbar, colors, styles, close_popups)
+require("arc_spaces")(sbar, colors, styles)
 require("workspace")(sbar, colors, styles, close_popups)
 require("system_stats")(sbar, colors, styles)
 require("api_usage")(sbar, colors, styles)
