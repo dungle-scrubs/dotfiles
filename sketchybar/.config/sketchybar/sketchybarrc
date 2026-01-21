@@ -25,6 +25,7 @@ local icons = {
   openai = "󰧑",     -- nf-md-openai
   terminal = "",   -- nf-oct-terminal (Codex)
   api = "󰍛",        -- nf-md-memory (AI)
+  docker = "󰡨",     -- nf-md-docker
   wifi = "󰖩",       -- nf-md-wifi
   wifi_off = "󰖪",   -- nf-md-wifi_off
   vpn = "󰦝",        -- nf-md-shield_lock
@@ -150,7 +151,7 @@ end)
 
 -- Close all popups helper
 local function close_popups()
-  sbar.exec("sketchybar --set apple popup.drawing=off --set api_usage popup.drawing=off")
+  sbar.exec("sketchybar --set apple popup.drawing=off --set api_usage popup.drawing=off --set docker popup.drawing=off")
 end
 
 -- Active app name (next to Apple logo)
@@ -479,6 +480,119 @@ end)
 api_usage:subscribe("mouse.clicked", function()
   sbar.exec("sketchybar --set apple popup.drawing=off")
   api_usage:set({ popup = { drawing = "toggle" } })
+end)
+
+-- Docker containers
+local docker = sbar.add("item", "docker", {
+  position = "e",
+  icon = {
+    string = icons.docker,
+    font = fonts.icon_small,
+    color = c(colors.blue),
+  },
+  label = {
+    string = "0",
+    font = fonts.text_semibold,
+    color = c(colors.text),
+  },
+  update_freq = 30,
+  popup = {
+    align = "left",
+    height = 30,
+    background = {
+      color = c(colors.surface0),
+      border_width = 2,
+      corner_radius = 9,
+      border_color = c(colors.blue),
+    },
+  },
+})
+
+-- Store dynamic popup items
+local docker_popup_items = {}
+
+local function update_docker()
+  sbar.exec("docker ps --format '{{.Names}}|{{.Status}}' 2>/dev/null", function(result)
+    local lines = {}
+    if type(result) == "string" and result ~= "" then
+      for line in result:gmatch("[^\n]+") do
+        table.insert(lines, line)
+      end
+    end
+
+    -- Update count
+    docker:set({ label = { string = tostring(#lines) } })
+
+    -- Clear old popup items
+    for _, item in ipairs(docker_popup_items) do
+      sbar.remove(item)
+    end
+    docker_popup_items = {}
+
+    -- Add new popup items
+    if #lines == 0 then
+      local item = sbar.add("item", "docker.none", {
+        position = "popup.docker",
+        icon = { drawing = false },
+        label = {
+          string = "No containers running",
+          font = "Hack Nerd Font:Regular:12.0",
+          color = c(colors.subtext0),
+          padding_left = 10,
+          padding_right = 10,
+        },
+      })
+      table.insert(docker_popup_items, item)
+    else
+      for i, line in ipairs(lines) do
+        local name, status = line:match("([^|]+)|(.+)")
+        if name then
+          -- Determine status color
+          local status_color = colors.green
+          local status_icon = "●"
+          if status:match("Restarting") then
+            status_color = colors.yellow
+            status_icon = "○"
+          elseif status:match("Exited") then
+            status_color = colors.red
+            status_icon = "○"
+          end
+
+          -- Truncate name if too long
+          if #name > 25 then
+            name = name:sub(1, 22) .. "..."
+          end
+
+          local item = sbar.add("item", "docker." .. i, {
+            position = "popup.docker",
+            icon = {
+              string = status_icon,
+              font = "Hack Nerd Font:Regular:10.0",
+              color = c(status_color),
+              padding_left = 10,
+              padding_right = 4,
+            },
+            label = {
+              string = name,
+              font = "Hack Nerd Font:Regular:12.0",
+              padding_right = 10,
+            },
+          })
+          table.insert(docker_popup_items, item)
+        end
+      end
+    end
+  end)
+end
+
+update_docker()
+docker:subscribe("routine", function()
+  update_docker()
+end)
+
+docker:subscribe("mouse.clicked", function()
+  sbar.exec("sketchybar --set apple popup.drawing=off --set api_usage popup.drawing=off")
+  docker:set({ popup = { drawing = "toggle" } })
 end)
 
 -- Date/Time (vertically stacked)
