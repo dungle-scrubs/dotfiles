@@ -512,7 +512,41 @@ local docker = sbar.add("item", "docker", {
 local docker_popup_items = {}
 
 local function update_docker()
-  sbar.exec("/usr/local/bin/docker ps --format '{{.Names}}|{{.Status}}' 2>/dev/null", function(result)
+  -- Show loading state
+  docker:set({ label = { string = "...", color = c(colors.subtext0) } })
+
+  -- Combine docker ps (status) with docker stats (memory)
+  local cmd = [[
+    /usr/local/bin/docker ps --format '{{.Names}}|{{.Status}}' 2>/dev/null | while read line; do
+      cname=$(echo "$line" | cut -d'|' -f1)
+      cstatus=$(echo "$line" | cut -d'|' -f2)
+
+      # Extract health status
+      health=""
+      if echo "$cstatus" | grep -q "(healthy)"; then health="healthy"
+      elif echo "$cstatus" | grep -q "(unhealthy)"; then health="unhealthy"
+      elif echo "$cstatus" | grep -q "Restarting"; then health="crashing"
+      elif echo "$cstatus" | grep -q "Exited"; then health="exited"
+      else health="up"; fi
+
+      # Extract time
+      uptime=$(echo "$cstatus" | sed -E '
+        s/.*Up ([0-9]+) hours?.*/\1h/
+        s/.*Up ([0-9]+) minutes?.*/\1m/
+        s/.*Up ([0-9]+) seconds?.*/\1s/
+        s/.*Up About a minute.*/~1m/
+        s/.*Up About an hour.*/~1h/
+        s/.*Restarting.*/--/
+        s/.*Exited.*/--/
+      ')
+
+      # Get memory
+      mem=$(/usr/local/bin/docker stats --no-stream --format '{{.MemUsage}}' "$cname" 2>/dev/null | cut -d'/' -f1 | tr -d ' ')
+      [ -z "$mem" ] && mem="0B"
+      echo "$cname|$health|$uptime|$mem"
+    done
+  ]]
+  sbar.exec(cmd, function(result)
     local lines = {}
     if type(result) == "string" and result ~= "" then
       for line in result:gmatch("[^\n]+") do
@@ -520,8 +554,26 @@ local function update_docker()
       end
     end
 
-    -- Update count
-    docker:set({ label = { string = tostring(#lines) } })
+    -- Check for any broken containers (data format: name|health|uptime|mem)
+    local has_broken = false
+    for _, line in ipairs(lines) do
+      if line:match("|crashing|") or line:match("|exited|") or line:match("|unhealthy|") then
+        has_broken = true
+        break
+      end
+    end
+
+    -- Update count (with red ! if broken)
+    local count_str = tostring(#lines)
+    if has_broken then
+      docker:set({
+        label = { string = count_str .. " !", color = c(colors.red) }
+      })
+    else
+      docker:set({
+        label = { string = count_str, color = c(colors.text) }
+      })
+    end
 
     -- Clear old popup items
     for _, item in ipairs(docker_popup_items) do
@@ -544,39 +596,96 @@ local function update_docker()
       })
       table.insert(docker_popup_items, item)
     else
-      for i, line in ipairs(lines) do
-        local name, status = line:match("([^|]+)|(.+)")
+      -- Group containers by prefix (e.g., "deckfusion" from "deckfusion-nextjs-compose")
+      local groups = {}
+      local group_order = {}
+      for _, line in ipairs(lines) do
+        local name, health, uptime, mem = line:match("([^|]+)|([^|]+)|([^|]+)|(.+)")
         if name then
-          -- Determine status color
+          -- Extract group prefix (first segment before -)
+          local group = name:match("^([^-]+)") or name
+          -- Extract service name (remove group prefix and -compose suffix)
+          local service = name:gsub("^" .. group .. "%-", ""):gsub("%-compose$", "")
+          if service == "" then service = name end
+
+          if not groups[group] then
+            groups[group] = {}
+            table.insert(group_order, group)
+          end
+          table.insert(groups[group], { name = name, service = service, health = health, uptime = uptime, mem = mem })
+        end
+      end
+
+      local item_idx = 0
+      for gi, group in ipairs(group_order) do
+        -- Add separator before groups (except first)
+        if gi > 1 then
+          item_idx = item_idx + 1
+          local sep = sbar.add("item", "docker.sep." .. item_idx, {
+            position = "popup.docker",
+            icon = { drawing = false },
+            label = {
+              string = "────────────────────────────────────────",
+              font = "Hack Nerd Font:Regular:8.0",
+              color = c(colors.surface1),
+              padding_left = 10,
+              padding_right = 10,
+            },
+            background = { height = 14 },
+          })
+          table.insert(docker_popup_items, sep)
+        end
+
+        -- Add group header
+        item_idx = item_idx + 1
+        local header = sbar.add("item", "docker.hdr." .. item_idx, {
+          position = "popup.docker",
+          icon = { drawing = false },
+          label = {
+            string = group,
+            font = "Hack Nerd Font:Bold:11.0",
+            color = c(colors.mauve),
+            padding_left = 10,
+            padding_right = 10,
+          },
+          background = { height = 20 },
+        })
+        table.insert(docker_popup_items, header)
+
+        -- Add containers in group
+        for _, c_data in ipairs(groups[group]) do
+          item_idx = item_idx + 1
           local status_color = colors.green
+          local label_color = colors.text
           local status_icon = "●"
-          if status:match("Restarting") then
-            status_color = colors.yellow
-            status_icon = "○"
-          elseif status:match("Exited") then
+          local is_bad = c_data.health == "crashing" or c_data.health == "exited" or c_data.health == "unhealthy"
+          if is_bad then
             status_color = colors.red
+            label_color = colors.red
             status_icon = "○"
           end
 
-          -- Truncate name if too long
-          if #name > 25 then
-            name = name:sub(1, 22) .. "..."
-          end
+          -- Columns: service | health | time | mem
+          local display = string.format("%-20s %-10s %5s %10s", c_data.service, c_data.health, c_data.uptime, c_data.mem)
 
-          local item = sbar.add("item", "docker." .. i, {
+          local item = sbar.add("item", "docker." .. item_idx, {
             position = "popup.docker",
             icon = {
               string = status_icon,
-              font = "Hack Nerd Font:Regular:10.0",
+              font = "Hack Nerd Font:Regular:8.0",
               color = c(status_color),
               padding_left = 10,
-              padding_right = 4,
+              padding_right = 2,
+              y_offset = 1,
             },
             label = {
-              string = name,
-              font = "Hack Nerd Font:Regular:12.0",
+              string = display,
+              font = "Hack Nerd Font:Regular:11.0",
+              color = c(label_color),
               padding_right = 10,
+              padding_left = 0,
             },
+            background = { height = 16 },
           })
           table.insert(docker_popup_items, item)
         end
