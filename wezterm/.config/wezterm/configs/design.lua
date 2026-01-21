@@ -41,7 +41,7 @@ end)
 ---Applies design configuration to WezTerm
 ---@param config table
 function M.apply(config)
-	config.window_decorations = "RESIZE | MACOS_FORCE_SQUARE_CORNERS"
+	config.window_decorations = "RESIZE"
 	config.window_padding = {
 		left = 10,
 		right = 10,
