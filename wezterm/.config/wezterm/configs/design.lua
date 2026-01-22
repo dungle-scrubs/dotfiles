@@ -79,6 +79,10 @@ function M.apply(config)
 		"cv02", "cv14", "cv27", "cv29", "cv30",
 	}
 
+	config.allow_square_glyphs_to_overflow_width = "Never"
+	config.treat_east_asian_ambiguous_as_wide = false
+	config.unicode_version = 14
+
 	config.bold_brightens_ansi_colors = false
 	config.colors = {
 		background = colors.background,
