@@ -52,12 +52,18 @@ function M.apply(config)
 			mods = "CTRL|ALT|SHIFT",
 			action = Wezterm.action_callback(function(window, pane)
 				local workspaces = Wezterm.mux.get_workspace_names()
+				if #workspaces <= 1 then
+					return
+				end
 				table.sort(workspaces)
 				local current = window:active_workspace()
 				for i, ws in ipairs(workspaces) do
 					if ws == current then
 						local prev_idx = i > 1 and i - 1 or #workspaces
-						workspace.switch(window, pane, workspaces[prev_idx])
+						window:perform_action(
+							act.SwitchToWorkspace({ name = workspaces[prev_idx] }),
+							pane
+						)
 						return
 					end
 				end
@@ -68,12 +74,18 @@ function M.apply(config)
 			mods = "CTRL|ALT|SHIFT",
 			action = Wezterm.action_callback(function(window, pane)
 				local workspaces = Wezterm.mux.get_workspace_names()
+				if #workspaces <= 1 then
+					return
+				end
 				table.sort(workspaces)
 				local current = window:active_workspace()
 				for i, ws in ipairs(workspaces) do
 					if ws == current then
 						local next_idx = i < #workspaces and i + 1 or 1
-						workspace.switch(window, pane, workspaces[next_idx])
+						window:perform_action(
+							act.SwitchToWorkspace({ name = workspaces[next_idx] }),
+							pane
+						)
 						return
 					end
 				end
@@ -253,7 +265,19 @@ function M.apply(config)
 					end),
 				}),
 			},
-			{ key = "c", desc = "Clone", action = Wezterm.action_callback(workspace.duplicate) },
+			{
+				key = "c",
+				desc = "Clone",
+				action = Wezterm.action_callback(function(window, pane)
+					local cwd = pane:get_current_working_dir()
+					if cwd then
+						local dir_path = cwd.file_path or tostring(cwd):gsub("^file://[^/]*/", "/")
+						window:perform_action(act.SpawnCommandInNewTab({ cwd = dir_path }), pane)
+					else
+						window:perform_action(act.SpawnTab("CurrentPaneDomain"), pane)
+					end
+				end),
+			},
 			{ key = "p", desc = "Project", action = Wezterm.action_callback(projects.open_tab) },
 			{ key = "Escape", action = "PopKeyTable" },
 		},

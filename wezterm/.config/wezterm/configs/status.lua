@@ -258,18 +258,25 @@ function M.load(config)
 		local elements = {}
 		local active_key_table = window:active_key_table()
 
+		-- Store globally so format-tab-title can access it
+		Wezterm.GLOBAL.active_key_table = active_key_table
+
 		if active_key_table then
-			add_keytable_hints(elements, active_key_table, M.config)
-			add_keytable_name(elements, active_key_table)
+			-- When key table active, put hints in left status (full width)
+			local left_elements = {}
+			add_keytable_name(left_elements, active_key_table)
+			add_keytable_hints(left_elements, active_key_table, M.config)
+			window:set_left_status(Wezterm.format(left_elements))
+			window:set_right_status("")
 		else
+			window:set_left_status("")
 			add_claude_indicator(elements, pane)
 			add_focus_zoom_indicator(elements)
 			add_process_name(elements, pane)
 			add_git_info(elements, pane)
 			add_workspace(elements, Wezterm.mux.get_active_workspace())
+			window:set_right_status(Wezterm.format(elements))
 		end
-
-		window:set_right_status(Wezterm.format(elements))
 	end)
 end
 

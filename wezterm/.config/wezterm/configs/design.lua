@@ -28,6 +28,11 @@ local function tab_title(tab_info)
 end
 
 Wezterm.on("format-tab-title", function(tab)
+	-- Hide tabs when key table is active (hints take over the bar)
+	if Wezterm.GLOBAL.active_key_table then
+		return ""
+	end
+
 	local title = tab_title(tab)
 	local fg = tab.is_active and colors.yellow or colors.inactive_fg
 
@@ -72,7 +77,7 @@ function M.apply(config)
 	config.cursor_blink_rate = 0
 	config.cursor_thickness = 2
 
-	config.font = Wezterm.font("JetBrainsMono Nerd Font Mono")
+	config.font = Wezterm.font("JetBrainsMono Nerd Font")
 	config.font_size = 16
 	config.harfbuzz_features = {
 		"ss01", "ss02", "ss03", "ss04", "ss05", "ss07",
@@ -80,7 +85,7 @@ function M.apply(config)
 	}
 
 	config.allow_square_glyphs_to_overflow_width = "Never"
-	config.treat_east_asian_ambiguous_as_wide = false
+	config.treat_east_asian_ambiguous_width_as_wide = false
 	config.unicode_version = 14
 
 	config.bold_brightens_ansi_colors = false
