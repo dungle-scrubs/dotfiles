@@ -85,7 +85,7 @@ return function(sbar, colors, styles)
       icon = "",
       color = colors.green,
       parse_mode = "github_release",
-      sections = { "News Features" },
+      sections = { "New Features" },
     },
     {
       name = "Clawdbot",
@@ -93,7 +93,7 @@ return function(sbar, colors, styles)
       icon = "🤖",
       color = colors.blue,
       parse_mode = "github_release",
-      sections = { "Highlights", "Breaking" },
+      sections = { "Changes" },
     },
   }
 
@@ -254,7 +254,7 @@ return function(sbar, colors, styles)
         apps_processed = apps_processed + 1
 
         if type(result) == "string" and result ~= "" then
-          local max_rel = app.max_releases or 3
+          local max_rel = app.max_releases or 1
           local parsed
           if app.parse_mode == "github_release" then
             parsed = parse_github_release(result, app.sections)
@@ -263,6 +263,9 @@ return function(sbar, colors, styles)
           else
             parsed = parse_added_style(result, max_rel)
           end
+
+          -- Get version from first release for header
+          local version_str = parsed[1] and ("  v" .. parsed[1].version) or ""
 
           -- Separator before app (if not first)
           if app_idx > 1 then
@@ -282,44 +285,24 @@ return function(sbar, colors, styles)
             table.insert(releases_popup_items, sep)
           end
 
-          -- App header
+          -- App header with version on same line
           item_idx = item_idx + 1
           local header = sbar.add("item", "releases.app." .. item_idx, {
             position = "popup.releases",
-            icon = {
-              string = app.icon,
-              font = fonts.icon_small,
+            icon = { drawing = false },
+            label = {
+              string = app.name .. version_str,
+              font = fonts.popup_bold,
               color = c(app.color),
               padding_left = popup.padding,
-              padding_right = 4,
-            },
-            label = {
-              string = app.name,
-              font = fonts.popup_bold,
-              color = c(colors.text),
               padding_right = popup.padding,
             },
             background = { height = popup.header_height },
           })
           table.insert(releases_popup_items, header)
 
-          -- Releases
+          -- Releases (only items, version is in header now)
           for _, rel in ipairs(parsed) do
-            -- Version subheader
-            item_idx = item_idx + 1
-            local ver_item = sbar.add("item", "releases.ver." .. item_idx, {
-              position = "popup.releases",
-              icon = { drawing = false },
-              label = {
-                string = "v" .. rel.version,
-                font = fonts.popup_bold,
-                color = c(colors.green),
-                padding_left = popup.padding + 4,
-                padding_right = popup.padding,
-              },
-            })
-            table.insert(releases_popup_items, ver_item)
-
             -- Items grouped by section
             local last_section = nil
             for _, entry in ipairs(rel.items) do
@@ -344,17 +327,16 @@ return function(sbar, colors, styles)
 
               -- Item with wrapping
               local lines = wrap_text(entry.text, MAX_LINE_WIDTH)
-              local icon_color = entry.section == "Breaking" and colors.red or colors.green
               for line_num, line_text in ipairs(lines) do
                 item_idx = item_idx + 1
                 local is_first = line_num == 1
                 local add_item = sbar.add("item", "releases.add." .. item_idx, {
                   position = "popup.releases",
                   icon = {
-                    string = is_first and (entry.section == "Breaking" and "!" or "+") or " ",
+                    string = is_first and "+" or " ",
                     font = "Hack Nerd Font:Bold:9.0",
-                    color = c(icon_color),
-                    padding_left = popup.padding + 12,
+                    color = c(colors.green),
+                    padding_left = popup.padding + 8,
                     padding_right = 4,
                   },
                   label = {
