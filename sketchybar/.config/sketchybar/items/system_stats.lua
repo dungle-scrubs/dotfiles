@@ -15,6 +15,9 @@ return function(sbar, colors, styles)
   local fonts = styles.fonts
   local c = styles.c
 
+  -- Open Activity Monitor on click
+  local open_activity_monitor = 'open -a "Activity Monitor"'
+
   -- ═══════════════════════════════════════════════════════════════════════════
   -- CPU Usage
   -- ═══════════════════════════════════════════════════════════════════════════
@@ -64,6 +67,10 @@ return function(sbar, colors, styles)
   update_cpu()
   cpu_percent:subscribe("routine", update_cpu)
 
+  -- Click to open Activity Monitor
+  cpu_percent:subscribe("mouse.clicked", function() sbar.exec(open_activity_monitor) end)
+  cpu_label:subscribe("mouse.clicked", function() sbar.exec(open_activity_monitor) end)
+
   -- ═══════════════════════════════════════════════════════════════════════════
   -- Disk Usage
   -- ═══════════════════════════════════════════════════════════════════════════
@@ -106,6 +113,10 @@ return function(sbar, colors, styles)
   update_disk()
   disk_percent:subscribe("routine", update_disk)
 
+  -- Click to open Activity Monitor
+  disk_percent:subscribe("mouse.clicked", function() sbar.exec(open_activity_monitor) end)
+  disk_label:subscribe("mouse.clicked", function() sbar.exec(open_activity_monitor) end)
+
   -- ═══════════════════════════════════════════════════════════════════════════
   -- RAM Usage
   -- ═══════════════════════════════════════════════════════════════════════════
@@ -142,4 +153,8 @@ return function(sbar, colors, styles)
 
   update_ram()
   ram_percent:subscribe("routine", update_ram)
+
+  -- Click to open Activity Monitor
+  ram_percent:subscribe("mouse.clicked", function() sbar.exec(open_activity_monitor) end)
+  ram_label:subscribe("mouse.clicked", function() sbar.exec(open_activity_monitor) end)
 end
