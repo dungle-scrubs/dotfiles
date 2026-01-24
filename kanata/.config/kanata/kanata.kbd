@@ -55,20 +55,20 @@
 
   ;; -------------------------------------------------------------------------
   ;; Home Row Mods - LEFT: Shift Ctrl Opt Cmd
-  ;; Using tap-hold-release to prevent roll issues
+  ;; require-prior-idle-ms prevents accidental activation during fast typing
   ;; -------------------------------------------------------------------------
-  a (tap-hold-release 200 200 a lsft)
-  s (tap-hold-release 200 200 s lctl)
-  d (tap-hold-release 200 200 d lalt)
-  f (tap-hold-release 200 200 f lmet)
+  a (tap-hold-release 200 200 a lsft :require-prior-idle-ms 150)
+  s (tap-hold-release 200 200 s lctl :require-prior-idle-ms 150)
+  d (tap-hold-release 200 200 d lalt :require-prior-idle-ms 150)
+  f (tap-hold-release 200 200 f lmet :require-prior-idle-ms 150)
 
   ;; -------------------------------------------------------------------------
   ;; Home Row Mods - RIGHT: Cmd Opt Ctrl Shift
   ;; -------------------------------------------------------------------------
-  j (tap-hold-release 200 200 j rmet)
-  k (tap-hold-release 200 200 k ralt)
-  l (tap-hold-release 200 200 l rctl)
-  ; (tap-hold-release 200 200 ; rsft)
+  j (tap-hold-release 200 200 j rmet :require-prior-idle-ms 150)
+  k (tap-hold-release 200 200 k ralt :require-prior-idle-ms 150)
+  l (tap-hold-release 200 200 l rctl :require-prior-idle-ms 150)
+  ; (tap-hold-release 200 200 ; rsft :require-prior-idle-ms 150)
 
   ;; -------------------------------------------------------------------------
   ;; Layer Triggers
