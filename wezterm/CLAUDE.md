@@ -98,6 +98,8 @@ Modular WezTerm configuration with vim-style keybindings, workspace management, 
 | `d` | Delete current workspace |
 | `n` | New workspace (project picker) |
 | `r` | Rename workspace |
+| `s` | Save session (resurrect) |
+| `l` | Load session (resurrect fuzzy picker) |
 | `Escape` | Exit |
 
 ## Features

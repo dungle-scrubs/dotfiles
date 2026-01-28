@@ -4,6 +4,34 @@ local workspace = require("functions.workspace")
 local focus_zoom = require("functions.focus_zoom")
 local paths = require("configs.paths")
 local act = Wezterm.action
+local resurrect = Wezterm.plugin.require("https://github.com/MLFlexer/resurrect.wezterm")
+
+local function save_session()
+	resurrect.state_manager.save_state(resurrect.workspace_state.get_workspace_state())
+end
+
+local function load_session(win, pane)
+	resurrect.fuzzy_loader.fuzzy_load(win, pane, function(id)
+		local state_type = string.match(id, "^([^/]+)")
+		id = string.match(id, "([^/]+)$")
+		id = string.match(id, "(.+)%..+$")
+		local opts = {
+			relative = true,
+			restore_text = true,
+			on_pane_restore = resurrect.tab_state.default_on_pane_restore,
+		}
+		if state_type == "workspace" then
+			local state = resurrect.state_manager.load_state(id, "workspace")
+			resurrect.workspace_state.restore_workspace(state, opts)
+		elseif state_type == "window" then
+			local state = resurrect.state_manager.load_state(id, "window")
+			resurrect.window_state.restore_window(pane:window(), state, opts)
+		elseif state_type == "tab" then
+			local state = resurrect.state_manager.load_state(id, "tab")
+			resurrect.tab_state.restore_tab(pane:tab(), state, opts)
+		end
+	end)
+end
 
 local M = {}
 
@@ -311,6 +339,8 @@ function M.apply(config)
 					end),
 				}),
 			},
+			{ key = "s", desc = "Save", action = Wezterm.action_callback(save_session) },
+			{ key = "l", desc = "Load", action = Wezterm.action_callback(load_session) },
 			{ key = "Escape", action = "PopKeyTable" },
 		},
 	}

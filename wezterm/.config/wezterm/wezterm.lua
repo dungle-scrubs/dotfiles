@@ -8,6 +8,10 @@ local status = require("configs.status")
 local focus_zoom = require("functions.focus_zoom")
 focus_zoom.init()
 
+local resurrect = Wezterm.plugin.require("https://github.com/MLFlexer/resurrect.wezterm")
+resurrect.state_manager.periodic_save()
+Wezterm.on("gui-startup", resurrect.state_manager.resurrect_on_gui_startup)
+
 local config = Wezterm.config_builder()
 
 config.set_environment_variables = {
