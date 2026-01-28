@@ -37,7 +37,7 @@ return function(sbar, colors, styles)
   -- Format: %-10s (name left)  %8s (value right)  %8s (period right)
   local fmt = "%-10s  %8s  %8s"
 
-  -- Alphabetical order: Anthropic, Codex, MiniMax, OpenAI, Z.ai
+  -- Alphabetical order: Anthropic, Codex, MiniMax, OpenAI, OpenRouter, Z.ai
   local api_anthropic = sbar.add("item", "api_usage.anthropic", {
     position = "popup.api_usage",
     icon = { drawing = false },
@@ -76,6 +76,17 @@ return function(sbar, colors, styles)
     icon = { drawing = false },
     label = {
       string = string.format(fmt, "OpenAI", "$0.00", "30d"),
+      font = fonts.popup,
+      padding_left = popup.padding,
+      padding_right = popup.padding,
+    },
+  })
+
+  local api_openrouter = sbar.add("item", "api_usage.openrouter", {
+    position = "popup.api_usage",
+    icon = { drawing = false },
+    label = {
+      string = string.format(fmt, "OpenRouter", "$0.00", "bal"),
       font = fonts.popup,
       padding_left = popup.padding,
       padding_right = popup.padding,
@@ -132,6 +143,20 @@ return function(sbar, colors, styles)
     ]], function(result)
       local cost = tonumber(type(result) == "string" and result:gsub("%s+", "") or "0") or 0
       api_openai:set({ label = { string = string.format(fmt, "OpenAI", "$"..string.format("%.2f", cost), "30d") } })
+    end)
+
+    -- OpenRouter
+    sbar.exec([[
+      export OP_SERVICE_ACCOUNT_TOKEN=$(security find-generic-password -a dev-secrets -s OP_SERVICE_ACCOUNT_TOKEN -w 2>/dev/null)
+      if [ -z "$OP_SERVICE_ACCOUNT_TOKEN" ]; then echo "0"; exit 0; fi
+      KEY=$(op read "op://Models/openrouter/api-key" 2>/dev/null)
+      if [ -z "$KEY" ]; then echo "0"; exit 0; fi
+      curl -s "https://openrouter.ai/api/v1/credits" \
+        -H "Authorization: Bearer $KEY" 2>/dev/null \
+      | jq '(.data.total_credits - .data.total_usage) // 0'
+    ]], function(result)
+      local bal = tonumber(type(result) == "string" and result:gsub("%s+", "") or "0") or 0
+      api_openrouter:set({ label = { string = string.format(fmt, "OpenRouter", "$"..string.format("%.2f", bal), "bal") } })
     end)
 
     -- Codex
