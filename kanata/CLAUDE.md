@@ -19,8 +19,8 @@ Standard QWERTY with tap-hold keys:
 
 | Key | Tap | Hold |
 |-----|-----|------|
-| Caps Lock | Escape | Left Ctrl |
-| Tab | Tab | Meh (Ctrl+Opt+Shift) |
+| Caps Lock | Escape | Meh (Ctrl+Opt+Shift) |
+| Tab | Tab | Hyper (Ctrl+Opt+Shift+Cmd) |
 | Right Cmd | F13 (SuperWhisper) | Right Cmd |
 | Space | Space | Navigation layer |
 | E | E | Numpad layer |
@@ -163,3 +163,61 @@ sudo kanata -c ~/.config/kanata/kanata.kbd -d
 ```
 
 **Note**: Requires sudo on macOS for keyboard access (or can be run as a launch daemon).
+
+## Known Issue: macOS Option Key Special Characters
+
+### Problem
+
+On macOS, pressing Ctrl+Alt+Shift+key (Meh+key) produces special characters instead of passing through as a keyboard shortcut. For example:
+- Meh+H → `Ô` instead of Ctrl+Alt+Shift+H
+- Meh+L → `Ò` instead of Ctrl+Alt+Shift+L
+
+This happens because macOS's input method layer transforms Option (Alt) + key combinations into special characters **after** Kanata sends the key events. This is OS-level behavior that Kanata cannot bypass.
+
+### Why This Happens
+
+1. Kanata sends Ctrl+Alt+Shift+H to macOS
+2. macOS input method intercepts Option+H and transforms it to `Ô`
+3. Apps receive `Ô` with Ctrl+Shift modifiers, not the intended shortcut
+
+### Solutions
+
+#### Option 1: Use Karabiner-Elements for Meh Key
+
+Karabiner intercepts keys at a lower level (virtual HID) and can send raw keycodes that bypass macOS input method transformation. Use Karabiner for Meh/Hyper keys while keeping Kanata for other remapping.
+
+#### Option 2: Switch Keyboard Input Source
+
+Use "Unicode Hex Input" keyboard layout (System Settings → Keyboard → Input Sources). This layout has no Option-key special character mappings.
+
+**Downside**: Changes how you input unicode characters (requires hex codes).
+
+#### Option 3: Create Custom Keyboard Layout
+
+Use [Ukelele](https://software.sil.org/ukelele/) to create a custom keyboard layout that removes Option-key character mappings.
+
+#### Option 4: Map to Function Keys (Workaround)
+
+In Kanata, map Meh+key to unused function keys (F13-F20), then bind those in your apps:
+
+```lisp
+(deflayer meh
+  ...
+  _    _    _    _    _    _    f17  _    _    f18  _    _    _
+  ...
+)
+```
+
+Then in WezTerm/other apps, bind F17/F18 instead of Ctrl+Alt+Shift+H/L.
+
+**Downside**: Loses semantic meaning of "Meh+H"; requires app-specific rebinding.
+
+#### Option 5: Use Ctrl+Cmd+Shift Instead of Ctrl+Alt+Shift
+
+Avoid the Option key entirely by redefining Meh as Ctrl+Cmd+Shift:
+
+```lisp
+cap (tap-hold 150 150 esc (multi lctl lmet lsft))
+```
+
+**Downside**: Non-standard Meh definition; may conflict with other shortcuts.
